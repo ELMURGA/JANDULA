@@ -410,3 +410,30 @@
         padding: 0.15rem 0.5rem;
     }
 }
+
+/* ============================================
+   LOS MÁS DESTACADOS — texto blanco (solo homepage #coleccion)
+   ============================================ */
+#coleccion .product-card__category {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+#coleccion .product-card__name {
+    color: #ffffff;
+}
+
+#coleccion .product-card:hover .product-card__name {
+    color: var(--color-brand-pink);
+}
+
+#coleccion .product-card__price {
+    color: #ffffff;
+}
+
+#coleccion .product-card:hover .product-card__price {
+    color: var(--color-brand-pink);
+}
+
+#coleccion .product-card__original-price {
+    color: rgba(255, 255, 255, 0.5);
+}

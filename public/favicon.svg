@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="64" fill="#fff"/>
+  <text x="256" y="220" font-family="'Brush Script MT', 'Segoe Script', cursive" font-size="200" fill="#333" text-anchor="middle" dominant-baseline="middle">J</text>
+  <path d="M256 280 C256 280, 206 310, 206 350 C206 380, 230 400, 256 400 C282 400, 306 380, 306 350 C306 310, 256 280, 256 280Z" fill="#F5A0B8"/>
+</svg>

@@ -43,7 +43,7 @@ export default function CartPage() {
                     {/* Cart Items */}
                     <div className="cart-items">
                         {cartItems.map(item => (
-                            <div key={`${item.id}-${item.size || 'nosize'}`} className="cart-item">
+                            <div key={`${item.id}-${item.size || 'nosize'}-${item.color || 'nocolor'}`} className="cart-item">
                                 <Link to={`/producto/${item.id}`} className="cart-item__img">
                                     <img src={item.image} alt={item.name} />
                                 </Link>
@@ -54,19 +54,20 @@ export default function CartPage() {
                                             <Link to={`/producto/${item.id}`}>
                                                 <h3 className="cart-item__name">
                                                     {item.name}
-                                                    {item.size && <span className="cart-item__size"> (Talla: {item.size})</span>}
+                                                    {item.size && <span className="cart-item__size"> <br/>Talla: {item.size}</span>}
+                                                    {item.color && <span className="cart-item__color"> <br/>Color: {item.color}</span>}
                                                 </h3>
                                             </Link>
                                         </div>
-                                        <button className="cart-item__remove" onClick={() => removeFromCart(item.id, item.size)} aria-label="Eliminar">
+                                        <button className="cart-item__remove" onClick={() => removeFromCart(item.id, item.size, item.color)} aria-label="Eliminar">
                                             <Trash2 size={18} />
                                         </button>
                                     </div>
                                     <div className="cart-item__bottom">
                                         <div className="quantity-control">
-                                            <button onClick={() => updateQuantity(item.id, item.size, item.quantity - 1)}><Minus size={14} /></button>
+                                            <button onClick={() => updateQuantity(item.id, item.size, item.color, item.quantity - 1)}><Minus size={14} /></button>
                                             <span>{item.quantity}</span>
-                                            <button onClick={() => updateQuantity(item.id, item.size, item.quantity + 1)}><Plus size={14} /></button>
+                                            <button onClick={() => updateQuantity(item.id, item.size, item.color, item.quantity + 1)}><Plus size={14} /></button>
                                         </div>
                                         <p className="cart-item__price">{formatPrice(item.price * item.quantity)}</p>
                                     </div>

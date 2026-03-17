@@ -1,16 +1,59 @@
-# React + Vite
+# Jándula Moda
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Tienda React + Vite con:
+- Sanity como CMS de catálogo
+- Supabase para auth, pedidos y productos transaccionales
+- Stripe para checkout
+- Resend para emails
 
-Currently, two official plugins are available:
+## Flujo actual
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+1. El catálogo visible se lee desde Sanity.
+2. El checkout valida precios y stock contra la tabla `products` de Supabase.
+3. Para que un producto nuevo de Sanity se pueda comprar, ese producto debe estar sincronizado en `products`.
 
-## React Compiler
+## Sync Sanity -> Supabase
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+La función desplegada es:
 
-## Expanding the ESLint configuration
+- `https://aadjazenpqldtvnxqksr.supabase.co/functions/v1/sync-products`
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Qué hace:
+
+- inserta o actualiza productos desde Sanity en Supabase
+- desactiva en Supabase los productos que ya no existan en Sanity
+
+Autenticación esperada:
+
+- header `Authorization: Bearer <VITE_SUPABASE_ANON_KEY>`
+
+## Para automatizar productos nuevos
+
+Configura un webhook en Sanity que haga `POST` a la URL anterior cada vez que cambie un documento `product`.
+
+Estado actual:
+
+- el webhook de produccion ya esta creado y apuntando a `sync-products`
+- la funcion ya valida un secreto dedicado para el webhook
+
+Headers recomendados:
+
+- `x-webhook-token: <SANITY_WEBHOOK_SECRET>`
+- `Content-Type: application/json`
+
+Resultado:
+
+- si el cliente crea un producto en Sanity, se sincroniza a Supabase y se puede comprar
+- si lo desactiva o lo elimina, deja de estar activo para checkout después del sync
+
+## Comandos útiles
+
+```bash
+npm run dev
+npm run build
+node scripts/setup_sanity_webhook.mjs
+supabase functions deploy sync-products
+supabase functions deploy create-checkout
+supabase functions deploy stripe-webhook
+supabase functions deploy confirm-order
+```

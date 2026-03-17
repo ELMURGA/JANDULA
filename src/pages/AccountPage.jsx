@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
+import { formatPrice } from '../utils/productUtils';
 import {
     LayoutDashboard, ShoppingBag, Download, MapPin, UserCog, LogOut,
     ChevronRight, Eye, Package, Mail, Lock, User, Save, Edit3
@@ -16,18 +18,19 @@ const TABS = [
     { id: 'logout', label: 'Cerrar sesión', icon: LogOut },
 ];
 
-// Mock orders data (empty by default, simulating a new account)
-const MOCK_ORDERS = [];
-
 export default function AccountPage() {
-    const { user, logout, updateUser } = useAuth();
+    const { user, loading, logout, updateUser } = useAuth();
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('dashboard');
+    const [orders, setOrders] = useState([]);
+    const [ordersLoading, setOrdersLoading] = useState(false);
+    const [ordersError, setOrdersError] = useState('');
+    const [expandedOrderId, setExpandedOrderId] = useState(null);
 
     // Address forms
     const [billingAddress, setBillingAddress] = useState({
-        firstName: user?.name?.split(' ')[0] || '',
-        lastName: user?.name?.split(' ').slice(1).join(' ') || '',
+        firstName: '',
+        lastName: '',
         company: '',
         country: 'España',
         street: '',
@@ -52,22 +55,126 @@ export default function AccountPage() {
 
     // Account details form
     const [accountForm, setAccountForm] = useState({
-        firstName: user?.name?.split(' ')[0] || '',
-        lastName: user?.name?.split(' ').slice(1).join(' ') || '',
-        displayName: user?.name || '',
-        email: user?.email || '',
+        firstName: '',
+        lastName: '',
+        displayName: '',
+        email: '',
         currentPassword: '',
         newPassword: '',
         confirmPassword: '',
     });
 
     const [addressSaved, setAddressSaved] = useState(false);
+    const [addressError, setAddressError] = useState('');
     const [detailsSaved, setDetailsSaved] = useState(false);
+    const [detailsError, setDetailsError] = useState('');
+    const [isSaving, setIsSaving] = useState(false);
     const [editingBilling, setEditingBilling] = useState(false);
     const [editingShipping, setEditingShipping] = useState(false);
 
-    if (!user) {
-        navigate('/');
+    // Cargar datos del perfil cuando el usuario esté disponible
+    useEffect(() => {
+        if (!user) return;
+        const nameParts = (user.full_name || '').split(' ');
+        setBillingAddress({
+            firstName: user.billing_first_name || nameParts[0] || '',
+            lastName: user.billing_last_name || nameParts.slice(1).join(' ') || '',
+            company: user.billing_company || '',
+            country: 'España',
+            street: user.address_line || '',
+            apartment: user.billing_apartment || '',
+            city: user.city || '',
+            province: user.province || 'Sevilla',
+            postalCode: user.postal_code || '',
+            phone: user.phone || '',
+        });
+        setShippingAddress({
+            firstName: user.shipping_first_name || '',
+            lastName: user.shipping_last_name || '',
+            company: user.shipping_company || '',
+            country: 'España',
+            street: user.shipping_street || '',
+            apartment: user.shipping_apartment || '',
+            city: user.shipping_city || '',
+            province: user.shipping_province || 'Sevilla',
+            postalCode: user.shipping_postal || '',
+        });
+        setAccountForm({
+            firstName: nameParts[0] || '',
+            lastName: nameParts.slice(1).join(' ') || '',
+            displayName: user.full_name || '',
+            email: user.email || '',
+            currentPassword: '',
+            newPassword: '',
+            confirmPassword: '',
+        });
+    }, [user?.id]);
+
+    useEffect(() => {
+        if (!user?.id) return;
+
+        const fetchOrders = async () => {
+            try {
+                setOrdersLoading(true);
+                setOrdersError('');
+
+                const { data, error } = await supabase
+                    .from('orders')
+                    .select(`
+                        id,
+                        created_at,
+                        status,
+                        total,
+                        subtotal,
+                        shipping,
+                        discount_amount,
+                        discount_code,
+                        order_items (
+                            product_name,
+                            quantity,
+                            unit_price,
+                            total_price,
+                            size
+                        )
+                    `)
+                    .eq('user_id', user.id)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+                setOrders(data || []);
+            } catch (error) {
+                console.error('Error cargando pedidos:', error);
+                setOrdersError('No se pudieron cargar tus pedidos. Inténtalo de nuevo.');
+            } finally {
+                setOrdersLoading(false);
+            }
+        };
+
+        fetchOrders();
+
+        const channel = supabase
+            .channel(`account-orders-${user.id}`)
+            .on(
+                'postgres_changes',
+                { event: '*', schema: 'public', table: 'orders', filter: `user_id=eq.${user.id}` },
+                () => {
+                    fetchOrders();
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, [user?.id]);
+
+    useEffect(() => {
+        if (!loading && !user) {
+            navigate('/');
+        }
+    }, [loading, user, navigate]);
+
+    if (loading || !user) {
         return null;
     }
 
@@ -80,26 +187,79 @@ export default function AccountPage() {
         setActiveTab(tabId);
     };
 
-    const handleAddressSave = (e) => {
+    const handleAddressSave = async (e) => {
         e.preventDefault();
-        setAddressSaved(true);
-        setEditingBilling(false);
-        setEditingShipping(false);
-        setTimeout(() => setAddressSaved(false), 3000);
+        setIsSaving(true);
+        setAddressError('');
+        try {
+            await updateUser({
+                billing_first_name: billingAddress.firstName,
+                billing_last_name:  billingAddress.lastName,
+                billing_company:    billingAddress.company,
+                address_line:       billingAddress.street,
+                billing_apartment:  billingAddress.apartment,
+                city:               billingAddress.city,
+                province:           billingAddress.province,
+                postal_code:        billingAddress.postalCode,
+                phone:              billingAddress.phone,
+                shipping_first_name: shippingAddress.firstName,
+                shipping_last_name:  shippingAddress.lastName,
+                shipping_company:    shippingAddress.company,
+                shipping_street:     shippingAddress.street,
+                shipping_apartment:  shippingAddress.apartment,
+                shipping_city:       shippingAddress.city,
+                shipping_province:   shippingAddress.province,
+                shipping_postal:     shippingAddress.postalCode,
+            });
+            setAddressSaved(true);
+            setEditingBilling(false);
+            setEditingShipping(false);
+            setTimeout(() => setAddressSaved(false), 3000);
+        } catch (err) {
+            setAddressError('Error al guardar. Inténtalo de nuevo.');
+        } finally {
+            setIsSaving(false);
+        }
     };
 
-    const handleDetailsSave = (e) => {
+    const handleDetailsSave = async (e) => {
         e.preventDefault();
-        updateUser({
-            name: accountForm.displayName || `${accountForm.firstName} ${accountForm.lastName}`.trim(),
-            email: accountForm.email,
-        });
-        setDetailsSaved(true);
-        setAccountForm(prev => ({ ...prev, currentPassword: '', newPassword: '', confirmPassword: '' }));
-        setTimeout(() => setDetailsSaved(false), 3000);
+        setIsSaving(true);
+        setDetailsError('');
+
+        if (accountForm.newPassword && accountForm.newPassword !== accountForm.confirmPassword) {
+            setDetailsError('Las contraseñas nuevas no coinciden.');
+            setIsSaving(false);
+            return;
+        }
+
+        try {
+            const fullName = accountForm.displayName ||
+                `${accountForm.firstName} ${accountForm.lastName}`.trim();
+
+            // Actualizar perfil en BD
+            await updateUser({ full_name: fullName, email: accountForm.email });
+
+            // Actualizar email o contraseña en Supabase Auth si han cambiado
+            const authUpdates = {};
+            if (accountForm.email !== user.email) authUpdates.email = accountForm.email;
+            if (accountForm.newPassword) authUpdates.password = accountForm.newPassword;
+            if (Object.keys(authUpdates).length > 0) {
+                const { error } = await supabase.auth.updateUser(authUpdates);
+                if (error) throw error;
+            }
+
+            setDetailsSaved(true);
+            setAccountForm(prev => ({ ...prev, currentPassword: '', newPassword: '', confirmPassword: '' }));
+            setTimeout(() => setDetailsSaved(false), 3000);
+        } catch (err) {
+            setDetailsError(err.message || 'Error al guardar. Inténtalo de nuevo.');
+        } finally {
+            setIsSaving(false);
+        }
     };
 
-    const userName = user.name || user.email.split('@')[0];
+    const userName = user.full_name || user.email.split('@')[0];
 
     return (
         <div className="page-wrapper">
@@ -219,7 +379,14 @@ export default function AccountPage() {
                                         <ShoppingBag size={22} /> Mis Pedidos
                                     </h2>
 
-                                    {MOCK_ORDERS.length === 0 ? (
+                                    {ordersLoading ? (
+                                        <div className="account-empty">
+                                            <Package size={48} />
+                                            <p>Cargando pedidos...</p>
+                                        </div>
+                                    ) : ordersError ? (
+                                        <div className="account-alert account-alert--error">{ordersError}</div>
+                                    ) : orders.length === 0 ? (
                                         <div className="account-empty">
                                             <Package size={48} />
                                             <p>Aún no has realizado ningún pedido.</p>
@@ -240,22 +407,52 @@ export default function AccountPage() {
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {MOCK_ORDERS.map(order => (
-                                                        <tr key={order.id}>
+                                                    {orders.map(order => (
+                                                        <React.Fragment key={order.id}>
+                                                        <tr>
                                                             <td><strong>#{order.id}</strong></td>
-                                                            <td>{order.date}</td>
+                                                            <td>{new Date(order.created_at).toLocaleDateString('es-ES')}</td>
                                                             <td>
-                                                                <span className={`account-status account-status--${order.status.toLowerCase()}`}>
-                                                                    {order.status}
+                                                                <span className={`account-status account-status--${(order.status || '').toLowerCase()}`}>
+                                                                    {order.status || 'pendiente'}
                                                                 </span>
                                                             </td>
-                                                            <td>{order.total}</td>
+                                                            <td>{formatPrice(order.total || 0)}</td>
                                                             <td>
-                                                                <button className="account-view-btn">
-                                                                    <Eye size={14} /> Ver
+                                                                <button
+                                                                    className="account-view-btn"
+                                                                    type="button"
+                                                                    onClick={() => setExpandedOrderId(expandedOrderId === order.id ? null : order.id)}
+                                                                >
+                                                                    <Eye size={14} /> {expandedOrderId === order.id ? 'Ocultar' : 'Ver'}
                                                                 </button>
                                                             </td>
                                                         </tr>
+                                                        {expandedOrderId === order.id && (
+                                                            <tr key={`detail-${order.id}`}>
+                                                                <td colSpan={5} style={{ background: '#faf9f7', padding: '1rem 1.25rem' }}>
+                                                                    <div style={{ fontSize: '0.875rem', color: '#374151' }}>
+                                                                        <strong style={{ display: 'block', marginBottom: '0.5rem' }}>Productos:</strong>
+                                                                        {(order.order_items || []).map((item, i) => (
+                                                                            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.35rem 0', borderBottom: '1px solid #f3f4f6' }}>
+                                                                                <span>{item.product_name}{item.size ? ` — Talla ${item.size}` : ''}{item.color ? ` — Color ${item.color}` : ''} × {item.quantity}</span>
+                                                                                <span style={{ fontWeight: 600 }}>{formatPrice(item.total_price)}</span>
+                                                                            </div>
+                                                                        ))}
+                                                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.75rem', paddingTop: '0.5rem', fontWeight: 600 }}>
+                                                                            <span>Total</span>
+                                                                            <span>{formatPrice(order.total)}</span>
+                                                                        </div>
+                                                                        {order.discount_code && (
+                                                                            <div style={{ color: '#16a34a', fontSize: '0.8rem', marginTop: '0.25rem' }}>
+                                                                                Descuento aplicado: {order.discount_code} (−{formatPrice(order.discount_amount)})
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        )}
+                                                        </React.Fragment>
                                                     ))}
                                                 </tbody>
                                             </table>
@@ -290,6 +487,11 @@ export default function AccountPage() {
                                     {addressSaved && (
                                         <div className="account-alert account-alert--success">
                                             ✓ Direcciones guardadas correctamente.
+                                        </div>
+                                    )}
+                                    {addressError && (
+                                        <div className="account-alert account-alert--error">
+                                            {addressError}
                                         </div>
                                     )}
 
@@ -439,8 +641,8 @@ export default function AccountPage() {
                                         </div>
 
                                         {(editingBilling || editingShipping) && (
-                                            <button type="submit" className="account-save-btn">
-                                                <Save size={16} /> Guardar Direcciones
+                                            <button type="submit" className="account-save-btn" disabled={isSaving}>
+                                                <Save size={16} /> {isSaving ? 'Guardando…' : 'Guardar Direcciones'}
                                             </button>
                                         )}
                                     </form>
@@ -457,6 +659,11 @@ export default function AccountPage() {
                                     {detailsSaved && (
                                         <div className="account-alert account-alert--success">
                                             ✓ Datos actualizados correctamente.
+                                        </div>
+                                    )}
+                                    {detailsError && (
+                                        <div className="account-alert account-alert--error">
+                                            {detailsError}
                                         </div>
                                     )}
 
@@ -537,8 +744,8 @@ export default function AccountPage() {
                                             </div>
                                         </div>
 
-                                        <button type="submit" className="account-save-btn">
-                                            <Save size={16} /> Guardar Cambios
+                                        <button type="submit" className="account-save-btn" disabled={isSaving}>
+                                            <Save size={16} /> {isSaving ? 'Guardando…' : 'Guardar Cambios'}
                                         </button>
                                     </form>
                                 </div>

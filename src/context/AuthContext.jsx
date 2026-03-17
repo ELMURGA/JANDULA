@@ -77,6 +77,20 @@ export function AuthProvider({ children }) {
         });
         if (error) throw error;
         setAuthModalOpen(false);
+
+        // Enviar email de bienvenida con cupón si hay sesión inmediata
+        const accessToken = data?.session?.access_token;
+        if (accessToken) {
+            const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+            fetch(`${supabaseUrl}/functions/v1/send-welcome-email`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`,
+                },
+            }).catch(() => { /* no bloquear registro si falla el email */ });
+        }
+
         return data;
     };
 

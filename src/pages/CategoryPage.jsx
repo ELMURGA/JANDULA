@@ -1,23 +1,39 @@
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { products, CATEGORIES, SUBCATEGORIES, formatPrice } from '../data/products';
+import { getProducts } from '../lib/sanity';
 import ProductCard from '../components/ProductCard';
-import { useState } from 'react';
-import { Filter, ChevronRight } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Filter } from 'lucide-react';
 import '../styles/pages.css';
 
 export default function CategoryPage() {
     const { slug } = useParams();
     const navigate = useNavigate();
     const [sortBy, setSortBy] = useState('default');
+    const [allProducts, setAllProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    // Cargar productos y categorías desde Sanity
+    useEffect(() => {
+        async function loadData() {
+            try {
+                setLoading(true);
+                const products = await getProducts();
+
+                setAllProducts(products);
+            } catch (error) {
+                console.error('Error cargando datos:', error);
+            } finally {
+                setLoading(false);
+            }
+        }
+        loadData();
+    }, []);
 
     const handleCategorySelect = (e) => {
         navigate(`/categoria/${e.target.value}`);
     };
 
-    const handleSubcategorySelect = (e) => {
-        navigate(`/categoria/${e.target.value}`);
-    };
-
+    // Crear mapa de categorías para slugs (similar al anterior)
     const categoryMap = {
         'nueva-coleccion': 'Nueva Colección',
         'invitada-talla-grande': 'Invitada Talla Grande',
@@ -28,44 +44,14 @@ export default function CategoryPage() {
         'special-price': 'Special Price',
     };
 
-    // Determine the parent category slug for subcategory lookup
-    const parentCategorySlug = Object.keys(categoryMap).find(key => key === slug);
-
-    // Check if slug is a subcategory
-    const isSubcategory = slug && !categoryMap[slug] && slug !== 'todos';
-    let categoryName = categoryMap[slug] || 'Todos';
-    let subcategoryName = null;
-    let parentSlug = null;
-
-    if (isSubcategory) {
-        for (const [parentKey, subs] of Object.entries(SUBCATEGORIES)) {
-            const found = subs.find(s => s.slug === slug);
-            if (found) {
-                subcategoryName = found.name;
-                parentSlug = parentKey;
-                categoryName = categoryMap[parentKey] || parentKey;
-                break;
-            }
-        }
-    }
-
     const isAll = !slug || slug === 'todos';
+    const categoryName = categoryMap[slug] || 'Todos';
 
-    // Get subcategories for the current main category (or parent if viewing subcategory)
-    const currentCategorySlug = isSubcategory ? parentSlug : parentCategorySlug;
-    const subcategories = currentCategorySlug ? SUBCATEGORIES[currentCategorySlug] || [] : [];
-
-    // Filter products
-    let filtered;
-    if (isAll) {
-        filtered = products;
-    } else if (isSubcategory && subcategoryName) {
-        filtered = products.filter(p => p.subcategory === slug);
-    } else if (categoryName === 'Special Price') {
-        filtered = products.filter(p => p.tags.includes('Special Price'));
-    } else {
-        filtered = products.filter(p =>
-            p.category === categoryName || p.tags.includes(categoryName)
+    // Filtrar productos
+    let filtered = allProducts;
+    if (!isAll && categoryName !== 'Todos') {
+        filtered = allProducts.filter(p =>
+            p.category === categoryName || (p.tags && p.tags.includes(categoryName))
         );
     }
 
@@ -75,22 +61,22 @@ export default function CategoryPage() {
     if (sortBy === 'price-desc') sorted.sort((a, b) => b.price - a.price);
     if (sortBy === 'name') sorted.sort((a, b) => a.name.localeCompare(b.name));
 
-    const displayName = subcategoryName || (isAll ? 'Toda la Colección' : categoryName);
+    const displayName = isAll ? 'Toda la Colección' : categoryName;
 
     return (
         <main className="page-wrapper">
             <div className="page-hero page-hero--category">
                 <h1>{displayName}</h1>
-                <p>{sorted.length} producto{sorted.length !== 1 && 's'}</p>
+                {!loading && <p>{sorted.length} producto{sorted.length !== 1 && 's'}</p>}
             </div>
 
             <section className="category-page container">
-                {/* Main Category Tabs */}
+                {/* Main Category Toolbar */}
                 <div className="category-toolbar">
                     {/* Selector de categoría para móvil */}
                     <div className="category-select-mobile">
                         <select
-                            value={isSubcategory ? parentSlug : (isAll ? 'todos' : slug)}
+                            value={isAll ? 'todos' : slug}
                             onChange={handleCategorySelect}
                             aria-label="Seleccionar categoría"
                         >
@@ -104,7 +90,7 @@ export default function CategoryPage() {
                     <div className="category-tags">
                         <Link to="/categoria/todos" className={`cat-tag ${isAll ? 'active' : ''}`}>Todos</Link>
                         {Object.entries(categoryMap).map(([s, name]) => (
-                            <Link key={s} to={`/categoria/${s}`} className={`cat-tag ${slug === s || (isSubcategory && parentSlug === s) ? 'active' : ''}`}>
+                            <Link key={s} to={`/categoria/${s}`} className={`cat-tag ${slug === s ? 'active' : ''}`}>
                                 {name}
                             </Link>
                         ))}
@@ -120,52 +106,22 @@ export default function CategoryPage() {
                     </div>
                 </div>
 
-                {/* Subcategory Tabs — shown when on a main category that has subcategories */}
-                {subcategories.length > 0 && (
-                    <>
-                    {/* Selector de subcategoría para móvil */}
-                    <div className="subcategory-select-mobile">
-                        <select
-                            value={isSubcategory ? slug : currentCategorySlug}
-                            onChange={handleSubcategorySelect}
-                            aria-label="Seleccionar subcategoría"
-                        >
-                            <option value={currentCategorySlug}>Todo {categoryName}</option>
-                            {subcategories.map(sub => (
-                                <option key={sub.slug} value={sub.slug}>{sub.name}</option>
-                            ))}
-                        </select>
+                {/* Grid de productos */}
+                {loading ? (
+                    <div style={{ textAlign: 'center', padding: '3rem 0' }}>
+                        <p style={{ color: 'var(--color-stone-500)' }}>Cargando productos...</p>
                     </div>
-
-                    <div className="subcategory-tabs">
-                        <Link
-                            to={`/categoria/${currentCategorySlug}`}
-                            className={`subcat-tab ${!isSubcategory ? 'active' : ''}`}
-                        >
-                            Todo {categoryName}
-                        </Link>
-                        {subcategories.map(sub => (
-                            <Link
-                                key={sub.slug}
-                                to={`/categoria/${sub.slug}`}
-                                className={`subcat-tab ${slug === sub.slug ? 'active' : ''}`}
-                            >
-                                {sub.name}
-                            </Link>
-                        ))}
+                ) : (
+                    <div className="category-grid">
+                        {sorted.length > 0 ? (
+                            sorted.map((product) => (
+                                <ProductCard key={product._id} product={product} />
+                            ))
+                        ) : (
+                            <p className="products-empty">No se encontraron productos en esta categoría.</p>
+                        )}
                     </div>
-                    </>
                 )}
-
-                <div className="category-grid">
-                    {sorted.length > 0 ? (
-                        sorted.map((product) => (
-                            <ProductCard key={product.id} product={product} />
-                        ))
-                    ) : (
-                        <p className="products-empty">No se encontraron productos en esta categoría.</p>
-                    )}
-                </div>
             </section>
         </main>
     );

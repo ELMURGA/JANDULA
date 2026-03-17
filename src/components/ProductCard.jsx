@@ -1,13 +1,14 @@
 import { Heart, ShoppingBag } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { formatPrice } from '../data/products';
+import { formatPrice, normalizeProduct } from '../utils/productUtils';
 import { useAuth } from '../context/AuthContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
 import { OptimizedImage } from '../utils/imageOptimization';
 import '../styles/products.css';
 
-export default function ProductCard({ product }) {
+export default function ProductCard({ product: sanityProduct }) {
+    const product = normalizeProduct(sanityProduct);
     const { isLoggedIn, setAuthModalOpen } = useAuth();
     const { isInWishlist, toggleWishlist } = useWishlist();
     const { addToCart } = useCart();
@@ -18,7 +19,7 @@ export default function ProductCard({ product }) {
         e.preventDefault();
         e.stopPropagation();
         if (product.sizes?.length > 0) {
-            navigate(`/producto/${product.id}`);
+            navigate(`/producto/${product.slug}`);
         } else {
             addToCart(product);
         }
@@ -31,12 +32,12 @@ export default function ProductCard({ product }) {
             setAuthModalOpen(true);
             return;
         }
-        toggleWishlist(product.id);
+        toggleWishlist(product);
     };
 
     return (
         <article className="product-card">
-            <Link to={`/producto/${product.id}`} className="product-card__image-wrap">
+            <Link to={`/producto/${product.slug}`} className="product-card__image-wrap">
                 <OptimizedImage
                     src={product.image}
                     alt={product.name}
@@ -76,7 +77,7 @@ export default function ProductCard({ product }) {
 
             <div className="product-card__info">
                 <p className="product-card__category">{product.category}</p>
-                <Link to={`/producto/${product.id}`}>
+                <Link to={`/producto/${product.slug}`}>
                     <h3 className="product-card__name">{product.name}</h3>
                 </Link>
                 <div className="product-card__prices">

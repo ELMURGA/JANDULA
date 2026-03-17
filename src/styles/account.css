@@ -665,6 +665,12 @@
     border: 1px solid #bbf7d0;
 }
 
+.account-alert--error {
+    background: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+}
+
 /* ============================================
    DETAILS FORM
    ============================================ */

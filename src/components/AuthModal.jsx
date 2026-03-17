@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { X, Mail, Lock, User, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { supabase } from '../lib/supabase';
 import logoImg from '../assets/logo-jandula-header.png';
 import '../styles/auth-modal.css';
 
 export default function AuthModal({ isOpen, onClose }) {
     const { login, register } = useAuth();
+    // mode: 'login' | 'register' | 'forgot'
     const [mode, setMode] = useState('login');
     const [showPassword, setShowPassword] = useState(false);
     const [form, setForm] = useState({ name: '', email: '', password: '' });
@@ -25,6 +27,27 @@ export default function AuthModal({ isOpen, onClose }) {
         setLoading(true);
 
         try {
+            if (mode === 'forgot') {
+                const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-password-recovery`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+                    },
+                    body: JSON.stringify({
+                        email: form.email,
+                        siteUrl: window.location.origin,
+                    }),
+                });
+
+                if (!res.ok) {
+                    const data = await res.json().catch(() => ({}));
+                    throw new Error(data.error || 'No se pudo enviar el email de recuperación');
+                }
+
+                setSubmitted(true);
+                return;
+            }
             if (mode === 'login') {
                 await login(form.email, form.password);
             } else {
@@ -40,7 +63,6 @@ export default function AuthModal({ isOpen, onClose }) {
             }, 1500);
         } catch (err) {
             console.error('Auth error:', err);
-            // Translate common Supabase messages or use generic
             setError(err.message === 'Invalid login credentials'
                 ? 'Email o contraseña incorrectos'
                 : err.message || 'Ocurrió un error');
@@ -69,11 +91,17 @@ export default function AuthModal({ isOpen, onClose }) {
                 </div>
 
                 <div className="auth-modal__header">
-                    <h2>{mode === 'login' ? 'Iniciar Sesión' : 'Crear Cuenta'}</h2>
+                    <h2>
+                        {mode === 'login' ? 'Iniciar Sesión'
+                            : mode === 'register' ? 'Crear Cuenta'
+                            : 'Recuperar Contraseña'}
+                    </h2>
                     <p>
                         {mode === 'login'
                             ? 'Accede a tu cuenta para gestionar tus pedidos y favoritos'
-                            : 'Regístrate para guardar tus favoritos y disfrutar de ofertas exclusivas'
+                            : mode === 'register'
+                            ? 'Regístrate para guardar tus favoritos y disfrutar de ofertas exclusivas'
+                            : 'Recibirás un email con el enlace para restablecer tu contraseña'
                         }
                     </p>
                 </div>
@@ -84,6 +112,8 @@ export default function AuthModal({ isOpen, onClose }) {
                         <p>
                             {mode === 'login'
                                 ? '¡Bienvenida de nuevo!'
+                                : mode === 'forgot'
+                                ? 'Email enviado. Revisa tu bandeja de entrada.'
                                 : '¡Cuenta creada con éxito!'
                             }
                         </p>
@@ -129,53 +159,70 @@ export default function AuthModal({ isOpen, onClose }) {
                             />
                         </div>
 
-                        <div className="auth-modal__field">
-                            <label htmlFor="auth-password">
-                                <Lock size={16} />
-                                Contraseña
-                            </label>
-                            <div className="auth-modal__password-wrap">
-                                <input
-                                    type={showPassword ? 'text' : 'password'}
-                                    id="auth-password"
-                                    name="password"
-                                    placeholder="••••••••"
-                                    value={form.password}
-                                    onChange={handleChange}
-                                    required
-                                    minLength={6}
-                                />
-                                <button
-                                    type="button"
-                                    className="auth-modal__toggle-pw"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
-                                >
-                                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                                </button>
+                        {mode !== 'forgot' && (
+                            <div className="auth-modal__field">
+                                <label htmlFor="auth-password">
+                                    <Lock size={16} />
+                                    Contraseña
+                                </label>
+                                <div className="auth-modal__password-wrap">
+                                    <input
+                                        type={showPassword ? 'text' : 'password'}
+                                        id="auth-password"
+                                        name="password"
+                                        placeholder="••••••••"
+                                        value={form.password}
+                                        onChange={handleChange}
+                                        required
+                                        minLength={6}
+                                    />
+                                    <button
+                                        type="button"
+                                        className="auth-modal__toggle-pw"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                                    >
+                                        {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                                    </button>
+                                </div>
                             </div>
-                        </div>
+                        )}
 
                         {mode === 'login' && (
-                            <button type="button" className="auth-modal__forgot">
+                            <button
+                                type="button"
+                                className="auth-modal__forgot"
+                                onClick={() => { setMode('forgot'); setError(''); setForm(f => ({ ...f, password: '' })); }}
+                            >
                                 ¿Olvidaste tu contraseña?
                             </button>
                         )}
 
                         <button type="submit" className="auth-modal__submit" disabled={loading}>
-                            {loading ? 'Cargando...' : (mode === 'login' ? 'Iniciar Sesión' : 'Crear Mi Cuenta')}
+                            {loading ? 'Cargando...'
+                                : mode === 'login' ? 'Iniciar Sesión'
+                                : mode === 'register' ? 'Crear Mi Cuenta'
+                                : 'Enviar enlace de recuperación'}
                         </button>
                     </form>
                 )}
 
-                <div className="auth-modal__switch">
-                    <span>
-                        {mode === 'login' ? '¿No tienes cuenta?' : '¿Ya tienes cuenta?'}
-                    </span>
-                    <button onClick={switchMode}>
-                        {mode === 'login' ? 'Regístrate aquí' : 'Inicia sesión'}
-                    </button>
-                </div>
+                {mode !== 'forgot' ? (
+                    <div className="auth-modal__switch">
+                        <span>
+                            {mode === 'login' ? '¿No tienes cuenta?' : '¿Ya tienes cuenta?'}
+                        </span>
+                        <button onClick={switchMode}>
+                            {mode === 'login' ? 'Regístrate aquí' : 'Inicia sesión'}
+                        </button>
+                    </div>
+                ) : (
+                    <div className="auth-modal__switch">
+                        <button onClick={() => { setMode('login'); setSubmitted(false); setError(''); }}>
+                            ← Volver al inicio de sesión
+                        </button>
+                    </div>
+                )}
             </div>
         </>
     );

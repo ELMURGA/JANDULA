@@ -7,7 +7,7 @@ import { products, formatPrice } from '../data/products';
 import '../styles/pages.css';
 
 export default function FavoritesPage() {
-    const { wishlist, removeFromWishlist } = useWishlist();
+    const { wishlistItems, removeFromWishlist } = useWishlist();
     const { isLoggedIn, setAuthModalOpen } = useAuth();
     const { addToCart } = useCart();
     const navigate = useNavigate();
@@ -34,7 +34,9 @@ export default function FavoritesPage() {
         );
     }
 
-    const favoriteProducts = products.filter(p => wishlist.includes(p.id));
+    const favoriteProducts = wishlistItems && wishlistItems.length > 0 && typeof wishlistItems[0] === 'object' 
+        ? wishlistItems 
+        : products.filter(p => wishlistItems.some(item => (typeof item === 'object' ? item.id === p.id : item === p.id)));
 
     return (
         <main className="page-wrapper">

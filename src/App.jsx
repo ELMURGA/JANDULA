@@ -22,12 +22,13 @@ import AccessibilityPage from './pages/AccessibilityPage';
 import ReturnPolicyPage from './pages/ReturnPolicyPage';
 import FavoritesPage from './pages/FavoritesPage';
 import AccountPage from './pages/AccountPage';
+import OrderConfirmedPage from './pages/OrderConfirmedPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 import AdminDashboard from './pages/AdminDashboard';
-import ProtectedRoute from './components/ProtectedRoute';
 function ScrollToTop() {
   const { pathname } = useLocation();
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: 'auto' });
   }, [pathname]);
   return null;
 }
@@ -47,7 +48,7 @@ export default function App() {
           <Navbar />
 
           {/* Spacer for fixed navbar */}
-          <div style={{ height: '36px' }} aria-hidden="true" />
+          <div style={{ height: '126px' }} aria-hidden="true" />
 
           <div id="main-content">
             <Routes>
@@ -57,16 +58,11 @@ export default function App() {
               <Route path="/producto/:id" element={<ProductDetailPage />} />
               <Route path="/carrito" element={<CartPage />} />
               <Route path="/checkout" element={<CheckoutPage />} />
+              <Route path="/pedido-confirmado" element={<OrderConfirmedPage />} />
               <Route path="/favoritos" element={<FavoritesPage />} />
               <Route path="/mi-cuenta" element={<AccountPage />} />
-              <Route
-                path="/admin"
-                element={
-                  <ProtectedRoute requireAdmin={true}>
-                    <AdminDashboard />
-                  </ProtectedRoute>
-                }
-              />
+              <Route path="/recuperar-contrasena" element={<ResetPasswordPage />} />
+              <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/politica-privacidad" element={<PrivacyPolicyPage />} />
               <Route path="/politica-cookies" element={<CookiePolicyPage />} />
               <Route path="/accesibilidad" element={<AccessibilityPage />} />

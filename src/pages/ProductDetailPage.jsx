@@ -1,21 +1,75 @@
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { products, formatPrice } from '../data/products';
-import { useState } from 'react';
-import { Heart, ShoppingBag, ChevronRight, Truck, ShieldCheck, MessageCircle, Minus, Plus } from 'lucide-react';
+import { getProduct, getProducts } from '../lib/sanity';
+import { useState, useEffect } from 'react';
+import { Heart, ShoppingBag, ChevronRight, Truck, ShieldCheck, Minus, Plus } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
+import { normalizeProduct, formatPrice } from '../utils/productUtils';
+import WhatsAppIcon from '../components/WhatsAppIcon';
 import '../styles/pages.css';
 
+function slugifyCategory(category) {
+    return String(category || '')
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/\s+/g, '-');
+}
+
 export default function ProductDetailPage() {
-    const { id } = useParams();
+    const { id: slug } = useParams(); // Ahora es slug, no ID numérico
     const navigate = useNavigate();
-    const product = products.find(p => p.id === parseInt(id));
+    const [product, setProduct] = useState(null);
+    const [relatedProducts, setRelatedProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [selectedSize, setSelectedSize] = useState('');
+    const [selectedColor, setSelectedColor] = useState('');
     const [quantity, setQuantity] = useState(1);
     const { addToCart } = useCart();
     const { wishlistItems, toggleWishlist } = useWishlist();
 
-    const wishlisted = wishlistItems?.some(item => item.id === product?.id) || false;
+    useEffect(() => {
+        async function loadProduct() {
+            try {
+                setLoading(true);
+                // Cargar producto por slug desde Sanity
+                const productData = await getProduct(slug);
+                
+                if (!productData) {
+                    setProduct(null);
+                    return;
+                }
+
+                const normalizedProduct = normalizeProduct(productData);
+                setProduct(normalizedProduct);
+
+                // Cargar productos relacionados
+                const allProducts = await getProducts();
+                const related = allProducts
+                    .filter(p => p.category === productData.category && p._id !== productData._id)
+                    .slice(0, 5);
+
+                setRelatedProducts(related.map(normalizeProduct));
+            } catch (error) {
+                console.error('Error cargando producto:', error);
+                setProduct(null);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        loadProduct();
+    }, [slug]);
+
+    if (loading) {
+        return (
+            <main className="page-wrapper">
+                <div className="container" style={{ textAlign: 'center', padding: '6rem 0' }}>
+                    <p style={{ color: 'var(--color-stone-500)' }}>Cargando producto...</p>
+                </div>
+            </main>
+        );
+    }
 
     if (!product) {
         return (
@@ -33,26 +87,28 @@ export default function ProductDetailPage() {
         );
     }
 
+    const wishlisted = wishlistItems?.some(item => item.id === product.id) || false;
+
     const discount = product.originalPrice
         ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
         : null;
-
-    const relatedProducts = products
-        .filter(p => p.category === product.category && p.id !== product.id)
-        .sort(() => 0.5 - Math.random())
-        .slice(0, 5);
 
     const handleAddToCart = () => {
         if (product.sizes?.length > 0 && !selectedSize) {
             alert('Por favor, selecciona una talla antes de añadir al carrito.');
             return;
         }
-        addToCart(product, selectedSize, quantity);
+        if (product.colors?.length > 0 && !selectedColor) {
+            alert('Por favor, selecciona un color antes de añadir al carrito.');
+            return;
+        }
+        addToCart(product, selectedSize, quantity, selectedColor);
     };
 
     const handleBuyWhatsApp = () => {
         const sizeText = selectedSize ? ` (Talla: ${selectedSize})` : '';
-        const text = `Hola, me interesa el producto: ${product.name}${sizeText} — ${formatPrice(product.price)} x ${quantity} unidad(es)`;
+        const colorText = selectedColor ? ` (Color: ${selectedColor})` : '';
+        const text = `Hola, me interesa el producto: ${product.name}${sizeText}${colorText} — ${formatPrice(product.price)} x ${quantity} unidad(es)`;
         window.open(`https://wa.me/34610505303?text=${encodeURIComponent(text)}`, '_blank');
     };
 
@@ -62,18 +118,26 @@ export default function ProductDetailPage() {
                 <div className="breadcrumb" style={{ padding: '1.5rem 0' }}>
                     <Link to="/">Inicio</Link>
                     <ChevronRight size={14} />
-                    <Link to={`/categoria/${product.category.toLowerCase().replace(/ /g, '-')}`}>{product.category}</Link>
+                    <Link to={`/categoria/${slugifyCategory(product.category)}`}>{product.category}</Link>
                     <ChevronRight size={14} />
                     <span>{product.name}</span>
                 </div>
 
                 <div className="product-detail">
-                    {/* Image */}
+                    {/* Image — usa imageHD (1200px, calidad 95%) */}
                     <div className="product-detail__gallery">
                         <div className="product-detail__main-img">
                             {discount && <span className="product-detail__discount">-{discount}%</span>}
-                            <img src={product.image} alt={product.name} />
+                            <img src={product.imageHD || product.image} alt={product.name} />
                         </div>
+                        {/* Galería adicional si existe */}
+                        {product.gallery?.length > 0 && (
+                            <div className="product-detail__thumbs">
+                                {product.gallery.map((img, i) => (
+                                    <img key={i} src={img} alt={`${product.name} ${i + 1}`} />
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     {/* Info */}
@@ -90,6 +154,24 @@ export default function ProductDetailPage() {
                         </div>
 
                         <p className="product-detail__desc">{product.description}</p>
+
+                        {/* Colors */}
+                        {product.colors && product.colors.length > 0 && (
+                            <div className="product-detail__sizes">
+                                <p className="product-detail__label">Color</p>
+                                <div className="size-options">
+                                    {product.colors.map(color => (
+                                        <button
+                                            key={color}
+                                            className={`size-btn ${selectedColor === color ? 'active' : ''}`}
+                                            onClick={() => setSelectedColor(color)}
+                                        >
+                                            {color}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
 
                         {/* Sizes */}
                         {product.sizes && product.sizes.length > 0 && (
@@ -125,7 +207,7 @@ export default function ProductDetailPage() {
                                 <ShoppingBag size={18} /> Añadir al Carrito
                             </button>
                             <button className="btn-whatsapp btn-lg" onClick={handleBuyWhatsApp}>
-                                <MessageCircle size={18} /> Comprar por WhatsApp
+                                <WhatsAppIcon size={20} color="#fff" /> Comprar por WhatsApp
                             </button>
                             <button
                                 className={`btn-wishlist ${wishlisted ? 'active' : ''}`}
@@ -149,7 +231,7 @@ export default function ProductDetailPage() {
                         <h2>También te puede gustar</h2>
                         <div className="related-grid">
                             {relatedProducts.map(p => (
-                                <Link key={p.id} to={`/producto/${p.id}`} className="related-card">
+                                <Link key={p.id} to={`/producto/${p.slug}`} className="related-card">
                                     <img src={p.image} alt={p.name} loading="lazy" />
                                     <div className="related-card__info">
                                         <h3>{p.name}</h3>

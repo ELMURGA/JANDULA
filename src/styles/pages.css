@@ -1418,7 +1418,7 @@
    SALE SECTION
    ============================================ */
 .sale-section {
-    background: linear-gradient(180deg, #fef3c7 0%, var(--color-bg) 100%);
+    background: linear-gradient(180deg, var(--color-brand-pink-light) 0%, var(--color-bg) 100%);
 }
 
 /* Price styles */

@@ -1,0 +1,94 @@
+CHECKLIST E2E — STRIPE + SUPABASE + EMAIL (JÁNDULA MODA)
+=========================================================
+
+Objetivo:
+Validar el flujo completo real de compra: pago en Stripe, webhook, pedido en BD, stock y email.
+
+Tiempo estimado:
+3–5 minutos.
+
+---------------------------------------------------------
+1) PREPARACIÓN
+---------------------------------------------------------
+[ ✔️] Inicia sesión en la web con un usuario normal (no admin).
+[  ✔️] Añade 1 o 2 productos al carrito.
+[  ✔️] Ve a Checkout y rellena datos de envío obligatorios.
+
+---------------------------------------------------------
+2) DESCUENTO (OPCIONAL)
+---------------------------------------------------------
+[  ✔️] Aplica un cupón de prueba (ej: BIENVENIDA10).
+[  ✔️] Verifica que el total cambia correctamente.
+
+---------------------------------------------------------
+3) PAGO EN STRIPE (TEST MODE)
+---------------------------------------------------------
+[  ✔️] Pulsa “Ir a pagar con Stripe”.
+[  ✔️] Completa el pago con tarjeta de prueba:
+    - Número: 4242 4242 4242 4242
+    - Fecha: cualquiera futura (ej 12/34)
+    - CVC: 123
+[  ✔️] Confirma que vuelve a la página de pedido confirmado.
+
+---------------------------------------------------------
+4) WEBHOOK EN STRIPE
+---------------------------------------------------------
+[ ✔️ ] En Stripe Dashboard > Developers > Webhooks > tu endpoint:
+    - Evento: checkout.session.completed
+    - Estado: Delivered (HTTP 200)
+
+---------------------------------------------------------
+5) VALIDACIÓN EN SUPABASE
+---------------------------------------------------------
+[ ] Tabla orders: existe nuevo pedido.
+[ ] orders.status = confirmado.
+[ ] orders.stripe_session_id tiene valor.
+[ ] Tabla order_items: existen líneas para ese pedido.
+[ ] Tabla products: el stock bajó en los productos comprados.
+
+---------------------------------------------------------
+6) VALIDACIÓN DE DESCUENTO (SI APLICASTE CÓDIGO)
+---------------------------------------------------------
+[ ] orders.discount_code tiene el código aplicado.
+[ ] orders.discount_amount tiene el descuento correcto.
+[ ] discount_usages registra uso del código para ese usuario.
+
+---------------------------------------------------------
+7) VALIDACIÓN DE EMAIL
+---------------------------------------------------------
+[ ] Llegó email de confirmación al cliente.
+[ ] Revisado también en carpeta spam/promociones.
+
+=========================================================
+SI ALGO FALLA (DIAGNÓSTICO RÁPIDO)
+=========================================================
+
+A) Webhook no llega o da error
+[ ] Revisa STRIPE_WEBHOOK_SECRET en Supabase Secrets.
+[ ] Verifica que el endpoint configurado en Stripe es el correcto.
+[ ] Comprueba que el evento suscrito incluye checkout.session.completed.
+
+B) Pago OK pero no se crea pedido
+[ ] Revisa logs de la función stripe-webhook.
+[ ] Comprueba que process_order_server_side existe en DB.
+[ ] Verifica que products tiene datos (catálogo sincronizado).
+
+C) Pedido creado pero no llega email
+[ ] Revisa RESEND_API_KEY en Supabase Secrets.
+[ ] Revisa logs de send-email.
+[ ] Verifica dominio/remitente válido en Resend.
+
+=========================================================
+RESULTADO FINAL ESPERADO
+=========================================================
+
+[ ] Compra completada en Stripe
+[ ] Webhook Delivered
+[ ] Pedido + líneas guardados en Supabase
+[ ] Stock actualizado
+[ ] Email recibido por cliente
+
+Estado de validación final:  [ ] OK   [ ] KO
+Fecha: ______________________
+Usuario de prueba: ______________________
+Notas: _________________________________

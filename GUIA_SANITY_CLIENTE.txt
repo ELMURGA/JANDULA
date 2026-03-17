@@ -1,0 +1,202 @@
+=======================================================
+GUÍA PARA EL CLIENTE: CÓMO GESTIONAR TU TIENDA
+CON SANITY STUDIO
+=======================================================
+
+¿QUÉ ES SANITY STUDIO?
+-----------------------
+Sanity Studio es tu panel de control para gestionar el
+contenido de la tienda: productos, categorías e imágenes.
+Es como el "Word" de tu web — no necesitas saber nada de
+programación, solo entrar, rellenar formularios y guardar.
+
+ENLACE DE ACCESO (guárdalo en favoritos):
+→ https://jandula-moda.sanity.studio/
+
+Necesitas iniciar sesión con la misma cuenta de Google o
+email con la que te registraste en Sanity.
+
+
+=======================================================
+SECCIÓN 1 — 🛍️ PRODUCTOS
+=======================================================
+
+Aquí gestionas TODOS los artículos que aparecen en la
+tienda. Puedes añadir nuevos, editarlos o desactivarlos.
+
+CÓMO AÑADIR UN PRODUCTO NUEVO:
+  1. Haz clic en "🛍️ Productos" en el menú izquierdo.
+  2. Pulsa el botón "+ Crear" (arriba a la derecha).
+  3. Rellena los campos (explicados abajo).
+  4. Pulsa "Publicar" (botón verde, abajo a la derecha).
+
+CAMPOS DEL PRODUCTO:
+┌─────────────────────────────────────────────────────┐
+│ Nombre del producto                                 │
+│   El nombre que verán los clientes.                 │
+│   Ej: "Vestido Fiesta Negro Lentejuelas"            │
+├─────────────────────────────────────────────────────┤
+│ URL amigable (slug)                                 │
+│   Se genera SOLO al pulsar el botón "Generate".     │
+│   No hace falta que lo toques.                      │
+├─────────────────────────────────────────────────────┤
+│ Precio (€)                                          │
+│   El precio de venta. Escríbelo con punto:          │
+│   Ej: 29.95 → se mostrará como 29,95 € en la web    │
+├─────────────────────────────────────────────────────┤
+│ Precio original / antes de oferta (€)               │
+│   SOLO si el producto está en oferta.               │
+│   Pon aquí el precio tachado (el de antes).         │
+│   Si no está en oferta, déjalo VACÍO.               │
+│   Ej: precio original 59.00, precio actual 39.00    │
+├─────────────────────────────────────────────────────┤
+│ Categoría                                           │
+│   Elige una del desplegable:                        │
+│   · Nueva Colección                                 │
+│   · Invitada Talla Grande                           │
+│   · Casual                                          │
+│   · Fiesta                                          │
+│   · Complementos                                    │
+│   · Bolsos                                          │
+│   · Special Price (para ofertas especiales)         │
+├─────────────────────────────────────────────────────┤
+│ Subcategoría                                        │
+│   Más específico dentro de la categoría.            │
+│   Ej: si es Casual → "Vestidos Casuales"            │
+│   Ej: si es Fiesta → "Vestidos Fiesta"              │
+│   Opcional, pero ayuda a filtrar mejor.             │
+├─────────────────────────────────────────────────────┤
+│ Etiquetas                                           │
+│   Palabras clave para clasificar el producto.       │
+│   Puedes marcar varias a la vez.                    │
+│   Ej: "Nueva Colección" + "Destacado"               │
+│   (Etiqueta rosa de tarjeta superior del producto)  │
+├─────────────────────────────────────────────────────┤
+│ Imagen principal                                    │
+│   La foto que sale en la tarjeta de la tienda.      │
+│   Pulsa "Upload" y elige la foto desde tu ordenador.│
+│   Recomendado: formato cuadrado o vertical.         │
+├─────────────────────────────────────────────────────┤
+│ Galería de fotos adicionales                        │
+│   Fotos extra que el cliente puede ver al entrar    │
+│   en la ficha del producto (opcional).              │
+├─────────────────────────────────────────────────────┤
+│ Descripción                                         │
+│   Texto libre describiendo el artículo.             │
+│   Ej: "Vestido largo de gasa con abertura lateral"  │
+├─────────────────────────────────────────────────────┤
+│ Tallas disponibles                                  │
+│   Marca las tallas que tienes en stock.             │
+│   Opciones: XS, S, M, L, XL, XXL, 3XL, 4XL,         │
+│             S/M, L/XL, Única                        │
+├─────────────────────────────────────────────────────┤
+│ Visible en la tienda                                │
+│   Interruptor ON/OFF.                               │
+│   · ON  → el producto aparece en la web.            │
+│   · OFF → el producto se oculta (sin borrarlo).     │
+│   Muy útil para productos sin stock temporalmente.  │
+└─────────────────────────────────────────────────────┘
+
+EDITAR UN PRODUCTO EXISTENTE:
+  1. Haz clic en "🛍️ Productos".
+  2. Busca el producto en la lista y haz clic sobre él.
+  3. Cambia lo que necesites.
+  4. Pulsa "Publicar" para guardar los cambios.
+
+PONER UN PRODUCTO EN OFERTA:
+  1. Abre el producto.
+  2. En "Precio (€)" pon el precio rebajado (ej: 39.00).
+  3. En "Precio original / antes de oferta (€)" pon el
+     precio antiguo (ej: 59.00).
+  4. En "Etiquetas" añade "Oferta".
+  5. Publica. Aparecerá en la sección "Ofertas
+     Irresistibles" de la web automáticamente.
+
+ELIMINAR UNA OFERTA (vuelve a precio normal):
+  1. Abre el producto.
+  2. Borra el contenido del campo "Precio original".
+  3. Publica. El precio tachado desaparece.
+
+OCULTAR UN PRODUCTO SIN BORRARLO:
+  1. Abre el producto.
+  2. Desactiva el interruptor "Visible en la tienda".
+  3. Publica. Desaparece de la web pero no se pierde.
+
+
+=======================================================
+SECCIÓN 2 — 📂 CATEGORÍAS
+=======================================================
+
+Las categorías son los apartados del menú de la tienda
+(Casual, Fiesta, Bolsos, etc.).
+
+Normalmente NO necesitarás tocar esto, ya que las
+categorías están configuradas desde el principio.
+
+Si algún día quieres añadir una categoría nueva:
+
+CAMPOS DE CATEGORÍA:
+┌─────────────────────────────────────────────────────┐
+│ Nombre         → El nombre que aparece en el menú.  │
+│ URL amigable   → Pulsa "Generate", se crea solo.    │
+│ Descripción    → Texto breve (opcional).            │
+│ Imagen portada → Foto que representa la categoría.  │
+│ Orden          → Número que decide su posición.     │
+│                  Ej: 1 sale antes que 2.            │
+└─────────────────────────────────────────────────────┘
+
+
+=======================================================
+SECCIÓN 3 — 🖼️ BANNERS / DESTACADOS
+=======================================================
+
+Los banners son los bloques visuales grandes que pueden
+aparecer en la portada o en secciones especiales.
+
+CAMPOS DEL BANNER:
+┌─────────────────────────────────────────────────────┐
+│ Título          → Texto principal del banner.       │
+│ Subtítulo       → Texto secundario (opcional).      │
+│ Imagen de fondo → La foto grande del banner.        │
+│ Texto del botón → Lo que pone en el botón.          │
+│                   Ej: "VER COLECCIÓN"               │
+│ Enlace del botón→ A dónde lleva al hacer clic.      │
+│                   Ej: /categoria/fiesta             │
+│ Mostrar banner  → ON para que aparezca,             │
+│                   OFF para ocultarlo.               │
+│ Orden           → Si hay varios, cuál va primero.   │
+└─────────────────────────────────────────────────────┘
+
+
+=======================================================
+CONSEJOS IMPORTANTES
+=======================================================
+
+✅ SIEMPRE pulsa "Publicar" al terminar de editar.
+   Si no publicas, los cambios no van a la web.
+   (Verás el texto "Draft" si no has publicado aún.)
+
+✅ Los cambios tardan unos SEGUNDOS en verse en la web.
+   Si no ves el cambio, espera 10-15 segundos y recarga.
+
+✅ Las fotos mejor en formato JPG o WEBP.
+   Intenta que pesen menos de 2 MB para que carguen
+   rápido en la web.
+
+✅ Para ocultar un producto temporalmente (sin stock)
+   usa el interruptor "Visible en la tienda" en OFF.
+   NO hagas falta borrar el producto.
+
+⚠️  Si borras un producto, se elimina permanentemente.
+    No hay papelera de reciclaje en Sanity.
+    Ante la duda, desactívalo en lugar de borrarlo.
+
+
+=======================================================
+¿PROBLEMAS O DUDAS?
+=======================================================
+
+Si algo no funciona como esperas o tienes dudas,
+contacta conmigo sin compromiso.
+
+=======================================================

@@ -43,7 +43,7 @@ export default function SaleGrid() {
                                                 setAuthModalOpen(true);
                                                 return;
                                             }
-                                            toggleWishlist(product.id);
+                                            toggleWishlist(product);
                                         }}
                                     >
                                         <Heart size={18} fill={isWishlisted ? 'var(--color-brand-pink)' : 'none'} />

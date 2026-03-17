@@ -1,0 +1,25 @@
+project_id = "aadjazenpqldtvnxqksr"
+
+[functions.create-checkout]
+verify_jwt = false
+
+[functions.apply-discount]
+verify_jwt = false
+
+[functions.stripe-webhook]
+verify_jwt = false
+
+[functions.send-email]
+verify_jwt = false
+
+[functions.sync-products]
+verify_jwt = false
+
+[functions.confirm-order]
+verify_jwt = false
+
+[functions.send-welcome-email]
+verify_jwt = false
+
+[functions.send-password-recovery]
+verify_jwt = false

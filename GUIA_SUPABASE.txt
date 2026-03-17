@@ -1,0 +1,38 @@
+CONTEXTO PARA LA IA SOBRE EL PROYECTO JÁNDULA
+
+--- LO QUE YA SE HA HECHO (FRONTEND Y CÓDIGO) ---
+Se ha realizado una auditoría completa del proyecto para cerrar el flujo e-commerce de principio a fin, solucionando varios fallos:
+
+1. **Bug en `AccountPage.jsx`**: Se arregló un warning de React (faltaba `key` en los Fragments dentro de un `.map()`).
+2. **Mejoras en `OrderConfirmedPage.jsx`**: Se cambió la lógica para mostrar un icono rojo de error (`AlertCircle` en vez de `CheckCircle`) y un fondo rojizo cuando falla el pago de Stripe.
+3. **Mejoras en el PDF de `AdminDashboard.jsx`**: Se añadió el teléfono del destinatario, el email del cliente y las notas de envío al generar la etiqueta de transporte en PDF para el mensajero.
+4. **Fix crítico de stock en `sync-products/index.ts` (Edge Function)**: El webhook de Sanity estaba sobreescribiendo el `stock` a 10 cada vez que se sincronizaban los productos (borrando el stock real). Se modificó para que `stock: 10` solo aplique a productos nuevos en base de datos.
+5. **Generación del fichero `supabase-migration-v2.sql`**: Se ha creado un archivo SQL con todos los arreglos necesarios para la base de datos (columnas faltantes e idempotencia).
+
+Todo el frontend ya compila (pasó el test de `npm run build` sin errores).
+
+--- LO QUE ESTÁ PENDIENTE DE HACER (BASE DE DATOS Y DEPLOY) ---
+El código de la aplicación ya espera que estos cambios en la base de datos existan, por lo que **esto es el bloqueante principal ahora mismo**:
+
+**Paso 1: Aplicar la migración SQL en Supabase**
+Hay un archivo llamado `supabase-migration-v2.sql` en la raíz del proyecto. El contenido de este archivo DEBE ejecutarse en el SQL Editor del panel de control de Supabase.
+Este SQL contiene:
+- Añade columnas faltantes a la tabla `orders`: `stripe_session_id`, `stripe_payment_intent`, `discount_code`, `discount_amount`, `shipping_country`.
+- Crea un índice UNIQUE para `stripe_session_id` que evita pedidos duplicados si un webhook se dispara dos veces.
+- Crea las tablas `discounts` y `discount_usages` para rastrear cupones.
+- Sobreescribe el RPC `process_order_server_side` (la función que la app usa para guardar los pedidos): ahora maneja descuentos, bloquea filas temporalmente al restar stock (pessimistic locking) para evitar race conditions, y garantiza la idempotencia (si llamas al RPC con el mismo id de Stripe, devuelve el pedido existente sin duplicar ni cobrar dos veces).
+
+**Paso 2: Hacer deploy de las Edge Functions**
+Como se modificó `sync-products/index.ts` para que no destruya el stock, se debe subir la nueva versión a Supabase.
+Comando a ejecutar:
+`supabase functions deploy sync-products`
+
+(O si se prefiere asegurar todo, deployar todas las funciones con `supabase functions deploy`).
+
+--- RESUMEN PARA CONTINUAR ---
+La IA anterior enlazó el proyecto mediante el CLI de Supabase (`supabase link --project-ref aadjazenpqldtvnxqksr`).
+Para terminar, la IA actual debe:
+1. Buscar o leer el archivo `supabase-migration-v2.sql`.
+2. Ejecutar ese SQL en Supabase.
+3. Ejecutar `supabase functions deploy sync-products`.
+4. (Opcional) Hacer una prueba final de flujo completo.

@@ -2,51 +2,59 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
-import { ArrowLeft, CreditCard, Lock, CheckCircle } from 'lucide-react';
-import { formatPrice } from '../data/products';
+import { ArrowLeft, CreditCard, Lock, Tag, CheckCircle, XCircle } from 'lucide-react';
+import { formatPrice } from '../utils/productUtils';
 import { supabase } from '../lib/supabase';
 import '../styles/pages.css';
 import '../styles/checkout.css';
 
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+
 export default function CheckoutPage() {
-    const { user, isLoggedIn } = useAuth();
-    const { cartItems, cartTotal, shippingCost = cartTotal >= 50 || cartTotal === 0 ? 0 : 3.99, clearCart } = useCart();
+    const { user, isLoggedIn, updateUser } = useAuth();
+    const { cartItems, cartTotal } = useCart();
     const navigate = useNavigate();
 
-    const [submitting, setSubmitting] = useState(false);
-    const [error, setError] = useState('');
-    const [success, setSuccess] = useState(false);
+    const shippingCost = cartTotal >= 50 || cartTotal === 0 ? 0 : 3.99;
 
+    const [submitting, setSubmitting] = useState(false);
+    const [error, setError]           = useState('');
+
+    // Datos de envío
     const [shippingInfo, setShippingInfo] = useState({
-        name: '',
+        name:    '',
         address: '',
-        city: '',
-        postal: '',
-        phone: '',
-        notes: ''
+        city:    '',
+        postal:  '',
+        phone:   '',
+        notes:   '',
     });
 
+    // Descuento
+    const [discountInput,   setDiscountInput]   = useState('');
+    const [discountLoading, setDiscountLoading] = useState(false);
+    const [appliedDiscount, setAppliedDiscount] = useState(null); // { code, type, value, savings, message }
+    const [discountError,   setDiscountError]   = useState('');
+
     useEffect(() => {
-        // Redirect if empty cart or not logged in
-        if (cartItems.length === 0 && !success) {
+        if (cartItems.length === 0 && !submitting) {
             navigate('/carrito');
         }
         if (!isLoggedIn) {
-            navigate('/mi-cuenta'); // Will trigger auth
+            navigate('/mi-cuenta');
         }
 
-        // Pre-fill from user profile
         if (user) {
             setShippingInfo(prev => ({
                 ...prev,
-                name: user.full_name || '',
+                name:    user.full_name    || '',
                 address: user.address_line || '',
-                city: user.city || '',
-                postal: user.postal_code || '',
-                phone: user.phone || ''
+                city:    user.city         || '',
+                postal:  user.postal_code  || '',
+                phone:   user.phone        || '',
             }));
         }
-    }, [cartItems, isLoggedIn, navigate, user, success]);
+    }, [cartItems.length, isLoggedIn, navigate, user, submitting]);
 
     const handleInputChange = (e) => {
         setShippingInfo({
@@ -55,67 +63,134 @@ export default function CheckoutPage() {
         });
     };
 
+    // ── Aplicar código de descuento ──────────────────────────────────────────
+    const handleApplyDiscount = async (e) => {
+        e.preventDefault();
+        setDiscountError('');
+
+        if (!discountInput.trim()) {
+            setDiscountError('Escribe un código de descuento');
+            return;
+        }
+
+        setDiscountLoading(true);
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session?.access_token) throw new Error('Sesión expirada');
+
+            const res = await fetch(`${SUPABASE_URL}/functions/v1/apply-discount`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type':  'application/json',
+                    'Authorization': `Bearer ${session.access_token}`,
+                },
+                body: JSON.stringify({
+                    code:      discountInput.trim(),
+                    cartTotal: cartTotal,
+                }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok || !data.valid) {
+                throw new Error(data.error || 'Código no válido');
+            }
+
+            setAppliedDiscount(data);
+            setDiscountInput('');
+        } catch (err) {
+            setDiscountError(err.message || 'Error al validar el descuento');
+            setAppliedDiscount(null);
+        } finally {
+            setDiscountLoading(false);
+        }
+    };
+
+    const removeDiscount = () => {
+        setAppliedDiscount(null);
+        setDiscountInput('');
+        setDiscountError('');
+    };
+
+    // ── Procesar checkout con Stripe  ────────────────────────────────────────
     const handleProcessOrder = async (e) => {
         e.preventDefault();
         setError('');
         setSubmitting(true);
 
         try {
-            // Validate required fields
-            const required = ['name', 'address', 'city', 'postal', 'phone'];
-            for (const field of required) {
-                if (!shippingInfo[field]) {
-                    throw new Error(`Por favor, rellena el campo: ${field}`);
+            // Validar campos de envío
+            const required = { name: 'Nombre', address: 'Dirección', city: 'Ciudad', postal: 'Código Postal', phone: 'Teléfono' };
+            for (const [field, label] of Object.entries(required)) {
+                if (!shippingInfo[field]?.trim()) {
+                    throw new Error(`Por favor, rellena el campo: ${label}`);
                 }
             }
 
-            // Prep items for DB function
-            const items = cartItems.map(item => ({
-                product_id: item.id,
-                quantity: item.quantity,
-                size: item.size || null
-            }));
+            // Guardar dirección de envío en el perfil del usuario silenciosamente
+            try {
+                await updateUser({
+                    full_name:    shippingInfo.name,
+                    address_line: shippingInfo.address,
+                    city:         shippingInfo.city,
+                    postal_code:  shippingInfo.postal,
+                    phone:        shippingInfo.phone,
+                });
+            } catch { /* no bloquear checkout si falla el guardado del perfil */ }
 
-            // Call Supabase RPC
-            const { data, error: rpcError } = await supabase.rpc('process_order', {
-                p_items: items,
-                p_shipping_info: shippingInfo
+            // Obtener token de sesión Supabase
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session?.access_token) throw new Error('Sesión expirada. Por favor, vuelve a iniciar sesión.');
+
+            // Llamar a la Edge Function create-checkout
+            const res = await fetch(`${SUPABASE_URL}/functions/v1/create-checkout`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type':  'application/json',
+                    'Authorization': `Bearer ${session.access_token}`,
+                },
+                body: JSON.stringify({
+                    cartItems:    cartItems.map(item => ({
+                        id:       item.id,
+                        quantity: item.quantity,
+                        size:     item.size || null,
+                        color:    item.color || null,
+                        name:     item.name,
+                    })),
+                    shippingInfo: {
+                        name:    shippingInfo.name,
+                        address: shippingInfo.address,
+                        city:    shippingInfo.city,
+                        postal:  shippingInfo.postal,
+                        phone:   shippingInfo.phone,
+                        notes:   shippingInfo.notes,
+                    },
+                    discountCode: appliedDiscount?.code || null,
+                }),
             });
 
-            if (rpcError) throw rpcError;
+            const data = await res.json();
 
-            // Success!
-            clearCart();
-            setSuccess(true);
+            if (!res.ok) {
+                throw new Error(data.error || 'Error al crear la sesión de pago');
+            }
+
+            // Redirigir a Stripe Checkout (hosted page)
+            window.location.href = data.sessionUrl;
 
         } catch (err) {
-            console.error('Order error:', err);
-            setError(err.message || 'Ocurrió un error al procesar el pedido.');
-        } finally {
+            console.error('Checkout error:', err);
+            setError(err.message || 'Ocurrió un error. Por favor, inténtalo de nuevo.');
             setSubmitting(false);
         }
     };
 
-    if (success) {
-        return (
-            <main className="page-wrapper checkout-page">
-                <div className="container" style={{ textAlign: 'center', padding: '10vh 0' }}>
-                    <CheckCircle size={80} color="var(--color-brand-pink)" style={{ margin: '0 auto 2rem' }} strokeWidth={1} />
-                    <h1 style={{ marginBottom: '1rem', fontFamily: 'var(--font-serif)' }}>¡Pedido Confirmado!</h1>
-                    <p style={{ color: 'var(--color-stone-600)', marginBottom: '3rem', maxWidth: '500px', margin: '0 auto 3rem' }}>
-                        Muchas gracias por tu compra. Te hemos enviado un email con los detalles de tu pedido.
-                    </p>
-                    <button className="btn-primary" onClick={() => navigate('/mi-cuenta')}>
-                        Ver mis pedidos
-                    </button>
-                </div>
-            </main>
-        );
-    }
+    if (!isLoggedIn || cartItems.length === 0) return null;
 
-    if (!isLoggedIn || cartItems.length === 0) return null; // Prevent flash while redirecting
-
-    const total = cartTotal + shippingCost;
+    // Calcular totales con descuento
+    const discountSavings = appliedDiscount?.savings ?? 0;
+    const effectiveShipping = appliedDiscount?.type === 'free_shipping' ? 0 : shippingCost;
+    const total = Math.max(0, cartTotal + effectiveShipping - (appliedDiscount?.type !== 'free_shipping' ? discountSavings : 0));
 
     return (
         <main className="page-wrapper checkout-page">
@@ -126,13 +201,19 @@ export default function CheckoutPage() {
             <section className="container">
                 <div className="checkout-layout">
 
-                    {/* Left Col: Form */}
+                    {/* ── Columna izquierda: Formulario ── */}
                     <div className="checkout-form-col">
+
+                        {/* Datos de envío */}
                         <div className="checkout-block">
                             <h2 className="checkout-block__title">Datos de Envío</h2>
 
                             {error && (
-                                <div className="cart-error" style={{ color: 'red', marginBottom: '1rem', padding: '1rem', background: '#fee2e2', borderRadius: '4px' }}>
+                                <div role="alert" style={{
+                                    color: '#dc2626', marginBottom: '1rem', padding: '0.875rem 1rem',
+                                    background: '#fef2f2', borderRadius: '8px', border: '1px solid #fecaca',
+                                    fontSize: '0.9rem'
+                                }}>
                                     {error}
                                 </div>
                             )}
@@ -140,61 +221,143 @@ export default function CheckoutPage() {
                             <form id="checkout-form" onSubmit={handleProcessOrder}>
                                 <div className="form-group">
                                     <label htmlFor="name">Nombre Completo *</label>
-                                    <input type="text" id="name" name="name" required value={shippingInfo.name} onChange={handleInputChange} />
+                                    <input type="text" id="name" name="name" required
+                                           value={shippingInfo.name} onChange={handleInputChange} />
                                 </div>
-
                                 <div className="form-group">
                                     <label htmlFor="address">Dirección *</label>
-                                    <input type="text" id="address" name="address" required value={shippingInfo.address} onChange={handleInputChange} />
+                                    <input type="text" id="address" name="address" required
+                                           value={shippingInfo.address} onChange={handleInputChange} />
                                 </div>
-
                                 <div className="form-row">
                                     <div className="form-group">
                                         <label htmlFor="city">Ciudad *</label>
-                                        <input type="text" id="city" name="city" required value={shippingInfo.city} onChange={handleInputChange} />
+                                        <input type="text" id="city" name="city" required
+                                               value={shippingInfo.city} onChange={handleInputChange} />
                                     </div>
                                     <div className="form-group">
                                         <label htmlFor="postal">Código Postal *</label>
-                                        <input type="text" id="postal" name="postal" required value={shippingInfo.postal} onChange={handleInputChange} />
+                                        <input type="text" id="postal" name="postal" required
+                                               value={shippingInfo.postal} onChange={handleInputChange} />
                                     </div>
                                 </div>
-
                                 <div className="form-group">
                                     <label htmlFor="phone">Teléfono de Contacto *</label>
-                                    <input type="tel" id="phone" name="phone" required value={shippingInfo.phone} onChange={handleInputChange} />
+                                    <input type="tel" id="phone" name="phone" required
+                                           value={shippingInfo.phone} onChange={handleInputChange} />
                                 </div>
-
                                 <div className="form-group">
                                     <label htmlFor="notes">Notas para el mensajero (opcional)</label>
-                                    <textarea id="notes" name="notes" rows="3" value={shippingInfo.notes} onChange={handleInputChange}></textarea>
+                                    <textarea id="notes" name="notes" rows="3"
+                                              value={shippingInfo.notes} onChange={handleInputChange} />
                                 </div>
                             </form>
                         </div>
 
-                        <div className="checkout-block" style={{ marginTop: '2rem' }}>
+                        {/* Código de descuento */}
+                        <div className="checkout-block" style={{ marginTop: '1.5rem' }}>
+                            <h2 className="checkout-block__title">
+                                <Tag size={18} style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} />
+                                Código de Descuento
+                            </h2>
+
+                            {appliedDiscount ? (
+                                <div style={{
+                                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                                    padding: '0.875rem 1rem', background: '#f0fdf4',
+                                    border: '1px solid #bbf7d0', borderRadius: '8px',
+                                }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                        <CheckCircle size={18} color="#16a34a" />
+                                        <span style={{ color: '#15803d', fontWeight: 600 }}>
+                                            {appliedDiscount.code}
+                                        </span>
+                                        <span style={{ color: '#16a34a', fontSize: '0.875rem' }}>
+                                            — {appliedDiscount.message}
+                                        </span>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={removeDiscount}
+                                        aria-label="Eliminar descuento"
+                                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0.25rem' }}
+                                    >
+                                        <XCircle size={20} color="#9ca3af" />
+                                    </button>
+                                </div>
+                            ) : (
+                                <form onSubmit={handleApplyDiscount} style={{ display: 'flex', gap: '0.75rem' }}>
+                                    <input
+                                        type="text"
+                                        placeholder="Escribe tu código"
+                                        value={discountInput}
+                                        onChange={e => { setDiscountInput(e.target.value.toUpperCase()); setDiscountError(''); }}
+                                        style={{
+                                            flex: 1, padding: '0.75rem 1rem',
+                                            border: discountError ? '1px solid #fca5a5' : '1px solid var(--color-stone-300)',
+                                            borderRadius: '8px', fontSize: '0.95rem',
+                                            letterSpacing: '1px', background: '#fff',
+                                        }}
+                                        disabled={discountLoading}
+                                    />
+                                    <button
+                                        type="submit"
+                                        className="btn-outline"
+                                        disabled={discountLoading}
+                                        style={{ whiteSpace: 'nowrap' }}
+                                    >
+                                        {discountLoading ? 'Verificando…' : 'Aplicar'}
+                                    </button>
+                                </form>
+                            )}
+
+                            {discountError && (
+                                <p style={{ marginTop: '0.5rem', color: '#dc2626', fontSize: '0.875rem' }}>
+                                    {discountError}
+                                </p>
+                            )}
+                        </div>
+
+                        {/* Pago seguro */}
+                        <div className="checkout-block" style={{ marginTop: '1.5rem' }}>
                             <h2 className="checkout-block__title">Pago Seguro</h2>
                             <div className="payment-simulation">
                                 <Lock size={20} />
-                                <p>Pago Contra Reembolso / Simulación Segura. Al hacer clic en el botón de confirmar, el pedido se procesará directamente en la base de datos de Jándula Moda (Modo Demo).</p>
+                                <p>
+                                    Pago 100% seguro procesado por Stripe. Aceptamos todas las tarjetas
+                                    de crédito y débito. Tus datos nunca pasan por nuestros servidores.
+                                </p>
+                            </div>
+                            <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.75rem', flexWrap: 'wrap' }}>
+                                {['Visa', 'Mastercard', 'Amex', 'Apple Pay', 'Google Pay'].map(brand => (
+                                    <span key={brand} style={{
+                                        padding: '0.25rem 0.625rem', background: '#f3f4f6',
+                                        borderRadius: '4px', fontSize: '0.75rem',
+                                        color: '#374151', fontWeight: 500,
+                                    }}>
+                                        {brand}
+                                    </span>
+                                ))}
                             </div>
                         </div>
                     </div>
 
-                    {/* Right Col: Summary */}
+                    {/* ── Columna derecha: Resumen ── */}
                     <div className="checkout-summary-col">
                         <div className="cart-summary checkout-summary">
                             <h2>Resumen del Pedido</h2>
 
                             <div className="checkout-items">
                                 {cartItems.map(item => (
-                                    <div key={`${item.id}-${item.size || 'nosize'}`} className="checkout-item-mini">
+                                    <div key={`${item.id}-${item.size || 'nosize'}-${item.color || 'nocolor'}`} className="checkout-item-mini">
                                         <div className="img-wrap">
-                                            <img src={item.image} alt={item.name} />
+                                            <img src={item.image} alt={item.name} loading="lazy" />
                                             <span className="qty-badge">{item.quantity}</span>
                                         </div>
                                         <div className="info">
                                             <h4>{item.name}</h4>
                                             {item.size && <span className="size">Talla: {item.size}</span>}
+                                            {item.color && <span className="size" style={{display: 'block'}}>Color: {item.color}</span>}
                                         </div>
                                         <div className="price">{formatPrice(item.price * item.quantity)}</div>
                                     </div>
@@ -207,9 +370,22 @@ export default function CheckoutPage() {
                                 <span>Subtotal</span>
                                 <span>{formatPrice(cartTotal)}</span>
                             </div>
+
+                            {discountSavings > 0 && appliedDiscount?.type !== 'free_shipping' && (
+                                <div className="cart-summary__row" style={{ color: '#16a34a' }}>
+                                    <span>Descuento ({appliedDiscount.code})</span>
+                                    <span>−{formatPrice(discountSavings)}</span>
+                                </div>
+                            )}
+
                             <div className="cart-summary__row">
                                 <span>Envío</span>
-                                <span>{shippingCost === 0 ? <em className="free-shipping">¡Gratis!</em> : formatPrice(shippingCost)}</span>
+                                <span>
+                                    {effectiveShipping === 0
+                                        ? <em className="free-shipping">¡Gratis!</em>
+                                        : formatPrice(effectiveShipping)
+                                    }
+                                </span>
                             </div>
 
                             <div className="cart-summary__total">
@@ -217,15 +393,34 @@ export default function CheckoutPage() {
                                 <span>{formatPrice(total)}</span>
                             </div>
 
-                            <button type="submit" form="checkout-form" className="btn-primary btn-lg btn-full checkout-submit-btn" disabled={submitting}>
-                                {submitting ? 'Procesando...' : (
-                                    <><CreditCard size={18} /> Confirmar Pedido y Pagar</>
-                                )}
+                            <button
+                                type="submit"
+                                form="checkout-form"
+                                className="btn-primary btn-lg btn-full checkout-submit-btn"
+                                disabled={submitting}
+                            >
+                                {submitting
+                                    ? 'Redirigiendo a pago seguro…'
+                                    : <><CreditCard size={18} /> Ir a Pagar con Stripe</>
+                                }
                             </button>
 
-                            <button type="button" className="btn-outline btn-full" style={{ marginTop: '1rem' }} onClick={() => navigate('/carrito')}>
+                            <button
+                                type="button"
+                                className="btn-outline btn-full"
+                                style={{ marginTop: '1rem' }}
+                                onClick={() => navigate('/carrito')}
+                                disabled={submitting}
+                            >
                                 <ArrowLeft size={16} /> Volver al Carrito
                             </button>
+
+                            <p style={{
+                                marginTop: '1rem', textAlign: 'center',
+                                fontSize: '0.75rem', color: 'var(--color-stone-400)',
+                            }}>
+                                🔒 Pago cifrado SSL · Datos protegidos por Stripe
+                            </p>
                         </div>
                     </div>
 

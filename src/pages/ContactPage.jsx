@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { MapPin, Phone, Mail, Clock, Send, MessageCircle } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, Send } from 'lucide-react';
+import WhatsAppIcon from '../components/WhatsAppIcon';
 import FAQAccordion from '../components/FAQAccordion';
 import '../styles/pages.css';
 
@@ -77,12 +78,12 @@ export default function ContactPage() {
                         </div>
 
                         <a
-                            href="https://wa.me/34610505303?text=Hola%2C%20me%20gustar%C3%ADa%20hacer%20una%20consulta"
+                            href="https://wa.me/34610505303?text=Hola%20J%C3%A1ndula%20Moda%20%F0%9F%93%9E%20Me%20gustar%C3%ADa%20recibir%20m%C3%A1s%20informaci%C3%B3n"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="contact-whatsapp-btn"
                         >
-                            <MessageCircle size={20} />
+                            <WhatsAppIcon size={20} color="#fff" />
                             Escríbenos por WhatsApp
                         </a>
                     </div>

@@ -1,12 +1,27 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MapPin, Phone, Mail, Clock, Send } from 'lucide-react';
 import WhatsAppIcon from '../components/WhatsAppIcon';
 import FAQAccordion from '../components/FAQAccordion';
+import { sanity } from '../lib/sanity';
 import '../styles/pages.css';
 
 export default function ContactPage() {
     const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' });
     const [submitted, setSubmitted] = useState(false);
+    const [businessHours, setBusinessHours] = useState([
+        "Lunes a Viernes: 10:00 – 14:00 / 17:30 – 21:00",
+        "Sábados: 10:00 – 14:00"
+    ]);
+
+    useEffect(() => {
+        sanity.fetch('*[_type == "siteSettings" && !(_id in path("drafts.**"))][0].businessHours')
+            .then(data => {
+                if (data && data.length > 0) {
+                    setBusinessHours(data);
+                }
+            })
+            .catch(console.error);
+    }, []);
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
@@ -73,7 +88,14 @@ export default function ContactPage() {
                             <div className="contact-card__icon"><Clock size={24} /></div>
                             <div>
                                 <h3>Horario</h3>
-                                <p>Lunes a Viernes: 10:00 – 14:00 / 17:30 – 21:00<br />Sábados: 10:00 – 14:00</p>
+                                <p>
+                                    {businessHours.map((line, idx) => (
+                                        <span key={idx}>
+                                            {line}
+                                            {idx < businessHours.length - 1 && <br />}
+                                        </span>
+                                    ))}
+                                </p>
                             </div>
                         </div>
 

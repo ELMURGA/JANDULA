@@ -31,6 +31,9 @@ export default defineConfig({
                         S.listItem()
                             .title('🖼️ Banners')
                             .child(S.documentTypeList('banner').title('Banners y destacados')),
+                        S.listItem()
+                            .title('⚙️ Configuración')
+                            .child(S.documentTypeList('siteSettings').title('Configuración de la Web')),
                     ]),
         }),
         visionTool(),

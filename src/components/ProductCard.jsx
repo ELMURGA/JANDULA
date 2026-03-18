@@ -37,7 +37,7 @@ export default function ProductCard({ product: sanityProduct }) {
 
     return (
         <article className="product-card">
-            <Link to={`/producto/${product.slug}`} className="product-card__image-wrap">
+            <Link to={`/producto/${product.slug}`} className={`product-card__image-wrap${product.imageRotation ? ` product-card__image-wrap--rot-${product.imageRotation}` : ''}`}>
                 <OptimizedImage
                     src={product.image}
                     alt={product.name}

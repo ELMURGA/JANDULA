@@ -638,14 +638,32 @@
     border-radius: 16px;
     overflow: hidden;
     background: var(--color-stone-100);
+    aspect-ratio: 3/4;
 }
 
 .product-detail__main-img img {
     width: 100%;
-    height: auto;
+    height: 100%;
     display: block;
-    aspect-ratio: 3/4;
     object-fit: cover;
+}
+
+/* --- Rotación imagen detalle --- */
+.product-detail__main-img--rot-90 img,
+.product-detail__main-img--rot-270 img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 133.34%;
+    height: 75%;
+    object-fit: cover;
+    transform: translate(-50%, -50%) rotate(90deg);
+}
+.product-detail__main-img--rot-270 img {
+    transform: translate(-50%, -50%) rotate(270deg);
+}
+.product-detail__main-img--rot-180 img {
+    transform: rotate(180deg);
 }
 
 .product-detail__discount {

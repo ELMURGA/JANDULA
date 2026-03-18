@@ -138,6 +138,37 @@
     transform: scale(1.05);
 }
 
+/* --- Rotación de imagen ---
+   El contenedor es 3:4 (portrait). Para 90°/270° el img se reposiciona
+   al 133% de ancho × 75% de alto y se centra antes de rotar,
+   de modo que rellena el contenedor exactamente. */
+.product-card__image-wrap--rot-90 .product-card__image,
+.product-card__image-wrap--rot-270 .product-card__image {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 133.34%;
+    height: 75%;
+    object-fit: cover;
+    transform: translate(-50%, -50%) rotate(90deg);
+    transition: transform 0.7s ease;
+}
+.product-card__image-wrap--rot-270 .product-card__image {
+    transform: translate(-50%, -50%) rotate(270deg);
+}
+.product-card:hover .product-card__image-wrap--rot-90 .product-card__image {
+    transform: translate(-50%, -50%) rotate(90deg) scale(1.05);
+}
+.product-card:hover .product-card__image-wrap--rot-270 .product-card__image {
+    transform: translate(-50%, -50%) rotate(270deg) scale(1.05);
+}
+.product-card__image-wrap--rot-180 .product-card__image {
+    transform: rotate(180deg);
+}
+.product-card:hover .product-card__image-wrap--rot-180 .product-card__image {
+    transform: rotate(180deg) scale(1.05);
+}
+
 .product-card__tag {
     position: absolute;
     top: 0.625rem;

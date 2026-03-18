@@ -126,7 +126,7 @@ export default function ProductDetailPage() {
                 <div className="product-detail">
                     {/* Image — usa imageHD (1200px, calidad 95%) */}
                     <div className="product-detail__gallery">
-                        <div className="product-detail__main-img">
+                        <div className={`product-detail__main-img${product.imageRotation ? ` product-detail__main-img--rot-${product.imageRotation}` : ''}`}>
                             {discount && <span className="product-detail__discount">-{discount}%</span>}
                             <img src={product.imageHD || product.image} alt={product.name} />
                         </div>

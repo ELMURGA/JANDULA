@@ -3,7 +3,7 @@ import { Heart, Trash2, ShoppingBag, ArrowLeft } from 'lucide-react';
 import { useWishlist } from '../context/WishlistContext';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
-import { products, formatPrice } from '../data/products';
+import { formatPrice } from '../utils/productUtils';
 import '../styles/pages.css';
 
 export default function FavoritesPage() {
@@ -34,9 +34,8 @@ export default function FavoritesPage() {
         );
     }
 
-    const favoriteProducts = wishlistItems && wishlistItems.length > 0 && typeof wishlistItems[0] === 'object' 
-        ? wishlistItems 
-        : products.filter(p => wishlistItems.some(item => (typeof item === 'object' ? item.id === p.id : item === p.id)));
+    // wishlistItems almacena siempre el objeto completo del producto
+    const favoriteProducts = wishlistItems.filter(item => typeof item === 'object' && item != null);
 
     return (
         <main className="page-wrapper">

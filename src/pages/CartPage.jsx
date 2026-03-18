@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { formatPrice } from '../data/products';
+import { formatPrice } from '../utils/productUtils';
 import { Trash2, Minus, Plus, ShoppingBag, ArrowLeft, CreditCard } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import '../styles/pages.css';

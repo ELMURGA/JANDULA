@@ -109,12 +109,51 @@ export async function getProductsByCategory(category) {
   }
 }
 
-// Obtener categorías únicas
+// Obtener categorías desde los documentos de Sanity (editables en el Studio)
 export async function getCategories() {
+  const query = `*[_type == "category" && active == true] {
+    _id,
+    name,
+    "slug": slug.current,
+    description,
+    coverImage,
+    order,
+    subcategories,
+    showInBlocks,
+    blockTitle,
+    blockDesc,
+    blockCta,
+  } | order(order asc)`;
+
   try {
-    return await sanity.fetch(`array::unique(*[_type == "product" && active == true].category)`);
+    return await sanity.fetch(query);
   } catch (error) {
     console.error('Error fetching categories:', error);
+    return [];
+  }
+}
+
+// Obtener banners activos desde Sanity (editables en el Studio)
+export async function getBanners() {
+  const query = `*[_type == "banner" && active == true] {
+    _id,
+    eyebrow,
+    title,
+    titleEm,
+    subtitle,
+    image,
+    imageAlt,
+    buttonText,
+    buttonLink,
+    secondButtonText,
+    secondButtonLink,
+    order,
+  } | order(order asc)`;
+
+  try {
+    return await sanity.fetch(query);
+  } catch (error) {
+    console.error('Error fetching banners:', error);
     return [];
   }
 }

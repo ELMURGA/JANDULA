@@ -1,202 +1,407 @@
-=======================================================
-GUÍA PARA EL CLIENTE: CÓMO GESTIONAR TU TIENDA
-CON SANITY STUDIO
-=======================================================
+╔═════════════════════════════════════════════════════╗
+║   GUÍA COMPLETA: GESTIONA TU TIENDA CON SANITY     ║
+║   Jándula Moda — Versión 2 (marzo 2026)            ║
+╚═════════════════════════════════════════════════════╝
 
 ¿QUÉ ES SANITY STUDIO?
------------------------
-Sanity Studio es tu panel de control para gestionar el
-contenido de la tienda: productos, categorías e imágenes.
-Es como el "Word" de tu web — no necesitas saber nada de
-programación, solo entrar, rellenar formularios y guardar.
+───────────────────────
+Tu panel de control para gestionar todo el contenido
+de la tienda: productos, categorías, menús, banners
+y la pantalla de inicio. Sin programación, solo
+rellenar formularios y publicar.
 
-ENLACE DE ACCESO (guárdalo en favoritos):
-→ https://jandula-moda.sanity.studio/
+ENLACE DE ACCESO — guárdalo en favoritos:
+  → https://jandula-moda.sanity.studio/
 
-Necesitas iniciar sesión con la misma cuenta de Google o
-email con la que te registraste en Sanity.
+Inicia sesión con tu cuenta de Google o email de Sanity.
+
+REGLA DE ORO: Siempre pulsa el botón "Publicar"
+(botón verde, abajo a la derecha) después de cualquier
+cambio. Si ves "Draft" significa que NO está publicado.
 
 
-=======================================================
-SECCIÓN 1 — 🛍️ PRODUCTOS
-=======================================================
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECCIÓN 1 — 🛍️  PRODUCTOS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Aquí gestionas TODOS los artículos que aparecen en la
-tienda. Puedes añadir nuevos, editarlos o desactivarlos.
+Aquí gestionas TODOS los artículos de la tienda.
+Añade nuevos, edítalos, ponlos en oferta o desactívalos.
 
-CÓMO AÑADIR UN PRODUCTO NUEVO:
-  1. Haz clic en "🛍️ Productos" en el menú izquierdo.
-  2. Pulsa el botón "+ Crear" (arriba a la derecha).
-  3. Rellena los campos (explicados abajo).
-  4. Pulsa "Publicar" (botón verde, abajo a la derecha).
+── AÑADIR UN PRODUCTO NUEVO ──────────────────────────
 
-CAMPOS DEL PRODUCTO:
+  1. Clic en "🛍️ Productos" (menú izquierdo).
+  2. Pulsa "+ Crear" (arriba a la derecha).
+  3. Rellena los campos.
+  4. Pulsa "Publicar".
+
+── CAMPOS DEL PRODUCTO ───────────────────────────────
+
 ┌─────────────────────────────────────────────────────┐
 │ Nombre del producto                                 │
-│   El nombre que verán los clientes.                 │
+│   Lo que verán los clientes.                        │
 │   Ej: "Vestido Fiesta Negro Lentejuelas"            │
 ├─────────────────────────────────────────────────────┤
 │ URL amigable (slug)                                 │
-│   Se genera SOLO al pulsar el botón "Generate".     │
-│   No hace falta que lo toques.                      │
+│   Pulsa "Generate" y se crea automáticamente.       │
+│   No lo cambies después de publicarlo.              │
 ├─────────────────────────────────────────────────────┤
 │ Precio (€)                                          │
-│   El precio de venta. Escríbelo con punto:          │
-│   Ej: 29.95 → se mostrará como 29,95 € en la web    │
+│   Escríbelo con punto decimal.                      │
+│   Ej: 29.95 → aparece como 29,95 € en la web        │
 ├─────────────────────────────────────────────────────┤
 │ Precio original / antes de oferta (€)               │
-│   SOLO si el producto está en oferta.               │
-│   Pon aquí el precio tachado (el de antes).         │
-│   Si no está en oferta, déjalo VACÍO.               │
-│   Ej: precio original 59.00, precio actual 39.00    │
+│   Solo si está en oferta → pon el precio de antes.  │
+│   Si NO está en oferta → déjalo VACÍO.              │
+│   Ej: antes 59.00, ahora 39.00                     │
 ├─────────────────────────────────────────────────────┤
 │ Categoría                                           │
-│   Elige una del desplegable:                        │
-│   · Nueva Colección                                 │
-│   · Invitada Talla Grande                           │
-│   · Casual                                          │
-│   · Fiesta                                          │
-│   · Complementos                                    │
-│   · Bolsos                                          │
-│   · Special Price (para ofertas especiales)         │
+│   Elige una del desplegable.                        │
+│   Las categorías las gestionas en la Sección 2.     │
 ├─────────────────────────────────────────────────────┤
 │ Subcategoría                                        │
 │   Más específico dentro de la categoría.            │
-│   Ej: si es Casual → "Vestidos Casuales"            │
-│   Ej: si es Fiesta → "Vestidos Fiesta"              │
-│   Opcional, pero ayuda a filtrar mejor.             │
+│   Ej: Casual → "Vestidos", Fiesta → "Conjuntos"     │
+│   Opcional pero mejora el filtrado.                 │
 ├─────────────────────────────────────────────────────┤
 │ Etiquetas                                           │
 │   Palabras clave para clasificar el producto.       │
-│   Puedes marcar varias a la vez.                    │
-│   Ej: "Nueva Colección" + "Destacado"               │
-│   (Etiqueta rosa de tarjeta superior del producto)  │
+│   La primera etiqueta sale como chip rosa           │
+│   en la tarjeta de la tienda.                       │
+│   Ej: "Nueva Colección", "Destacado", "Oferta"      │
 ├─────────────────────────────────────────────────────┤
 │ Imagen principal                                    │
-│   La foto que sale en la tarjeta de la tienda.      │
-│   Pulsa "Upload" y elige la foto desde tu ordenador.│
-│   Recomendado: formato cuadrado o vertical.         │
+│   La foto de la tarjeta de tienda.                  │
+│   Pulsa "Upload" → elige desde tu ordenador.        │
+│   Recomendado: cuadrada o vertical, menos de 2 MB.  │
 ├─────────────────────────────────────────────────────┤
 │ Galería de fotos adicionales                        │
-│   Fotos extra que el cliente puede ver al entrar    │
-│   en la ficha del producto (opcional).              │
+│   Fotos extra en la ficha del producto (opcional).  │
 ├─────────────────────────────────────────────────────┤
 │ Descripción                                         │
-│   Texto libre describiendo el artículo.             │
+│   Texto describiendo el artículo.                   │
 │   Ej: "Vestido largo de gasa con abertura lateral"  │
 ├─────────────────────────────────────────────────────┤
 │ Tallas disponibles                                  │
 │   Marca las tallas que tienes en stock.             │
-│   Opciones: XS, S, M, L, XL, XXL, 3XL, 4XL,         │
-│             S/M, L/XL, Única                        │
+│   Opciones: XS · S · M · L · XL · XXL              │
+│             3XL · 4XL · S/M · L/XL · Única          │
 ├─────────────────────────────────────────────────────┤
 │ Visible en la tienda                                │
-│   Interruptor ON/OFF.                               │
-│   · ON  → el producto aparece en la web.            │
-│   · OFF → el producto se oculta (sin borrarlo).     │
-│   Muy útil para productos sin stock temporalmente.  │
+│   Interruptor ON / OFF.                             │
+│   ON  → visible en la web.                         │
+│   OFF → oculto, pero sin borrarlo.                 │
+│   Úsalo para productos sin stock temporal.          │
 └─────────────────────────────────────────────────────┘
 
-EDITAR UN PRODUCTO EXISTENTE:
-  1. Haz clic en "🛍️ Productos".
-  2. Busca el producto en la lista y haz clic sobre él.
+── EDITAR UN PRODUCTO EXISTENTE ──────────────────────
+
+  1. Clic en "🛍️ Productos".
+  2. Encuentra el producto en la lista → clic sobre él.
   3. Cambia lo que necesites.
-  4. Pulsa "Publicar" para guardar los cambios.
+  4. Pulsa "Publicar".
 
-PONER UN PRODUCTO EN OFERTA:
-  1. Abre el producto.
-  2. En "Precio (€)" pon el precio rebajado (ej: 39.00).
-  3. En "Precio original / antes de oferta (€)" pon el
-     precio antiguo (ej: 59.00).
-  4. En "Etiquetas" añade "Oferta".
-  5. Publica. Aparecerá en la sección "Ofertas
-     Irresistibles" de la web automáticamente.
+── PONER UN PRODUCTO EN OFERTA ───────────────────────
 
-ELIMINAR UNA OFERTA (vuelve a precio normal):
   1. Abre el producto.
-  2. Borra el contenido del campo "Precio original".
+  2. "Precio (€)" → pon el precio rebajado (ej: 39.00).
+  3. "Precio original" → pon el precio antiguo (ej: 59.00).
+  4. En "Etiquetas" añade la etiqueta "Oferta".
+  5. Publica. Aparecerá automáticamente en la sección
+     "Ofertas Irresistibles" de la portada.
+
+── QUITAR UNA OFERTA (volver a precio normal) ────────
+
+  1. Abre el producto.
+  2. Borra el campo "Precio original" (déjalo vacío).
   3. Publica. El precio tachado desaparece.
 
-OCULTAR UN PRODUCTO SIN BORRARLO:
+── OCULTAR UN PRODUCTO (sin borrarlo) ────────────────
+
   1. Abre el producto.
-  2. Desactiva el interruptor "Visible en la tienda".
-  3. Publica. Desaparece de la web pero no se pierde.
+  2. Desactiva "Visible en la tienda" → OFF.
+  3. Publica. Desaparece de la web sin perder los datos.
+
+  ⚠️  Si ELIMINAS un producto en Sanity, se borra para
+      siempre. No hay papelera. Ante la duda, desactívalo.
 
 
-=======================================================
-SECCIÓN 2 — 📂 CATEGORÍAS
-=======================================================
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECCIÓN 2 — 📂  CATEGORÍAS ← NUEVO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Las categorías son los apartados del menú de la tienda
-(Casual, Fiesta, Bolsos, etc.).
+Las categorías controlan TODO el menú de la web:
+los apartados que aparecen en la barra de navegación
+superior (Casual, Fiesta, Complementos, etc.) y sus
+subcategorías en el desplegable.
 
-Normalmente NO necesitarás tocar esto, ya que las
-categorías están configuradas desde el principio.
+Cualquier cambio que hagas aquí se refleja
+automáticamente en el menú y en la tienda.
 
-Si algún día quieres añadir una categoría nueva:
+Las categorías actuales ya están creadas:
+  [1] Nueva Colección
+  [2] Invitada Talla Grande
+  [3] Casual          (con 7 subcategorías)
+  [4] Fiesta          (con 3 subcategorías)
+  [5] Complementos    (con 6 subcategorías)
+  [6] Bolsos
+  [7] Special Price
 
-CAMPOS DE CATEGORÍA:
+── EDITAR UNA CATEGORÍA EXISTENTE ───────────────────
+
+  1. Clic en "📂 Categorías" (menú izquierdo).
+  2. Haz clic sobre la categoría que quieres cambiar.
+  3. Verás 3 pestañas en la parte superior:
+       · General
+       · Menú de navegación
+       · Bloque destacado (inicio)
+  4. Modifica lo que necesites.
+  5. Pulsa "Publicar".
+
+PESTAÑA "GENERAL"
 ┌─────────────────────────────────────────────────────┐
-│ Nombre         → El nombre que aparece en el menú.  │
-│ URL amigable   → Pulsa "Generate", se crea solo.    │
-│ Descripción    → Texto breve (opcional).            │
-│ Imagen portada → Foto que representa la categoría.  │
-│ Orden          → Número que decide su posición.     │
-│                  Ej: 1 sale antes que 2.            │
+│ Nombre      → El texto que aparece en el menú.     │
+│ URL (slug)  → Pulsa "Generate", se crea solo.       │
+│               No lo cambies si ya hay productos     │
+│               asignados a esa categoría.            │
+│ Activa      → ON = visible / OFF = oculta.         │
+│               Si la desactivas, desaparece del      │
+│               menú y de la tienda sin borrar nada.  │
+│ Orden       → Número de posición en el menú.       │
+│               1 = primera, 2 = segunda, etc.       │
+│ Descripción → Texto corto opcional.                │
+│ Imagen      → Foto que representa la categoría.    │
 └─────────────────────────────────────────────────────┘
 
-
-=======================================================
-SECCIÓN 3 — 🖼️ BANNERS / DESTACADOS
-=======================================================
-
-Los banners son los bloques visuales grandes que pueden
-aparecer en la portada o en secciones especiales.
-
-CAMPOS DEL BANNER:
+PESTAÑA "MENÚ DE NAVEGACIÓN"
 ┌─────────────────────────────────────────────────────┐
-│ Título          → Texto principal del banner.       │
-│ Subtítulo       → Texto secundario (opcional).      │
-│ Imagen de fondo → La foto grande del banner.        │
-│ Texto del botón → Lo que pone en el botón.          │
-│                   Ej: "VER COLECCIÓN"               │
-│ Enlace del botón→ A dónde lleva al hacer clic.      │
-│                   Ej: /categoria/fiesta             │
-│ Mostrar banner  → ON para que aparezca,             │
-│                   OFF para ocultarlo.               │
-│ Orden           → Si hay varios, cuál va primero.   │
+│ Subcategorías                                       │
+│   Son los enlaces del desplegable que aparece al    │
+│   pasar el ratón por una categoría en el menú.      │
+│                                                     │
+│   Cada subcategoría tiene dos campos:              │
+│   · Nombre → lo que ve el cliente                  │
+│   · Slug   → la URL (sin espacios, con guiones)    │
+│              Ej: "casual-vestidos"                 │
+│                                                     │
+│   AÑADIR subcategoría:                             │
+│     Pulsa "+ Añadir elemento" al final de la lista. │
+│                                                     │
+│   REORDENAR: arrastra y suelta con el ícono ≡      │
+│   ELIMINAR:  pulsa el ícono de papelera            │
 └─────────────────────────────────────────────────────┘
 
+PESTAÑA "BLOQUE DESTACADO (INICIO)"
+┌─────────────────────────────────────────────────────┐
+│   Controla si esta categoría aparece como bloque    │
+│   grande en la portada (como los de Fiesta y        │
+│   Complementos).                                    │
+│                                                     │
+│ Mostrar como bloque → Actívalo (ON) para que       │
+│                       aparezca en la portada.      │
+│ Título del bloque   → El texto grande del bloque.  │
+│                       Si lo dejas vacío usa el     │
+│                       nombre de la categoría.      │
+│ Descripción         → Texto corto debajo del título.│
+│ Texto del botón     → Lo que pone el botón.        │
+│                       Ej: "Descubrir"              │
+│                                                     │
+│   ⚠️ Recuerda subir una imagen en la pestaña       │
+│   "General" → "Imagen de portada" para que el      │
+│   bloque tenga foto de fondo.                      │
+└─────────────────────────────────────────────────────┘
 
-=======================================================
-CONSEJOS IMPORTANTES
-=======================================================
+── AÑADIR UNA CATEGORÍA NUEVA ────────────────────────
+
+  1. Clic en "📂 Categorías".
+  2. Pulsa "+ Crear".
+  3. Rellena en la pestaña "General":
+       · Nombre (ej: "Abrigos")
+       · Slug → pulsa "Generate"
+       · Activa → ON
+       · Orden → el número que corresponda
+  4. Si va a tener subcategorías, ve a
+     "Menú de navegación" y añádelas.
+  5. Publica.
+
+  Los productos de la web se asignan a esta categoría
+  escribiendo exactamente el mismo nombre en el campo
+  "Categoría" del producto.
+
+── DESACTIVAR UNA CATEGORÍA ──────────────────────────
+
+  1. Abre la categoría.
+  2. En "General" pon "Activa" en OFF.
+  3. Publica. Desaparece del menú y de la tienda.
+     Los productos que tenía asignados no se borran.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECCIÓN 3 — 🖼️  BANNERS ← ACTUALIZADO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+El banner es la gran imagen de portada que aparece
+nada más entrar en la web (el Hero). Puedes cambiar
+todo su contenido: textos, imagen y botones.
+
+── EDITAR EL BANNER PRINCIPAL ────────────────────────
+
+  1. Clic en "🖼️ Banners".
+  2. Haz clic sobre el banner existente.
+  3. Verás 3 pestañas:
+       · Contenido
+       · Botones
+       · Configuración
+  4. Modifica lo que necesites.
+  5. Pulsa "Publicar".
+
+PESTAÑA "CONTENIDO"
+┌─────────────────────────────────────────────────────┐
+│ Texto pequeño superior (eyebrow)                    │
+│   La línea pequeña encima del título.               │
+│   Ej: "Jándula Moda — Tienda Online"               │
+├─────────────────────────────────────────────────────┤
+│ Título principal                                    │
+│   La primera línea grande del banner.               │
+│   Ej: "Tu Estilo,"                                 │
+├─────────────────────────────────────────────────────┤
+│ Segunda línea del título (resaltada)                │
+│   Se muestra en cursiva o con color diferente.      │
+│   Ej: "Nuestra Pasión"                             │
+├─────────────────────────────────────────────────────┤
+│ Subtítulo / descripción                             │
+│   Texto más pequeño debajo del título.              │
+│   Ej: "Moda de mujer con personalidad."            │
+├─────────────────────────────────────────────────────┤
+│ Imagen de fondo                                     │
+│   La foto grande del banner.                        │
+│   Pulsa "Upload" → elige desde tu ordenador.        │
+│   Recomendado: horizontal, mínimo 2000 × 1200 px,  │
+│   formato JPG o WEBP, menos de 3 MB.               │
+├─────────────────────────────────────────────────────┤
+│ Texto alternativo de la imagen                      │
+│   Describe la foto brevemente (para SEO).           │
+│   Ej: "Jándula Moda — Nueva temporada primavera"   │
+└─────────────────────────────────────────────────────┘
+
+PESTAÑA "BOTONES"
+┌─────────────────────────────────────────────────────┐
+│ Botón principal — Texto                             │
+│   Lo que pone el botón grande.                      │
+│   Ej: "Explorar Tienda"                            │
+├─────────────────────────────────────────────────────┤
+│ Botón principal — Enlace                            │
+│   A dónde va al hacer clic.                         │
+│   Ej: /categoria/todos  o  /categoria/fiesta       │
+├─────────────────────────────────────────────────────┤
+│ Botón secundario — Texto                            │
+│   El botón más pequeño junto al principal.          │
+│   Si lo dejas vacío, no aparece ningún 2º botón.   │
+│   Ej: "Contactar"                                   │
+├─────────────────────────────────────────────────────┤
+│ Botón secundario — Enlace                           │
+│   Ej: /contacto                                    │
+└─────────────────────────────────────────────────────┘
+
+PESTAÑA "CONFIGURACIÓN"
+┌─────────────────────────────────────────────────────┐
+│ Visible en la web → ON / OFF.                      │
+│   OFF oculta el banner pero no lo borra.            │
+│ Orden → Si tienes varios banners, el de número     │
+│          menor aparece primero (1 = primero).       │
+└─────────────────────────────────────────────────────┘
+
+── AÑADIR UN SEGUNDO BANNER ──────────────────────────
+
+  Si en algún momento quieres tener varios banners
+  (ej: uno por cada temporada y activarlos según la
+  época del año):
+
+  1. Clic en "🖼️ Banners".
+  2. Pulsa "+ Crear".
+  3. Rellena todos los campos de las 3 pestañas.
+  4. En "Configuración" → "Visible en la web" → ON.
+  5. Ajusta el "Orden" (1 sale primero).
+  6. Publica.
+
+  Para cambiar de banner de temporada:
+  · Pon el banner antiguo en OFF (invisible).
+  · Pon el nuevo en ON (visible).
+  · Solo aparece en la web el que tenga ON.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECCIÓN 4 — ⚙️  CONFIGURACIÓN DEL SITIO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Aquí puedes ajustar datos generales de la tienda como
+el nombre, el email de contacto o textos del aviso de
+envíos gratuitos. Toca solo lo que conozcas con
+seguridad.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CONSEJOS Y REGLAS IMPORTANTES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ✅ SIEMPRE pulsa "Publicar" al terminar de editar.
-   Si no publicas, los cambios no van a la web.
-   (Verás el texto "Draft" si no has publicado aún.)
+   Sin publicar, los cambios no van a la web.
 
 ✅ Los cambios tardan unos SEGUNDOS en verse en la web.
-   Si no ves el cambio, espera 10-15 segundos y recarga.
+   Si no aparecen, espera 15-30 segundos y recarga.
 
-✅ Las fotos mejor en formato JPG o WEBP.
-   Intenta que pesen menos de 2 MB para que carguen
-   rápido en la web.
+✅ Fotos: usa JPG o WEBP. Menos de 2 MB.
+   Para el banner de portada: mínimo 2000 × 1200 px.
+   Para productos: cuadradas o verticales, mínimo
+   800 × 800 px.
 
-✅ Para ocultar un producto temporalmente (sin stock)
-   usa el interruptor "Visible en la tienda" en OFF.
-   NO hagas falta borrar el producto.
+✅ Para ocultar un producto sin stock usa el
+   interruptor "Visible en la tienda" → OFF.
+   NO lo borres — así puedes recuperarlo fácilmente.
 
-⚠️  Si borras un producto, se elimina permanentemente.
-    No hay papelera de reciclaje en Sanity.
-    Ante la duda, desactívalo en lugar de borrarlo.
+✅ Para ocultar una categoría temporalmente usa
+   el interruptor "Activa" → OFF.
+
+⚠️  Si ELIMINAS un producto o categoría en Sanity,
+    se borra para siempre. No hay papelera.
+    Ante la duda → desactívalo en lugar de borrarlo.
+
+⚠️  No cambies el "slug" (URL amigable) de un producto
+    o categoría una vez publicado. Podría romper los
+    enlaces de la web o los resultados de Google.
 
 
-=======================================================
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RESUMEN RÁPIDO — QUÉ PUEDO HACER DESDE EL STUDIO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PRODUCTOS
+  ✔ Añadir, editar y eliminar productos
+  ✔ Cambiar nombre, precio, fotos, tallas
+  ✔ Activar y desactivar ofertas
+  ✔ Ocultar productos sin stock
+  ✔ La búsqueda de la web refleja los cambios al instante
+
+CATEGORÍAS ← NUEVO
+  ✔ Editar el nombre de una categoría
+  ✔ Cambiar el orden de aparición en el menú
+  ✔ Añadir y editar subcategorías del desplegable
+  ✔ Desactivar categorías completas
+  ✔ Añadir nuevas categorías propias
+  ✔ Controlar qué categorías aparecen como bloques
+    destacados en la portada (con imagen, texto y botón)
+
+BANNER DE PORTADA ← ACTUALIZADO
+  ✔ Cambiar la imagen de fondo
+  ✔ Editar todos los textos (eyebrow, título, subtítulo)
+  ✔ Cambiar el texto y destino de los botones
+  ✔ Tener varios banners preparados y alternarlos
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ¿PROBLEMAS O DUDAS?
-=======================================================
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Si algo no funciona como esperas o tienes dudas,
-contacta conmigo sin compromiso.
+Contacta conmigo ante cualquier duda o si algo no
+funciona como esperas. Estoy aquí para ayudarte.
 
-=======================================================
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

@@ -1,13 +1,20 @@
 import { useState, useEffect, useRef } from 'react';
 import { Search, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { products, formatPrice } from '../data/products';
+import { getProducts } from '../lib/sanity';
+import { formatPrice, normalizeProduct } from '../utils/productUtils';
 import '../styles/search-modal.css';
 
 export default function SearchModal({ isOpen, onClose }) {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState([]);
+    const [allProducts, setAllProducts] = useState([]);
     const inputRef = useRef(null);
+
+    // Cargar productos de Sanity una sola vez al montar
+    useEffect(() => {
+        getProducts().then(list => setAllProducts(list.map(normalizeProduct)));
+    }, []);
 
     useEffect(() => {
         if (isOpen) {
@@ -27,14 +34,14 @@ export default function SearchModal({ isOpen, onClose }) {
             return;
         }
         const q = query.toLowerCase().trim();
-        const filtered = products.filter(p =>
-            p.name.toLowerCase().includes(q) ||
-            p.category.toLowerCase().includes(q) ||
-            p.description.toLowerCase().includes(q) ||
+        const filtered = allProducts.filter(p =>
+            p.name?.toLowerCase().includes(q) ||
+            p.category?.toLowerCase().includes(q) ||
+            p.description?.toLowerCase().includes(q) ||
             (p.tags && p.tags.some(t => t.toLowerCase().includes(q)))
         );
         setResults(filtered.slice(0, 8));
-    }, [query]);
+    }, [query, allProducts]);
 
     if (!isOpen) return null;
 
@@ -93,8 +100,8 @@ export default function SearchModal({ isOpen, onClose }) {
                             <div className="search-modal__results">
                                 {results.map(product => (
                                     <Link
-                                        key={product.id}
-                                        to={`/producto/${product.id}`}
+                                        key={product._id}
+                                        to={`/producto/${product.slug}`}
                                         className="search-result"
                                         onClick={onClose}
                                     >

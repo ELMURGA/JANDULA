@@ -13,11 +13,11 @@ const faqs = [
     },
     {
         question: "¿Aceptáis devoluciones o cambios de talla?",
-        answer: "¡Por supuesto! Dispones de 7 días naturales desde que recibes tu paquete para solicitar una devolución o cambio. Si devuelves una prenda, te entregaremos un vale de compra sin caducidad por el mismo importe para que lo gastes cuando quieras en nuestra web o tienda física."
+        answer: "¡Por supuesto! Dispones de 7 días desde que recibes tu pedido para solicitar una devolución o cambio (3 días en el caso de trajes de fiesta e invitada). No se aceptan devoluciones de complementos y bolsos. Te devolveremos el importe del pedido en forma de vale que podrás canjear en los 6 meses siguientes."
     },
     {
         question: "¿Cómo tramito una devolución?",
-        answer: "El proceso es facilísimo. Escríbenos a nuestro número de WhatsApp (610 505 303) o a nuestro email con tu número de pedido diciendo qué quieres devolver. El coste del transporte para la devolución (6,00 €) corre de cuenta del cliente y se te descontará del vale."
+        answer: "Escríbenos a nuestro número de WhatsApp (610 505 303) en los próximos 7 días desde la llegada de tu pedido. El coste del envío de la devolución son 6 € (independientes del envío del nuevo producto si hay cambio). Una vez recibido y evaluado, te enviaremos tu vale de compra."
     },
     {
         question: "¿Tenéis tienda física en algún lugar?",

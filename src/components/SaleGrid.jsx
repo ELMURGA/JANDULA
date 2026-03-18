@@ -1,6 +1,8 @@
-import { products, formatPrice } from '../data/products';
+import { useState, useEffect } from 'react';
 import { Heart, ShoppingBag } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import { getProducts } from '../lib/sanity';
+import { formatPrice, normalizeProduct } from '../utils/productUtils';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useAuth } from '../context/AuthContext';
@@ -10,8 +12,15 @@ export default function SaleGrid() {
     const { addToCart } = useCart();
     const { isLoggedIn, setAuthModalOpen } = useAuth();
     const { isInWishlist, toggleWishlist } = useWishlist();
-    const saleProducts = products.filter(p => p.originalPrice !== null);
+    const [saleProducts, setSaleProducts] = useState([]);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        getProducts().then(list => {
+            const normalized = list.map(normalizeProduct);
+            setSaleProducts(normalized.filter(p => p.originalPrice != null));
+        });
+    }, []);
 
     if (saleProducts.length === 0) return null;
 
@@ -29,8 +38,8 @@ export default function SaleGrid() {
                         const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
                         const isWishlisted = isInWishlist(product.id);
                         return (
-                            <article key={product.id} className="product-card product-card--sale">
-                                <Link to={`/producto/${product.id}`} className="product-card__image-wrap">
+                            <article key={product._id} className="product-card product-card--sale">
+                                <Link to={`/producto/${product.slug}`} className="product-card__image-wrap">
                                     <img src={product.image} alt={product.name} className="product-card__image" loading="lazy" />
                                     <span className="product-card__sale-tag">-{discount}%</span>
                                     <button
@@ -55,7 +64,7 @@ export default function SaleGrid() {
                                                 e.preventDefault();
                                                 e.stopPropagation();
                                                 if (product.sizes?.length > 0) {
-                                                    navigate(`/producto/${product.id}`);
+                                                    navigate(`/producto/${product.slug}`);
                                                 } else {
                                                     addToCart(product);
                                                 }
@@ -67,7 +76,7 @@ export default function SaleGrid() {
                                 </Link>
                                 <div className="product-card__info">
                                     <p className="product-card__category">{product.category}</p>
-                                    <Link to={`/producto/${product.id}`}>
+                                    <Link to={`/producto/${product.slug}`}>
                                         <h3 className="product-card__name">{product.name}</h3>
                                     </Link>
                                     <div className="product-card__prices">

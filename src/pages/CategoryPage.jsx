@@ -1,5 +1,5 @@
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { getProducts } from '../lib/sanity';
+import { getProducts, getCategories } from '../lib/sanity';
 import ProductCard from '../components/ProductCard';
 import { useState, useEffect } from 'react';
 import { Filter } from 'lucide-react';
@@ -10,16 +10,16 @@ export default function CategoryPage() {
     const navigate = useNavigate();
     const [sortBy, setSortBy] = useState('default');
     const [allProducts, setAllProducts] = useState([]);
+    const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    // Cargar productos y categorías desde Sanity
     useEffect(() => {
         async function loadData() {
             try {
                 setLoading(true);
-                const products = await getProducts();
-
+                const [products, cats] = await Promise.all([getProducts(), getCategories()]);
                 setAllProducts(products);
+                setCategories(cats);
             } catch (error) {
                 console.error('Error cargando datos:', error);
             } finally {
@@ -33,23 +33,20 @@ export default function CategoryPage() {
         navigate(`/categoria/${e.target.value}`);
     };
 
-    // Crear mapa de categorías para slugs (similar al anterior)
-    const categoryMap = {
-        'nueva-coleccion': 'Nueva Colección',
-        'invitada-talla-grande': 'Invitada Talla Grande',
-        'casual': 'Casual',
-        'fiesta': 'Fiesta',
-        'complementos': 'Complementos',
-        'bolsos': 'Bolsos',
-        'special-price': 'Special Price',
-    };
-
     const isAll = !slug || slug === 'todos';
-    const categoryName = categoryMap[slug] || 'Todos';
+
+    // Buscar el nombre de la categoría actual desde Sanity
+    // También incluir subcategorías para hacer el matching
+    const allCatSlugs = categories.flatMap(c => [
+        { slug: c.slug, name: c.name },
+        ...(c.subcategories || []).map(s => ({ slug: s.slug, name: s.name })),
+    ]);
+    const currentCat = allCatSlugs.find(c => c.slug === slug);
+    const categoryName = currentCat?.name || (isAll ? '' : slug);
 
     // Filtrar productos
     let filtered = allProducts;
-    if (!isAll && categoryName !== 'Todos') {
+    if (!isAll && categoryName) {
         filtered = allProducts.filter(p =>
             p.category === categoryName || (p.tags && p.tags.includes(categoryName))
         );
@@ -61,7 +58,7 @@ export default function CategoryPage() {
     if (sortBy === 'price-desc') sorted.sort((a, b) => b.price - a.price);
     if (sortBy === 'name') sorted.sort((a, b) => a.name.localeCompare(b.name));
 
-    const displayName = isAll ? 'Toda la Colección' : categoryName;
+    const displayName = isAll ? 'Toda la Colección' : (categoryName || slug);
 
     return (
         <main className="page-wrapper">
@@ -81,17 +78,17 @@ export default function CategoryPage() {
                             aria-label="Seleccionar categoría"
                         >
                             <option value="todos">Todos</option>
-                            {Object.entries(categoryMap).map(([s, name]) => (
-                                <option key={s} value={s}>{name}</option>
+                            {categories.map(cat => (
+                                <option key={cat.slug} value={cat.slug}>{cat.name}</option>
                             ))}
                         </select>
                     </div>
 
                     <div className="category-tags">
                         <Link to="/categoria/todos" className={`cat-tag ${isAll ? 'active' : ''}`}>Todos</Link>
-                        {Object.entries(categoryMap).map(([s, name]) => (
-                            <Link key={s} to={`/categoria/${s}`} className={`cat-tag ${slug === s ? 'active' : ''}`}>
-                                {name}
+                        {categories.map(cat => (
+                            <Link key={cat.slug} to={`/categoria/${cat.slug}`} className={`cat-tag ${slug === cat.slug ? 'active' : ''}`}>
+                                {cat.name}
                             </Link>
                         ))}
                     </div>

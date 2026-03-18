@@ -5,68 +5,21 @@ import logoImg from '../assets/logo-jandula-header.png';
 import { useAuth } from '../context/AuthContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
+import { getCategories } from '../lib/sanity';
 import SearchModal from './SearchModal';
 import AuthModal from './AuthModal';
 import '../styles/navbar.css';
-
-const menuStructure = [
-    {
-        name: 'Nueva Colección',
-        slug: 'nueva-coleccion',
-    },
-    {
-        name: 'Invitada Talla Grande',
-        slug: 'invitada-talla-grande',
-    },
-    {
-        name: 'Casual',
-        slug: 'casual',
-        subcategories: [
-            { name: 'Camisas y Chalecos', slug: 'casual-camisas-chalecos' },
-            { name: 'Camisetas y Tops', slug: 'casual-camisetas-tops' },
-            { name: 'Chaquetas', slug: 'casual-chaquetas' },
-            { name: 'Faldas y Shorts', slug: 'casual-faldas-shorts' },
-            { name: 'Pantalones y Monos', slug: 'casual-pantalones-monos' },
-            { name: 'Total Casual Look', slug: 'casual-total-look' },
-            { name: 'Vestidos', slug: 'casual-vestidos' },
-        ],
-    },
-    {
-        name: 'Fiesta',
-        slug: 'fiesta',
-        subcategories: [
-            { name: 'Conjunto Dos Piezas', slug: 'fiesta-conjunto-dos-piezas' },
-            { name: 'Vestidos Fiesta', slug: 'fiesta-vestidos' },
-            { name: 'Vestidos Largos Fiesta', slug: 'fiesta-vestidos-largos' },
-        ],
-    },
-    {
-        name: 'Complementos',
-        slug: 'complementos',
-        subcategories: [
-            { name: 'Anillos', slug: 'complementos-anillos' },
-            { name: 'Cinturones', slug: 'complementos-cinturones' },
-            { name: 'Collares', slug: 'complementos-collares' },
-            { name: 'Pendientes', slug: 'complementos-pendientes' },
-            { name: 'Pulseras', slug: 'complementos-pulseras' },
-            { name: 'Tocados', slug: 'complementos-tocados' },
-        ],
-    },
-    {
-        name: 'Bolsos',
-        slug: 'bolsos',
-    },
-    {
-        name: 'Special Price',
-        slug: 'special-price',
-    },
-];
 
 export default function Navbar() {
     const [isScrolled, setIsScrolled] = useState(false);
     const [mobileOpen, setMobileOpen] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [expandedMobile, setExpandedMobile] = useState(null);
+    const [menuStructure, setMenuStructure] = useState([]);
+
+    useEffect(() => {
+        getCategories().then(cats => setMenuStructure(cats));
+    }, []);
     const dropdownRef = useRef(null);
     const dropdownTimeout = useRef(null);
     const location = useLocation();

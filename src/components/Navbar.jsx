@@ -92,9 +92,9 @@ export default function Navbar() {
                                         <div key={cat.slug} className="navbar__dropdown-group">
                                             <Link to={`/categoria/${cat.slug}`} className="navbar__dropdown-item">
                                                 {cat.name}
-                                                {cat.subcategories && <ChevronRight size={12} className="navbar__dropdown-arrow" />}
+                                                {cat.subcategories?.length > 0 && <ChevronRight size={12} className="navbar__dropdown-arrow" />}
                                             </Link>
-                                            {cat.subcategories && (
+                                            {cat.subcategories?.length > 0 && (
                                                 <div className="navbar__dropdown-sub">
                                                     {cat.subcategories.map(sub => (
                                                         <Link key={sub.slug} to={`/categoria/${sub.slug}`} className="navbar__dropdown-sub-item">
@@ -159,7 +159,7 @@ export default function Navbar() {
                                         <Link to={`/categoria/${cat.slug}`} onClick={() => setMobileOpen(false)}>
                                             {cat.name}
                                         </Link>
-                                        {cat.subcategories && (
+                                        {cat.subcategories?.length > 0 && (
                                             <button
                                                 className="mobile-menu__expand"
                                                 onClick={() => setExpandedMobile(expandedMobile === cat.slug ? null : cat.slug)}
@@ -169,7 +169,7 @@ export default function Navbar() {
                                             </button>
                                         )}
                                     </div>
-                                    {cat.subcategories && expandedMobile === cat.slug && (
+                                    {cat.subcategories?.length > 0 && expandedMobile === cat.slug && (
                                         <ul className="mobile-menu__subcats">
                                             {cat.subcategories.map(sub => (
                                                 <li key={sub.slug}>

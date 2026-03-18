@@ -98,22 +98,6 @@ export default {
             validation: Rule => Rule.required(),
         },
         {
-            name: 'imageRotation',
-            title: 'Rotar imagen principal',
-            type: 'number',
-            description: 'Usa esto si la foto aparece girada en la web. Selecciona los grados necesarios para que quede vertical.',
-            options: {
-                list: [
-                    { title: '0° — Normal (sin rotar)', value: 0 },
-                    { title: '90° — Girar hacia la derecha', value: 90 },
-                    { title: '180° — Girar al revés', value: 180 },
-                    { title: '270° — Girar hacia la izquierda', value: 270 },
-                ],
-                layout: 'radio',
-            },
-            initialValue: 0,
-        },
-        {
             name: 'gallery',
             title: 'Galería de fotos adicionales',
             type: 'array',

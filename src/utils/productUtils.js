@@ -68,7 +68,6 @@ export function normalizeProduct(sanityProduct) {
     gallery: sanityProduct.gallery?.map(img => getImageUrl(img, 1200)) || [],
     // Objeto imagen original (por si se necesita para srcset)
     rawImage: sanityProduct.image || null,
-    imageRotation: sanityProduct.imageRotation || 0,
     description: sanityProduct.description,
     sizes: sanityProduct.sizes || [],
     colors: sanityProduct.colors || [],

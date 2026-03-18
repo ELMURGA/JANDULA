@@ -646,24 +646,7 @@
     height: 100%;
     display: block;
     object-fit: cover;
-}
-
-/* --- Rotación imagen detalle --- */
-.product-detail__main-img--rot-90 img,
-.product-detail__main-img--rot-270 img {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 133.34%;
-    height: 75%;
-    object-fit: cover;
-    transform: translate(-50%, -50%) rotate(90deg);
-}
-.product-detail__main-img--rot-270 img {
-    transform: translate(-50%, -50%) rotate(270deg);
-}
-.product-detail__main-img--rot-180 img {
-    transform: rotate(180deg);
+    image-orientation: from-image;
 }
 
 .product-detail__discount {

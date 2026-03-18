@@ -4,6 +4,12 @@ import { Link } from 'react-router-dom';
 import { getCategories, urlFor } from '../lib/sanity';
 import '../styles/sections.css';
 
+// Imágenes de reserva por slug hasta que la clienta suba fotos reales en el Studio
+const FALLBACK_IMAGES = {
+    'fiesta':       'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?auto=format&fit=crop&q=80&w=1000',
+    'complementos': 'https://images.unsplash.com/photo-1584273143981-41c073dfe8f8?auto=format&fit=crop&q=80&w=1000',
+};
+
 export default function CategoryBlocks() {
     const [blocks, setBlocks] = useState([]);
 
@@ -20,7 +26,7 @@ export default function CategoryBlocks() {
             {blocks.map((block) => {
                 const imageUrl = block.coverImage
                     ? urlFor(block.coverImage).width(1000).url()
-                    : null;
+                    : FALLBACK_IMAGES[block.slug] || null;
 
                 return (
                     <Link key={block.slug} to={`/categoria/${block.slug}`} className="category-block">

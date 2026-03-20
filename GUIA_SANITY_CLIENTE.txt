@@ -330,7 +330,114 @@ PESTAÑA "CONFIGURACIÓN"
 
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-SECCIÓN 4 — ⚙️  CONFIGURACIÓN DEL SITIO
+SECCIÓN 4 — 🏷️  CUPONES DE DESCUENTO ← NUEVO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Desde aquí puedes crear y gestionar los códigos de
+descuento que los clientes usan al hacer el pago.
+Una vez creados en Sanity hay que sincronizarlos al
+panel de administración (un solo clic, ver más abajo).
+
+── CREAR UN CUPÓN NUEVO ──────────────────────────────
+
+  1. Clic en "🏷️ Cupones de Descuento" (menú izquierdo).
+  2. Pulsa "+ Crear".
+  3. Rellena los campos (ver tabla abajo).
+  4. Pulsa "Publicar".
+  5. Ve al panel de administración de la tienda:
+       → https://jandula.vercel.app/admin
+  6. Pulsa el botón "🏷️ Sincronizar cupones".
+     En pocos segundos el cupón estará activo en la tienda.
+
+── CAMPOS DEL CUPÓN ─────────────────────────────────
+
+┌─────────────────────────────────────────────────────┐
+│ Código del cupón                                    │
+│   En mayúsculas, sin espacios.                      │
+│   Ej: VERANO20 · BIENVENIDA10 · DESCUENTO5         │
+│   Este es el código que el cliente escribe          │
+│   en el carrito para aplicar el descuento.          │
+├─────────────────────────────────────────────────────┤
+│ Descripción interna                                 │
+│   Una nota tuya para identificarlo.                 │
+│   No la ve el cliente.                              │
+│   Ej: "Campaña verano 2026 — redes sociales"        │
+├─────────────────────────────────────────────────────┤
+│ Tipo de descuento                                   │
+│   · Porcentaje (%) → ej: 10% sobre el total        │
+│   · Importe fijo (€) → ej: 5€ menos en el total   │
+│   · Envío gratis → el envío pasa a costar 0€       │
+├─────────────────────────────────────────────────────┤
+│ Valor del descuento                                 │
+│   Para porcentaje: escribe 10 para un 10%.         │
+│   Para importe fijo: escribe 5 para 5€.            │
+│   Para envío gratis: déjalo en 0.                  │
+├─────────────────────────────────────────────────────┤
+│ Pedido mínimo (€)                                   │
+│   Importe mínimo del carrito para poder usar        │
+│   el cupón. Escribe 0 para sin mínimo.             │
+│   Ej: 30 → el cliente necesita tener al menos      │
+│   30€ en el carrito para que el cupón funcione.    │
+├─────────────────────────────────────────────────────┤
+│ Usos máximos                                        │
+│   Cuántas veces en total puede usarse este código  │
+│   entre TODOS los clientes. Déjalo vacío para       │
+│   usos ilimitados.                                  │
+│   Ej: 50 → solo 50 pedidos podrán usar el código.  │
+├─────────────────────────────────────────────────────┤
+│ Activo                                              │
+│   ON  → el cupón funciona en la tienda.            │
+│   OFF → el cupón no funciona aunque el cliente     │
+│          tenga el código. Úsalo para pausar        │
+│          temporalmente una campaña.                 │
+├─────────────────────────────────────────────────────┤
+│ Fecha de expiración                                 │
+│   Opcional. Si lo dejas vacío el cupón no caduca.  │
+│   Si añades una fecha, el código dejará de         │
+│   funcionar automáticamente pasada esa fecha.      │
+│   Ej: 30/06/2026 → cupón válido hasta el 30 junio. │
+└─────────────────────────────────────────────────────┘
+
+── EJEMPLOS PRÁCTICOS ───────────────────────────────
+
+  CUPÓN DE BIENVENIDA (ya existe, no lo toques):
+    Código: BIENVENIDA10
+    Tipo:   Porcentaje
+    Valor:  10 (= 10%)
+    Mínimo: 0 (sin mínimo)
+    Activo: ON / Sin fecha de expiración
+
+  CAMPAÑA DE VERANO:
+    Código: VERANO20
+    Tipo:   Porcentaje
+    Valor:  20 (= 20%)
+    Mínimo: 50 (mínimo 50€ en el carrito)
+    Activo: ON
+    Caduca: 31/08/2026
+
+  REGALO FIJO PARA CLIENTAS VIP:
+    Código: VIP5
+    Tipo:   Importe fijo
+    Valor:  5 (= 5€ de descuento)
+    Mínimo: 0
+    Activo: ON
+    Usos máximos: 20
+
+── DESACTIVAR UN CUPÓN ──────────────────────────────
+
+  1. Clic en "🏷️ Cupones de Descuento".
+  2. Abre el cupón.
+  3. Pon "Activo" en OFF.
+  4. Pulsa "Publicar".
+  5. En el panel admin → pulsa "🏷️ Sincronizar cupones".
+     El cupón quedará desactivado al instante.
+
+  ⚠️ No borres cupones que ya han sido usados por
+     clientes. Ponlos en OFF en lugar de eliminarlos.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECCIÓN 5 — ⚙️  CONFIGURACIÓN DEL SITIO
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Aquí puedes ajustar datos generales de la tienda como
@@ -395,6 +502,14 @@ BANNER DE PORTADA ← ACTUALIZADO
   ✔ Editar todos los textos (eyebrow, título, subtítulo)
   ✔ Cambiar el texto y destino de los botones
   ✔ Tener varios banners preparados y alternarlos
+
+CUPONES DE DESCUENTO ← NUEVO
+  ✔ Crear códigos de descuento (%, importe fijo, envío gratis)
+  ✔ Establecer pedido mínimo para cada cupón
+  ✔ Limitar el número total de usos
+  ✔ Poner fecha de caducidad automática
+  ✔ Activar y desactivar cupones sin borrarlos
+  ✔ Sincronizar al panel admin con un solo clic
 
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

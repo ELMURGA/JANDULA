@@ -32,6 +32,9 @@ export default defineConfig({
                             .title('🖼️ Banners')
                             .child(S.documentTypeList('banner').title('Banners y destacados')),
                         S.listItem()
+                            .title('🏷️ Cupones de Descuento')
+                            .child(S.documentTypeList('discount').title('Cupones de Descuento')),
+                        S.listItem()
                             .title('⚙️ Configuración')
                             .child(S.documentTypeList('siteSettings').title('Configuración de la Web')),
                     ]),

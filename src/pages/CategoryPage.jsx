@@ -60,6 +60,15 @@ export default function CategoryPage() {
     if (sortBy === 'price-desc') sorted.sort((a, b) => b.price - a.price);
     if (sortBy === 'name') sorted.sort((a, b) => a.name.localeCompare(b.name));
 
+    // Detectar si el slug actual es una subcategoría y cuál es su categoría padre
+    const parentCat = categories.find(c =>
+        (c.subcategories || []).some(s => s.slug === slug)
+    );
+
+    // Subcategorías a mostrar: las de la categoría activa o la del padre si estamos en una subcat
+    const activeCat = categories.find(c => c.slug === slug);
+    const subcatsToShow = (activeCat || parentCat)?.subcategories || [];
+
     const displayName = isAll ? 'Toda la Colección' : (categoryName || slug);
 
     return (
@@ -81,18 +90,40 @@ export default function CategoryPage() {
                         >
                             <option value="todos">Todos</option>
                             {categories.map(cat => (
-                                <option key={cat.slug} value={cat.slug}>{cat.name}</option>
+                                <optgroup key={cat.slug} label={cat.name}>
+                                    <option value={cat.slug}>{cat.name} — Todo</option>
+                                    {(cat.subcategories || []).map(s => (
+                                        <option key={s.slug} value={s.slug}>↳ {s.name}</option>
+                                    ))}
+                                </optgroup>
                             ))}
                         </select>
                     </div>
 
-                    <div className="category-tags">
-                        <Link to="/categoria/todos" className={`cat-tag ${isAll ? 'active' : ''}`}>Todos</Link>
-                        {categories.map(cat => (
-                            <Link key={cat.slug} to={`/categoria/${cat.slug}`} className={`cat-tag ${slug === cat.slug ? 'active' : ''}`}>
-                                {cat.name}
-                            </Link>
-                        ))}
+                    <div className="category-tags" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '0.5rem' }}>
+                        {/* Fila de categorías principales */}
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                            <Link to="/categoria/todos" className={`cat-tag ${isAll ? 'active' : ''}`}>Todos</Link>
+                            {categories.map(cat => (
+                                <Link key={cat.slug} to={`/categoria/${cat.slug}`} className={`cat-tag ${slug === cat.slug || parentCat?.slug === cat.slug ? 'active' : ''}`}>
+                                    {cat.name}
+                                </Link>
+                            ))}
+                        </div>
+                        {/* Fila de subcategorías si la categoría activa tiene */}
+                        {subcatsToShow.length > 0 && (
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', paddingLeft: '0.25rem' }}>
+                                {subcatsToShow.map(sub => (
+                                    <Link
+                                        key={sub.slug}
+                                        to={`/categoria/${sub.slug}`}
+                                        className={`cat-tag cat-tag--sub ${slug === sub.slug ? 'active' : ''}`}
+                                    >
+                                        {sub.name}
+                                    </Link>
+                                ))}
+                            </div>
+                        )}
                     </div>
                     <div className="category-sort">
                         <Filter size={16} />

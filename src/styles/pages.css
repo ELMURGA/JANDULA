@@ -309,6 +309,19 @@
     border-color: var(--color-brand-pink);
 }
 
+.cat-tag--sub {
+    font-size: 0.75rem;
+    padding: 0.35rem 0.85rem;
+    border-style: dashed;
+    opacity: 0.85;
+}
+
+.cat-tag--sub.active,
+.cat-tag--sub:hover {
+    opacity: 1;
+    border-style: solid;
+}
+
 .category-sort {
     display: flex;
     align-items: center;

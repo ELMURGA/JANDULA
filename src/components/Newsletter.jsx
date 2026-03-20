@@ -21,6 +21,10 @@ export default function Newsletter() {
                     Suscríbete y entérate antes que nadie de las nuevas colecciones, ofertas exclusivas
                     y consejos de moda de Jándula Moda Utrera.
                 </p>
+                <p style={{ marginTop: '0.5rem', fontSize: '0.95rem' }}>
+                    Además, <strong>obtén un 10% de descuento</strong> en tu primera compra con el código{' '}
+                    <strong style={{ letterSpacing: '1px', color: 'var(--color-primary, #c77d7d)' }}>BIENVENIDA10</strong>.
+                </p>
 
                 {submitted ? (
                     <p style={{ color: 'var(--color-stone-700)', fontWeight: 500, marginTop: '0.5rem' }}>

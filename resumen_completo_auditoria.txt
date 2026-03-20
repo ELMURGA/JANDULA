@@ -1,0 +1,67 @@
+================================================================================
+REPORTE TÉCNICO DE AUDITORÍA Y FIXES - JÁNDULA MODA
+================================================================================
+
+1. LO QUE SE HA HECHO (VERIFICACIONES EXITOSAS)
+--------------------------------------------------------------------------------
+- Revisión de la Guía de Supabase (GUIA_SUPABASE.txt): Se verificó que todos los 
+  pasos estaban completados (Migración V2 aplicada y funciones desplegadas).
+- BD Supabase: Se confirmaron 253 productos activos, 3 códigos de descuento 
+  disponibles, y la existencia de las tablas de pedidos y facturación.
+- Edge Functions: Se verificó el funcionamiento de las 8 funciones serverless 
+  necesarias (sync-products, checkout, webhooks, confirmaciones, etc.).
+- Interfaz (Frontend): Revisión del código incluyendo CheckoutPage, AccountPage, 
+  OrderConfirmedPage. Se comprobó que el flujo visual y de enrutamiento es correcto.
+- Guardado de Direcciones: Se verificó que la tabla 'profiles' en base de datos 
+  sí contiene las columnas necesarias para facturación y envío 
+  (billing_first_name, shipping_street, etc.).
+
+2. FALLOS CRÍTICOS ENCONTRADOS Y SUS SOLUCIONES
+--------------------------------------------------------------------------------
+
+FALLO 1: Variables de Entorno en Vercel Omitidas (BLOQUEO CRÍTICO)
+  - Problema: La tienda desplegada en Vercel (jandula.vercel.app) no podía hacer 
+    peticiones a la base de datos Supabase porque faltaban las variables de entorno. 
+    Usaba un sitio de prueba (https://tu-proyecto.supabase.co). Esto bloqueaba 
+    registro, inicio de sesión y compras.
+  - Solución: Se introdujeron manualmente (el cliente lo hizo tras instrucciones) 
+    las variables necesarias (VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY, etc.) en 
+    el panel de control de Vercel y se redesplegó el sitio.
+  - Estado: Solucionado ✅. Ya funciona el registro e inicio de sesión en Producción.
+
+FALLO 2: Error en el cálculo de Pedidos y Base de Datos (price_discount)
+  - Problema: Al hacer el pago de prueba con Stripe de manera exitosa, el sistema 
+    fallaba al intentar registrar el pedido porque buscaba campos inexistentes en 
+    la base de datos: 'price_discount', 'image_url' y 'discount'.
+  - Solución: Se ha redactado un script SQL correctivo (fix_rpc_columns.sql) 
+    para modificar la función 'process_order_server_side' y apuntar a los 
+    campos reales ('price', 'image', 'discount_amount').
+  - Acción Requerida: El cliente debe copiar este código SQL y ejecutarlo en 
+    el editor SQL dentro del panel de control de Supabase.
+
+FALLO 3: Correos de Bienvenida / Envío a Clientes con Resend (Error 500)
+  - Problema: La plataforma de correos Resend (en modo gratuito/sandbox) solo 
+    permite enviar emails al dueño de la cuenta, y además la función requería un 
+    secreto 'RESEND_FROM_EMAIL' faltante en Supabase.
+  - Solución: 
+    A) Para que lleguen los emails, se deben añadir 3 registros DNS (proporcionados 
+       por Resend) en el hosting del dominio (jandulamodautrera.es).
+    B) Se debe crear un "Secret" en Supabase Edge Functions con la 
+       variable RESEND_FROM_EMAIL apuntando a info@jandulamodautrera.es.
+
+FALLO 4: Problemas de Compilación Local (node_modules)
+  - Problema: Permisos denegados en macOS (EPERM / lstat) al intentar hacer 'npm run build'
+    o instalar librerías. Esto es un bloqueo de seguridad del sistema operativo macOS 
+    sobre la Terminal impidiendo accesos de disco completo (TCC de Apple).
+  - Solución: Se indicó dar permisos de "Acceso Total al Disco" a la Terminal
+    en Preferencias del Sistema de macOS y después ejecutar 'rm -rf node_modules' 
+    e instalar de nuevo con 'npm install'. Esto solo afecta al PC local, no a 
+    la web final.
+
+3. PRÓXIMOS PASOS (LO QUE QUEDA POR HACER)
+--------------------------------------------------------------------------------
+1. Copiar y ejecutar las líneas SQL solucionadas (Punto 2) en el Editor de Supabase.
+2. Hacer el cambio DNS en el panel de jandulamodautrera.es para verificar la entrega de emails.
+3. Volver a realizar una prueba manual completa de usuario -> pago Stripe.
+4. Si el pago de prueba (con la tarjeta 4242..) se registra correctamente en Base de datos, 
+   cambiar "Stripe Test Mode" por las claves "Stripe LIVE" para poder recibir tarjetas reales.

@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { formatPrice } from '../utils/productUtils';
 import {
-    LayoutDashboard, ShoppingBag, Download, MapPin, UserCog, LogOut,
+    LayoutDashboard, ShoppingBag, MapPin, UserCog, LogOut,
     ChevronRight, Eye, Package, Mail, Lock, User, Save, Edit3
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -12,7 +12,6 @@ import '../styles/account.css';
 const TABS = [
     { id: 'dashboard', label: 'Panel de control', icon: LayoutDashboard },
     { id: 'orders', label: 'Pedidos', icon: ShoppingBag },
-    { id: 'downloads', label: 'Descargas', icon: Download },
     { id: 'addresses', label: 'Direcciones', icon: MapPin },
     { id: 'details', label: 'Detalles de la cuenta', icon: UserCog },
     { id: 'logout', label: 'Cerrar sesión', icon: LogOut },
@@ -461,18 +460,7 @@ export default function AccountPage() {
                                 </div>
                             )}
 
-                            {/* ===== DESCARGAS ===== */}
-                            {activeTab === 'downloads' && (
-                                <div className="account-panel animate-fade-in-up">
-                                    <h2 className="account-panel__title">
-                                        <Download size={22} /> Descargas
-                                    </h2>
-                                    <div className="account-empty">
-                                        <Download size={48} />
-                                        <p>Aún no has hecho ninguna descarga.</p>
-                                    </div>
-                                </div>
-                            )}
+
 
                             {/* ===== DIRECCIONES ===== */}
                             {activeTab === 'addresses' && (

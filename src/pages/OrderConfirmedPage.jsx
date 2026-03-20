@@ -231,12 +231,12 @@ export default function OrderConfirmedPage() {
                     <p style={{ fontSize: '0.875rem', color: '#9ca3af', marginBottom: '0.5rem' }}>
                         ¿Alguna duda sobre tu pedido?
                     </p>
-                    <a href="mailto:info@jandula.es" style={{
+                    <a href="mailto:jandulamodautrera@gmail.com" style={{
                         color: '#e879a4',
                         textDecoration: 'none',
                         fontWeight: 600,
                     }}>
-                        info@jandula.es
+                        jandulamodautrera@gmail.com
                     </a>
                 </div>
 

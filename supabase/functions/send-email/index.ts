@@ -274,7 +274,7 @@ function buildEmailHtml(
               <p style="margin:0 0 24px;color:#9ca3af;text-align:center;font-family:Arial,sans-serif;font-size:13px;line-height:1.6;">
                 Recibirás otro email cuando tu pedido sea enviado.<br>
                 ¿Alguna duda? Escríbenos a
-                <a href="mailto:info@jandula.es" style="color:#e879a4;">info@jandula.es</a>
+                <a href="mailto:jandulamodautrera@gmail.com" style="color:#e879a4;">jandulamodautrera@gmail.com</a>
               </p>
 
             </td>

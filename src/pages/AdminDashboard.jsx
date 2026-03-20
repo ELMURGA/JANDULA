@@ -5,7 +5,7 @@ import { formatPrice } from '../utils/productUtils';
 import { useAdminAuth, AdminAuthProvider } from '../context/AdminAuthContext';
 import {
     Package, Search, LogOut, Eye, X, TrendingUp,
-    ShoppingBag, Clock, Truck, CheckCircle, XCircle, Lock
+    ShoppingBag, Clock, Truck, CheckCircle, XCircle, Lock, RefreshCw
 } from 'lucide-react';
 import WhatsAppIcon from '../components/WhatsAppIcon';
 import '../styles/admin.css';
@@ -272,6 +272,7 @@ function AdminPanel() {
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState('all');
     const [selectedOrder, setSelectedOrder] = useState(null);
+    const [syncingDiscounts, setSyncingDiscounts] = useState(false);
 
     useEffect(() => {
         document.body.style.overflow = selectedOrder ? 'hidden' : '';
@@ -345,9 +346,35 @@ function AdminPanel() {
                 .eq('id', orderId);
 
             if (error) throw error;
-            setOrders(orders.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
+            setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
         } catch (err) {
             alert('Error al actualizar el estado: ' + err.message);
+        }
+    };
+
+    const handleSyncDiscounts = async () => {
+        setSyncingDiscounts(true);
+        try {
+            const res = await fetch(
+                `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/sync-discounts`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+            const data = await res.json();
+            if (data.success) {
+                alert(`✅ ${data.synced} cupón(es) sincronizados desde Sanity.`);
+            } else {
+                alert('❌ Error al sincronizar: ' + data.error);
+            }
+        } catch (err) {
+            alert('❌ Error al sincronizar cupón: ' + err.message);
+        } finally {
+            setSyncingDiscounts(false);
         }
     };
 
@@ -402,10 +429,16 @@ function AdminPanel() {
                             <p className="admin-header__sub">Jándula Moda · Panel de Control</p>
                         </div>
                     </div>
-                    <button className="admin-logout-btn" onClick={adminLogout}>
-                        <LogOut size={16} />
-                        Cerrar sesión
-                    </button>
+                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                        <button className="admin-logout-btn" onClick={fetchOrders} title="Actualizar pedidos">
+                            <RefreshCw size={16} />
+                            Actualizar
+                        </button>
+                        <button className="admin-logout-btn" onClick={adminLogout}>
+                            <LogOut size={16} />
+                            Cerrar sesión
+                        </button>
+                    </div>
                 </header>
 
                 {/* Stats */}
@@ -461,6 +494,15 @@ function AdminPanel() {
                             <option value="cancelado">Cancelado</option>
                         </select>
                     </div>
+                    <button
+                        className="admin-logout-btn"
+                        onClick={handleSyncDiscounts}
+                        disabled={syncingDiscounts}
+                        title="Sincronizar cupones desde Sanity"
+                        style={{ whiteSpace: 'nowrap' }}
+                    >
+                        {syncingDiscounts ? 'Sincronizando...' : '🏷️ Sincronizar cupones'}
+                    </button>
                 </div>
 
                 {/* Content */}

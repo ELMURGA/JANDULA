@@ -178,7 +178,7 @@ serve(async (req: Request) => {
       apiVersion: '2024-06-20',
     } as any);
 
-    const origin = req.headers.get('origin') ?? 'https://jandula.vercel.app';
+    const origin = req.headers.get('origin') ?? 'https://jandulamodautrera.es';
 
     // El metadata guarda todo lo que el webhook necesitará para crear el pedido
     const metadata: Record<string, string> = {

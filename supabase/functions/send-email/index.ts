@@ -264,7 +264,7 @@ function buildEmailHtml(
 
               <!-- CTA -->
               <div style="text-align:center;margin-bottom:32px;">
-                <a href="https://jandula.vercel.app/mi-cuenta"
+                <a href="https://jandulamodautrera.es/mi-cuenta"
                    style="display:inline-block;background:#F29BCB;color:#fff;text-decoration:none;padding:14px 32px;border-radius:50px;font-family:Arial,sans-serif;font-size:15px;font-weight:600;letter-spacing:0.5px;">
                   Ver Mis Pedidos
                 </a>
@@ -285,10 +285,10 @@ function buildEmailHtml(
             <td style="padding:24px;text-align:center;">
               <p style="margin:0;color:#9ca3af;font-family:Arial,sans-serif;font-size:12px;">
                 © ${new Date().getFullYear()} Jándula Moda · Todos los derechos reservados<br>
-                <a href="https://jandula.vercel.app/politica-privacidad"
+                <a href="https://jandulamodautrera.es/politica-privacidad"
                    style="color:#9ca3af;text-decoration:underline;">Política de Privacidad</a>
                 &nbsp;·&nbsp;
-                <a href="https://jandula.vercel.app/devoluciones"
+                <a href="https://jandulamodautrera.es/devoluciones"
                    style="color:#9ca3af;text-decoration:underline;">Devoluciones</a>
               </p>
             </td>

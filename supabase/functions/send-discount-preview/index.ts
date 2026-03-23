@@ -153,8 +153,13 @@ function buildHtml(email: string): string {
         <tr>
           <td style="background:#f9fafb;padding:20px 40px;text-align:center;
                      border-top:1px solid #f3f4f6;">
-            <p style="color:#9ca3af;font-size:12px;margin:0;">
-              © 2026 Jándula Moda · Si no pediste este código, puedes ignorar este correo.
+            <p style="color:#9ca3af;font-size:12px;font-family:Arial,sans-serif;margin:0;">
+              &copy; ${new Date().getFullYear()} Jándula Moda &middot; Todos los derechos reservados<br>
+              <a href="https://jandulamodautrera.es/politica-privacidad"
+                 style="color:#9ca3af;text-decoration:underline;">Política de Privacidad</a>
+              &nbsp;&middot;&nbsp;
+              <a href="https://jandulamodautrera.es/devoluciones"
+                 style="color:#9ca3af;text-decoration:underline;">Devoluciones</a>
             </p>
           </td>
         </tr>

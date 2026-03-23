@@ -372,14 +372,17 @@ function AdminPanel() {
                     },
                 }
             );
-            const data = await res.json();
+            const text = await res.text();
+            let data;
+            try { data = JSON.parse(text); } catch { data = {}; }
             if (data.success) {
                 alert(`✅ ${data.synced} cupón(es) sincronizados desde Sanity.`);
             } else {
-                alert('❌ Error al sincronizar: ' + data.error);
+                const msg = data.error || data.message || text || 'Error desconocido';
+                alert('❌ Error al sincronizar: ' + msg);
             }
         } catch (err) {
-            alert('❌ Error al sincronizar cupón: ' + err.message);
+            alert('❌ Error al sincronizar: ' + (err.message || String(err)));
         } finally {
             setSyncingDiscounts(false);
         }

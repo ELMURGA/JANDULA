@@ -105,13 +105,15 @@ export function AuthProvider({ children }) {
         try {
             const { data, error } = await supabase
                 .from('profiles')
-                .update(updates)
-                .eq('id', user.id)
+                .upsert(
+                    { id: user.id, email: user.email, full_name: user.full_name || '', ...updates },
+                    { onConflict: 'id' }
+                )
                 .select()
                 .single();
 
             if (error) throw error;
-            setUser(prev => ({ ...prev, ...data }));
+            if (data) setUser(prev => ({ ...prev, ...data }));
             return data;
         } catch (err) {
             console.error('Update profile error:', err);

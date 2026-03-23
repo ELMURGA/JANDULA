@@ -55,7 +55,7 @@ export default function Navbar() {
         <>
             {/* Top Banner */}
             <div className="top-banner">
-                ¡Envíos de 24 a 48 horas!&nbsp;|&nbsp;Envío gratis en pedidos +50€
+                ¡Envíos de 24 a 48 horas!&nbsp;|&nbsp;Envío gratis en pedidos +100€
             </div>
 
             {/* Main Nav */}

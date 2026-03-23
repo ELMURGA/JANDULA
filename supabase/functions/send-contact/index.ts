@@ -162,8 +162,13 @@ function buildHtml(name: string, email: string, phone: string, message: string):
         </tr>
         <tr>
           <td style="background:#f9fafb;padding:16px 32px;text-align:center;border-top:1px solid #f3f4f6;">
-            <p style="color:#9ca3af;font-size:11px;margin:0;">
-              © 2026 Jándula Moda · Utrera, Sevilla
+            <p style="color:#9ca3af;font-size:12px;font-family:Arial,sans-serif;margin:0;">
+              &copy; ${new Date().getFullYear()} Jándula Moda &middot; Todos los derechos reservados<br>
+              <a href="https://jandulamodautrera.es/politica-privacidad"
+                 style="color:#9ca3af;text-decoration:underline;">Política de Privacidad</a>
+              &nbsp;&middot;&nbsp;
+              <a href="https://jandulamodautrera.es/devoluciones"
+                 style="color:#9ca3af;text-decoration:underline;">Devoluciones</a>
             </p>
           </td>
         </tr>
@@ -217,8 +222,13 @@ function buildConfirmationHtml(name: string): string {
         </tr>
         <tr>
           <td style="background:#f9fafb;padding:16px 36px;text-align:center;border-top:1px solid #f3f4f6;">
-            <p style="color:#9ca3af;font-size:12px;margin:0;">
-              © 2026 Jándula Moda · Av. María Auxiliadora, 76 — Utrera, Sevilla
+            <p style="color:#9ca3af;font-size:12px;font-family:Arial,sans-serif;margin:0;">
+              &copy; ${new Date().getFullYear()} Jándula Moda &middot; Todos los derechos reservados<br>
+              <a href="https://jandulamodautrera.es/politica-privacidad"
+                 style="color:#9ca3af;text-decoration:underline;">Política de Privacidad</a>
+              &nbsp;&middot;&nbsp;
+              <a href="https://jandulamodautrera.es/devoluciones"
+                 style="color:#9ca3af;text-decoration:underline;">Devoluciones</a>
             </p>
           </td>
         </tr>

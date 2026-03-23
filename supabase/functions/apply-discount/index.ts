@@ -93,7 +93,7 @@ serve(async (req: Request) => {
     } else if (discount.type === 'fixed') {
       savings = Math.min(discount.value, total);
     } else if (discount.type === 'free_shipping') {
-      savings = total >= 50 ? 0 : 3.99;
+      savings = total >= 100 ? 0 : 3.99;
     }
 
     return new Response(

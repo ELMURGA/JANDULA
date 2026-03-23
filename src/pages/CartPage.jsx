@@ -9,7 +9,7 @@ export default function CartPage() {
     const navigate = useNavigate();
 
     const subtotal = cartTotal;
-    const shipping = subtotal >= 50 || subtotal === 0 ? 0 : 3.99;
+    const shipping = subtotal >= 100 || subtotal === 0 ? 0 : 3.99;
     const total = subtotal + shipping;
 
     const handleCheckout = () => {
@@ -87,9 +87,9 @@ export default function CartPage() {
                             <span>Envío</span>
                             <span>{shipping === 0 ? <em className="free-shipping">¡Gratis!</em> : formatPrice(shipping)}</span>
                         </div>
-                        {subtotal < 50 && (
+                        {subtotal < 100 && subtotal > 0 && (
                             <p className="cart-summary__hint">
-                                ¡Añade {formatPrice(50 - subtotal)} más para envío gratis!
+                                ¡Añade {formatPrice(100 - subtotal)} más para envío gratis!
                             </p>
                         )}
                         <div className="cart-summary__total">

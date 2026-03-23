@@ -109,7 +109,7 @@ serve(async (req: Request) => {
     }
 
     // ── 5. Gastos de envío ───────────────────────────────────────────────────
-    const shippingCost = subtotal >= 50 ? 0 : 3.99;
+    const shippingCost = subtotal >= 100 ? 0 : 3.99;
     if (shippingCost > 0) {
       lineItems.push({
         price_data: {

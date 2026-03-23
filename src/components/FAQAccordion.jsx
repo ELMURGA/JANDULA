@@ -9,7 +9,7 @@ const faqs = [
     },
     {
         question: "¿Cuáles son los gastos de envío?",
-        answer: "El coste del envío estándar es de solo 3,99 €. ¡Pero si tu pedido supera los 50 €, el envío es totalmente GRATIS! También disponemos de pago contra reembolso por 6,00 €."
+        answer: "El coste del envío estándar es de solo 3,99 €. ¡Pero si tu pedido supera los 100 €, el envío es totalmente GRATIS!"
     },
     {
         question: "¿Aceptáis devoluciones o cambios de talla?",

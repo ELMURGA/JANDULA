@@ -15,7 +15,7 @@ export default function CheckoutPage() {
     const { cartItems, cartTotal } = useCart();
     const navigate = useNavigate();
 
-    const shippingCost = cartTotal >= 50 || cartTotal === 0 ? 0 : 3.99;
+    const shippingCost = cartTotal >= 100 || cartTotal === 0 ? 0 : 3.99;
 
     const [submitting, setSubmitting] = useState(false);
     const [error, setError]           = useState('');

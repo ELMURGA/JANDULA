@@ -5,9 +5,14 @@ import FAQAccordion from '../components/FAQAccordion';
 import { sanity } from '../lib/sanity';
 import '../styles/pages.css';
 
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
 export default function ContactPage() {
     const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' });
     const [submitted, setSubmitted] = useState(false);
+    const [sending, setSending] = useState(false);
+    const [formError, setFormError] = useState('');
     const [businessHours, setBusinessHours] = useState([
         "Lunes a Viernes: 10:00 – 14:00 / 17:30 – 21:00",
         "Sábados: 10:00 – 14:00"
@@ -29,23 +34,27 @@ export default function ContactPage() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setFormError('');
+        setSending(true);
         try {
-            const response = await fetch("https://formspree.io/f/TU_ID_AQUI", {
-                method: "POST",
+            const res = await fetch(`${SUPABASE_URL}/functions/v1/send-contact`, {
+                method: 'POST',
                 headers: {
-                    "Accept": "application/json",
-                    "Content-Type": "application/json"
+                    'Content-Type': 'application/json',
+                    'apikey': SUPABASE_ANON_KEY,
                 },
-                body: JSON.stringify(form)
+                body: JSON.stringify(form),
             });
-            if (response.ok) {
-                setSubmitted(true);
-                setForm({ name: '', email: '', phone: '', message: '' });
-            } else {
-                alert("Hubo un problema al enviar el mensaje. Por favor, inténtalo de nuevo.");
+            const data = await res.json();
+            if (!res.ok || !data.sent) {
+                throw new Error(data.error || 'Error al enviar el mensaje');
             }
-        } catch (error) {
-            alert("Error de conexión al enviar el formulario.");
+            setSubmitted(true);
+            setForm({ name: '', email: '', phone: '', message: '' });
+        } catch (err) {
+            setFormError('Hubo un problema al enviar el mensaje. Por favor, inténtalo de nuevo o escríbenos directamente a jandulamodautrera@gmail.com');
+        } finally {
+            setSending(false);
         }
     };
 
@@ -142,8 +151,11 @@ export default function ContactPage() {
                                     <label htmlFor="message">Mensaje</label>
                                     <textarea id="message" name="message" rows="5" value={form.message} onChange={handleChange} required></textarea>
                                 </div>
-                                <button type="submit" className="contact-submit-btn">
-                                    <Send size={16} /> Enviar Mensaje
+                                {formError && (
+                                    <p style={{ color: '#c0392b', fontSize: '0.9rem', marginBottom: '0.5rem' }}>{formError}</p>
+                                )}
+                                <button type="submit" className="contact-submit-btn" disabled={sending}>
+                                    <Send size={16} /> {sending ? 'Enviando…' : 'Enviar Mensaje'}
                                 </button>
                             </form>
                         )}

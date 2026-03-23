@@ -29,7 +29,6 @@ export default function ReturnPolicyPage() {
                     <p>Estos costes son independientes del envío del nuevo producto en su caso, que serán de:</p>
                     <ul>
                       <li>Envío normal: 3,99 €</li>
-                      <li>Contra reembolso: 6,00 €</li>
                     </ul>
                 </div>
 

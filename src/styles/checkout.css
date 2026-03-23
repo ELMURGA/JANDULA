@@ -71,6 +71,109 @@
     background: #ffffff;
 }
 
+/* ── Selector de método de entrega ─────────────────────────────────────── */
+.delivery-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+@media (max-width: 540px) {
+    .delivery-options { grid-template-columns: 1fr; }
+}
+
+.delivery-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    border: 2px solid var(--color-stone-200);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    background: var(--color-stone-50);
+}
+
+.delivery-option:hover {
+    border-color: var(--color-brand-pink);
+    background: #fdf0f8;
+}
+
+.delivery-option--active {
+    border-color: var(--color-brand-pink);
+    background: #fdf0f8;
+}
+
+.delivery-option input[type="radio"] {
+    margin-top: 2px;
+    accent-color: var(--color-brand-pink);
+    flex-shrink: 0;
+}
+
+.delivery-option__label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.delivery-option__title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #111827;
+}
+
+.delivery-option__sub {
+    font-size: 0.8rem;
+    color: var(--color-stone-500);
+    line-height: 1.4;
+}
+
+.delivery-option__price {
+    font-weight: 700;
+    color: var(--color-brand-pink);
+    font-size: 0.85rem;
+}
+
+/* Recogida en tienda: info de dirección */
+.pickup-info-box {
+    margin-top: 1rem;
+    padding: 1rem 1.25rem;
+    background: #fdf0f8;
+    border: 1px solid #f5c6e8;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    color: #6b4c5e;
+    line-height: 1.6;
+}
+
+.pickup-info-box strong {
+    display: block;
+    color: #111827;
+    margin-bottom: 0.25rem;
+}
+
+/* ── Métodos de pago visibles ──────────────────────────────────────────── */
+.payment-methods-icons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.payment-method-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.3rem 0.75rem;
+    background: #f3f4f6;
+    border-radius: 5px;
+    font-size: 0.75rem;
+    color: #374151;
+    font-weight: 500;
+    border: 1px solid #e5e7eb;
+}
+
+/* ──────────────────────────────────────────────────────────────────────── */
 .payment-simulation {
     display: flex;
     gap: 1rem;

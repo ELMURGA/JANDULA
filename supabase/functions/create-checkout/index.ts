@@ -44,13 +44,16 @@ serve(async (req: Request) => {
     }
 
     // ── 2. Parsear body ──────────────────────────────────────────────────────
-    const { cartItems, shippingInfo, discountCode } = await req.json();
+    const { cartItems, shippingInfo, discountCode, deliveryMethod } = await req.json();
 
     if (!Array.isArray(cartItems) || cartItems.length === 0) {
       throw new Error('El carrito está vacío');
     }
-    if (!shippingInfo?.name?.trim() || !shippingInfo?.address?.trim()) {
-      throw new Error('Datos de envío incompletos');
+    if (!shippingInfo?.name?.trim()) {
+      throw new Error('El nombre de contacto es obligatorio');
+    }
+    if (deliveryMethod !== 'pickup' && !shippingInfo?.address?.trim()) {
+      throw new Error('La dirección de envío es obligatoria');
     }
 
     // ── 3. Verificar precios server-side (Supabase como fuente de verdad) ────
@@ -109,7 +112,8 @@ serve(async (req: Request) => {
     }
 
     // ── 5. Gastos de envío ───────────────────────────────────────────────────
-    const shippingCost = subtotal >= 100 ? 0 : 3.99;
+    const isPickup = deliveryMethod === 'pickup';
+    const shippingCost = (isPickup || subtotal >= 100) ? 0 : 3.99;
     if (shippingCost > 0) {
       lineItems.push({
         price_data: {
@@ -187,6 +191,7 @@ serve(async (req: Request) => {
       notes:            shippingInfo.notes || '',
       discount_code:    resolvedDiscountCode ?? '',
       discount_amount:  String(discountAmount),
+      delivery_method:  isPickup ? 'pickup' : 'shipping',
       // Sólo guardamos id, quantity, size, color (los precios se vuelven a verificar en el webhook)
       cart_items: JSON.stringify(
         cartItems.map((item: { id: number; quantity: number; size?: string; color?: string }) => ({
@@ -199,7 +204,9 @@ serve(async (req: Request) => {
     };
 
     const sessionParams: any = {
-      payment_method_types: ['card'],
+      // Muestra automáticamente todos los métodos activados en el Stripe Dashboard:
+      // Tarjeta (Visa/MC/Amex), Apple Pay, Google Pay, Bizum, PayPal, etc.
+      automatic_payment_methods: { enabled: true },
       line_items:           lineItems,
       mode:                 'payment',
       success_url:          `${origin}/pedido-confirmado?session_id={CHECKOUT_SESSION_ID}`,

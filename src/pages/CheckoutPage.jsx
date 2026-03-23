@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
-import { ArrowLeft, CreditCard, Lock, Tag, CheckCircle, XCircle } from 'lucide-react';
+import { ArrowLeft, CreditCard, Lock, Tag, CheckCircle, XCircle, Truck, Store } from 'lucide-react';
 import { formatPrice } from '../utils/productUtils';
 import { supabase } from '../lib/supabase';
 import '../styles/pages.css';
@@ -15,7 +15,10 @@ export default function CheckoutPage() {
     const { cartItems, cartTotal } = useCart();
     const navigate = useNavigate();
 
-    const shippingCost = cartTotal >= 100 || cartTotal === 0 ? 0 : 3.99;
+    const [deliveryMethod, setDeliveryMethod] = useState('shipping'); // 'shipping' | 'pickup'
+    const shippingCost = deliveryMethod === 'pickup'
+        ? 0
+        : (cartTotal >= 100 || cartTotal === 0 ? 0 : 3.99);
 
     const [submitting, setSubmitting] = useState(false);
     const [error, setError]           = useState('');
@@ -120,7 +123,9 @@ export default function CheckoutPage() {
 
         try {
             // Validar campos de envío
-            const required = { name: 'Nombre', address: 'Dirección', city: 'Ciudad', postal: 'Código Postal', phone: 'Teléfono' };
+            const required = deliveryMethod === 'pickup'
+                ? { name: 'Nombre', phone: 'Teléfono' }
+                : { name: 'Nombre', address: 'Dirección', city: 'Ciudad', postal: 'Código Postal', phone: 'Teléfono' };
             for (const [field, label] of Object.entries(required)) {
                 if (!shippingInfo[field]?.trim()) {
                     throw new Error(`Por favor, rellena el campo: ${label}`);
@@ -150,6 +155,7 @@ export default function CheckoutPage() {
                     'Authorization': `Bearer ${session.access_token}`,
                 },
                 body: JSON.stringify({
+                    deliveryMethod,
                     cartItems:    cartItems.map(item => ({
                         id:       item.id,
                         quantity: item.quantity,
@@ -204,9 +210,48 @@ export default function CheckoutPage() {
                     {/* ── Columna izquierda: Formulario ── */}
                     <div className="checkout-form-col">
 
-                        {/* Datos de envío */}
+                        {/* ── Método de entrega ── */}
+                        <div className="checkout-block" style={{ marginBottom: '1.5rem' }}>
+                            <h2 className="checkout-block__title">Método de Entrega</h2>
+                            <div className="delivery-options">
+                                <label className={`delivery-option${deliveryMethod === 'shipping' ? ' delivery-option--active' : ''}`}>
+                                    <input type="radio" name="deliveryMethod" value="shipping"
+                                           checked={deliveryMethod === 'shipping'}
+                                           onChange={() => setDeliveryMethod('shipping')} />
+                                    <div className="delivery-option__label">
+                                        <span className="delivery-option__title"><Truck size={15} style={{verticalAlign:'middle',marginRight:4}}/> Envío a domicilio</span>
+                                        <span className="delivery-option__sub">Entrega en 24-48h</span>
+                                        <span className="delivery-option__price">
+                                            {cartTotal >= 100 ? '¡Gratis!' : '3,99 €'}
+                                        </span>
+                                    </div>
+                                </label>
+                                <label className={`delivery-option${deliveryMethod === 'pickup' ? ' delivery-option--active' : ''}`}>
+                                    <input type="radio" name="deliveryMethod" value="pickup"
+                                           checked={deliveryMethod === 'pickup'}
+                                           onChange={() => setDeliveryMethod('pickup')} />
+                                    <div className="delivery-option__label">
+                                        <span className="delivery-option__title"><Store size={15} style={{verticalAlign:'middle',marginRight:4}}/> Recogida en tienda</span>
+                                        <span className="delivery-option__sub">Av. María Auxiliadora, 76<br/>Utrera, Sevilla</span>
+                                        <span className="delivery-option__price">¡Gratis!</span>
+                                    </div>
+                                </label>
+                            </div>
+                            {deliveryMethod === 'pickup' && (
+                                <div className="pickup-info-box">
+                                    <strong>📍 Jándula Moda — Tienda física</strong>
+                                    Av. María Auxiliadora, 76 · Utrera, Sevilla<br/>
+                                    Lun–Vie: 10:00–14:00 / 17:30–21:00 · Sáb: 10:00–14:00<br/>
+                                    Tel: <a href="tel:+34610505303" style={{color:'var(--color-brand-pink)'}}>610 505 303</a>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Datos de envío / recogida */}
                         <div className="checkout-block">
-                            <h2 className="checkout-block__title">Datos de Envío</h2>
+                            <h2 className="checkout-block__title">
+                                {deliveryMethod === 'pickup' ? 'Datos de Contacto' : 'Datos de Envío'}
+                            </h2>
 
                             {error && (
                                 <div role="alert" style={{
@@ -224,33 +269,39 @@ export default function CheckoutPage() {
                                     <input type="text" id="name" name="name" required
                                            value={shippingInfo.name} onChange={handleInputChange} />
                                 </div>
-                                <div className="form-group">
-                                    <label htmlFor="address">Dirección *</label>
-                                    <input type="text" id="address" name="address" required
-                                           value={shippingInfo.address} onChange={handleInputChange} />
-                                </div>
-                                <div className="form-row">
+                                {deliveryMethod === 'shipping' && (
                                     <div className="form-group">
-                                        <label htmlFor="city">Ciudad *</label>
-                                        <input type="text" id="city" name="city" required
-                                               value={shippingInfo.city} onChange={handleInputChange} />
+                                        <label htmlFor="address">Dirección *</label>
+                                        <input type="text" id="address" name="address" required
+                                               value={shippingInfo.address} onChange={handleInputChange} />
                                     </div>
-                                    <div className="form-group">
-                                        <label htmlFor="postal">Código Postal *</label>
-                                        <input type="text" id="postal" name="postal" required
-                                               value={shippingInfo.postal} onChange={handleInputChange} />
+                                )}
+                                {deliveryMethod === 'shipping' && (
+                                    <div className="form-row">
+                                        <div className="form-group">
+                                            <label htmlFor="city">Ciudad *</label>
+                                            <input type="text" id="city" name="city" required
+                                                   value={shippingInfo.city} onChange={handleInputChange} />
+                                        </div>
+                                        <div className="form-group">
+                                            <label htmlFor="postal">Código Postal *</label>
+                                            <input type="text" id="postal" name="postal" required
+                                                   value={shippingInfo.postal} onChange={handleInputChange} />
+                                        </div>
                                     </div>
-                                </div>
+                                )}
                                 <div className="form-group">
                                     <label htmlFor="phone">Teléfono de Contacto *</label>
                                     <input type="tel" id="phone" name="phone" required
                                            value={shippingInfo.phone} onChange={handleInputChange} />
                                 </div>
-                                <div className="form-group">
-                                    <label htmlFor="notes">Notas para el mensajero (opcional)</label>
-                                    <textarea id="notes" name="notes" rows="3"
-                                              value={shippingInfo.notes} onChange={handleInputChange} />
-                                </div>
+                                {deliveryMethod === 'shipping' && (
+                                    <div className="form-group">
+                                        <label htmlFor="notes">Notas para el mensajero (opcional)</label>
+                                        <textarea id="notes" name="notes" rows="3"
+                                                  value={shippingInfo.notes} onChange={handleInputChange} />
+                                    </div>
+                                )}
                             </form>
                         </div>
 
@@ -320,25 +371,31 @@ export default function CheckoutPage() {
 
                         {/* Pago seguro */}
                         <div className="checkout-block" style={{ marginTop: '1.5rem' }}>
-                            <h2 className="checkout-block__title">Pago Seguro</h2>
+                            <h2 className="checkout-block__title">Métodos de Pago</h2>
                             <div className="payment-simulation">
                                 <Lock size={20} />
                                 <p>
-                                    Pago 100% seguro procesado por Stripe. Aceptamos todas las tarjetas
-                                    de crédito y débito. Tus datos nunca pasan por nuestros servidores.
+                                    Pago 100% seguro procesado por Stripe. Selecciona tu método
+                                    preferido en la siguiente pantalla. Tus datos nunca pasan por
+                                    nuestros servidores.
                                 </p>
                             </div>
-                            <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.75rem', flexWrap: 'wrap' }}>
-                                {['Visa', 'Mastercard', 'Amex', 'Apple Pay', 'Google Pay'].map(brand => (
-                                    <span key={brand} style={{
-                                        padding: '0.25rem 0.625rem', background: '#f3f4f6',
-                                        borderRadius: '4px', fontSize: '0.75rem',
-                                        color: '#374151', fontWeight: 500,
-                                    }}>
-                                        {brand}
+                            <div className="payment-methods-icons">
+                                {[
+                                    { label: '💳 Tarjeta', sub: 'Visa · Mastercard · Amex' },
+                                    { label: '📱 Bizum', sub: 'Solo España' },
+                                    { label: '🍎 Apple Pay', sub: 'Safari/iPhone' },
+                                    { label: 'G Google Pay', sub: 'Android/Chrome' },
+                                    { label: '🅿️ PayPal', sub: 'Cuenta PayPal' },
+                                ].map(({ label, sub }) => (
+                                    <span key={label} className="payment-method-badge" title={sub}>
+                                        {label}
                                     </span>
                                 ))}
                             </div>
+                            <p style={{ marginTop: '0.75rem', fontSize: '0.75rem', color: 'var(--color-stone-400)' }}>
+                                La disponibilidad de cada método depende de tu dispositivo y país.
+                            </p>
                         </div>
                     </div>
 

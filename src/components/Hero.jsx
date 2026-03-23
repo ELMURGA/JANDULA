@@ -14,7 +14,7 @@ const DEFAULT = {
     buttonLink: '/categoria/todos',
     secondButtonText: 'Contactar',
     secondButtonLink: '/contacto',
-    imageUrl: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&q=80&w=2000',
+    imageUrl: null,
     imageAlt: 'Jándula Moda — Nueva temporada',
 };
 
@@ -44,13 +44,15 @@ export default function Hero() {
 
     return (
         <section className="hero" id="inicio">
-            <img
-                src={b.imageUrl}
-                alt={b.imageAlt}
-                className="hero__bg"
-                loading="eager"
-                fetchPriority="high"
-            />
+            {b.imageUrl && (
+                <img
+                    src={b.imageUrl}
+                    alt={b.imageAlt}
+                    className="hero__bg"
+                    loading="eager"
+                    fetchPriority="high"
+                />
+            )}
             <div className="hero__overlay" />
 
             <div className="hero__content animate-fade-in-up">

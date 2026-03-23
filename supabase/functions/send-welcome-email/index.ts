@@ -85,7 +85,7 @@ function buildWelcomeHtml(name: string): string {
     <tr><td align="center">
       <table width="600" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.06);max-width:600px;width:100%;">
         <tr>
-          <td style="background:linear-gradient(135deg,#e879a4,#c2185b);padding:40px;text-align:center;">
+            <td style="background:#F29BCB;padding:40px;text-align:center;">
             <h1 style="color:#fff;font-size:28px;margin:0;font-weight:300;letter-spacing:2px;">JÁNDULA MODA</h1>
             <p style="color:rgba(255,255,255,0.85);margin:8px 0 0;font-size:13px;letter-spacing:1px;">MODA PARA SENTIRTE BIEN</p>
           </td>
@@ -95,13 +95,13 @@ function buildWelcomeHtml(name: string): string {
             <h2 style="color:#111827;font-size:22px;margin:0 0 16px;">¡Bienvenida, ${name}! 🎉</h2>
             <p style="color:#6b7280;font-size:15px;line-height:1.7;margin:0 0 24px;">
               Nos alegra tenerte con nosotras. Como regalo de bienvenida, tienes un
-              <strong style="color:#e879a4;">10% de descuento</strong> en tu primera compra.
+              <strong style="color:#F29BCB;">10% de descuento</strong> en tu primera compra.
             </p>
-            <table width="100%" cellpadding="0" cellspacing="0" style="background:#fdf2f8;border:2px dashed #e879a4;border-radius:12px;margin:0 0 24px;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#fdf0f8;border:2px dashed #F29BCB;border-radius:12px;margin:0 0 24px;">
               <tr>
                 <td style="padding:24px;text-align:center;">
                   <p style="color:#9ca3af;font-size:11px;letter-spacing:1px;margin:0 0 8px;text-transform:uppercase;">Tu código de bienvenida</p>
-                  <p style="color:#e879a4;font-size:30px;font-weight:700;letter-spacing:4px;margin:0;font-family:monospace;">BIENVENIDA10</p>
+                  <p style="color:#c47fa8;font-size:30px;font-weight:700;letter-spacing:4px;margin:0;font-family:monospace;">BIENVENIDA10</p>
                   <p style="color:#9ca3af;font-size:13px;margin:8px 0 0;">10% de descuento · Sin fecha de caducidad</p>
                 </td>
               </tr>
@@ -111,8 +111,8 @@ function buildWelcomeHtml(name: string): string {
             </p>
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr><td align="center">
-                <a href="https://jandula.es/categoria/todos"
-                   style="display:inline-block;background:linear-gradient(135deg,#e879a4,#c2185b);color:#fff;padding:16px 40px;border-radius:8px;text-decoration:none;font-size:15px;font-weight:600;">
+                <a href="https://jandulamodautrera.es/categoria/todos"
+                   style="display:inline-block;background:#F29BCB;color:#fff;padding:16px 40px;border-radius:8px;text-decoration:none;font-size:15px;font-weight:600;">
                   Ir a la Tienda →
                 </a>
               </td></tr>

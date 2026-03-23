@@ -178,7 +178,7 @@ function buildEmailHtml(
 
           <!-- Header -->
           <tr>
-            <td style="background:linear-gradient(135deg,#f9a8d4 0%,#e879a4 100%);padding:40px;text-align:center;border-radius:12px 12px 0 0;">
+            <td style="background:#F29BCB;padding:40px;text-align:center;border-radius:12px 12px 0 0;">
               <h1 style="margin:0;color:#fff;font-size:28px;letter-spacing:2px;font-family:Georgia,serif;">
                 JÁNDULA MODA
               </h1>
@@ -204,7 +204,7 @@ function buildEmailHtml(
                 ¡Gracias por tu compra, ${escapeHtml(customerName.split(' ')[0])}!
               </h2>
               <p style="margin:0 0 32px;color:#6b7280;text-align:center;font-family:Arial,sans-serif;font-size:15px;">
-                Tu pedido <strong style="color:#e879a4;">#${orderId}</strong> ha sido confirmado y está siendo preparado con cariño.
+                Tu pedido <strong style="color:#F29BCB;">#${orderId}</strong> ha sido confirmado y está siendo preparado con cariño.
               </p>
 
               <!-- Order items table -->
@@ -242,7 +242,7 @@ function buildEmailHtml(
                     <td colspan="2" style="padding:14px 16px;font-weight:bold;color:#111827;font-size:16px;font-family:Arial,sans-serif;">
                       TOTAL
                     </td>
-                    <td style="padding:14px 16px;text-align:right;font-weight:bold;color:#e879a4;font-size:18px;font-family:Arial,sans-serif;">
+                    <td style="padding:14px 16px;text-align:right;font-weight:bold;color:#F29BCB;font-size:18px;font-family:Arial,sans-serif;">
                       ${fmt(total)}
                     </td>
                   </tr>
@@ -265,7 +265,7 @@ function buildEmailHtml(
               <!-- CTA -->
               <div style="text-align:center;margin-bottom:32px;">
                 <a href="https://jandula.vercel.app/mi-cuenta"
-                   style="display:inline-block;background:linear-gradient(135deg,#f9a8d4,#e879a4);color:#fff;text-decoration:none;padding:14px 32px;border-radius:50px;font-family:Arial,sans-serif;font-size:15px;font-weight:600;letter-spacing:0.5px;">
+                   style="display:inline-block;background:#F29BCB;color:#fff;text-decoration:none;padding:14px 32px;border-radius:50px;font-family:Arial,sans-serif;font-size:15px;font-weight:600;letter-spacing:0.5px;">
                   Ver Mis Pedidos
                 </a>
               </div>
@@ -274,7 +274,7 @@ function buildEmailHtml(
               <p style="margin:0 0 24px;color:#9ca3af;text-align:center;font-family:Arial,sans-serif;font-size:13px;line-height:1.6;">
                 Recibirás otro email cuando tu pedido sea enviado.<br>
                 ¿Alguna duda? Escríbenos a
-                <a href="mailto:jandulamodautrera@gmail.com" style="color:#e879a4;">jandulamodautrera@gmail.com</a>
+                <a href="mailto:jandulamodautrera@gmail.com" style="color:#F29BCB;">jandulamodautrera@gmail.com</a>
               </p>
 
             </td>

@@ -355,12 +355,19 @@ function AdminPanel() {
     const handleSyncDiscounts = async () => {
         setSyncingDiscounts(true);
         try {
+            const { data: { session } } = await supabase.auth.getSession();
+            const token = session?.access_token;
+            if (!token) {
+                alert('Sesión expirada. Vuelve a iniciar sesión.');
+                setSyncingDiscounts(false);
+                return;
+            }
             const res = await fetch(
                 `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/sync-discounts`,
                 {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+                        'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json',
                     },
                 }

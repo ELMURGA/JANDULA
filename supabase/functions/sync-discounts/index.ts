@@ -26,24 +26,40 @@ serve(async (req: Request) => {
   }
 
   try {
-    // Autenticación: anon key o webhook token
-    const authorization   = req.headers.get('Authorization') ?? '';
-    const webhookToken    = req.headers.get('x-webhook-token') ?? '';
-    const expectedAnon    = `Bearer ${Deno.env.get('SUPABASE_ANON_KEY')}`;
+    const authorization = req.headers.get('Authorization') ?? '';
+    const webhookToken  = req.headers.get('x-webhook-token') ?? '';
+
+    const supabaseUrl     = Deno.env.get('SUPABASE_URL')!;
+    const anonKey         = Deno.env.get('SUPABASE_ANON_KEY')!;
+    const serviceKey      = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const expectedWebhook = Deno.env.get('SANITY_WEBHOOK_SECRET') ?? '';
 
-    const isAuthorized =
-      authorization === expectedAnon ||
-      (expectedWebhook !== '' && webhookToken === expectedWebhook);
+    // Opción A: webhook de Sanity con token secreto
+    const isWebhook = expectedWebhook !== '' && webhookToken === expectedWebhook;
 
-    if (!isAuthorized) {
+    // Opción B: llamada desde admin panel — verificar JWT + rol admin
+    let isAdminUser = false;
+    if (!isWebhook && authorization.startsWith('Bearer ')) {
+      const userClient = createClient(supabaseUrl, anonKey, {
+        global: { headers: { Authorization: authorization } },
+      });
+      const { data: { user }, error: userError } = await userClient.auth.getUser();
+      if (!userError && user?.id) {
+        const svcClient = createClient(supabaseUrl, serviceKey);
+        const { data: profile } = await svcClient
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .single();
+        isAdminUser = profile?.role === 'admin';
+      }
+    }
+
+    if (!isWebhook && !isAdminUser) {
       return json({ success: false, error: 'No autorizado' }, 401);
     }
 
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL')!,
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-    );
+    const supabase = createClient(supabaseUrl, serviceKey);
 
     // 1. Leer cupones desde Sanity
     const query = `*[_type == "discount"] {

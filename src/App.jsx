@@ -8,6 +8,7 @@ import Footer from './components/Footer';
 import Toast from './components/Toast';
 import WhatsAppButton from './components/WhatsAppButton';
 import CookieConsent from './components/CookieConsent';
+import DiscountModal from './components/DiscountModal';
 
 // Pages
 import HomePage from './pages/HomePage';
@@ -73,6 +74,7 @@ export default function App() {
           <Footer />
           <WhatsAppButton />
           <CookieConsent />
+          <DiscountModal />
         </CartProvider>
       </WishlistProvider>
     </AuthProvider>

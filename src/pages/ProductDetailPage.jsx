@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Heart, ShoppingBag, ChevronRight, Truck, ShieldCheck, Minus, Plus } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
+import { useAuth } from '../context/AuthContext';
 import { normalizeProduct, formatPrice } from '../utils/productUtils';
 import WhatsAppIcon from '../components/WhatsAppIcon';
 import SEOHead from '../components/SEOHead';
@@ -28,6 +29,7 @@ export default function ProductDetailPage() {
     const [quantity, setQuantity] = useState(1);
     const { addToCart } = useCart();
     const { wishlistItems, toggleWishlist } = useWishlist();
+    const { isLoggedIn, setAuthModalOpen } = useAuth();
 
     useEffect(() => {
         async function loadProduct() {
@@ -95,6 +97,10 @@ export default function ProductDetailPage() {
         : null;
 
     const handleAddToCart = () => {
+        if (!isLoggedIn) {
+            setAuthModalOpen(true);
+            return;
+        }
         if (product.sizes?.length > 0 && !selectedSize) {
             alert('Por favor, selecciona una talla antes de añadir al carrito.');
             return;

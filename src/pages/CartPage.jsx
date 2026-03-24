@@ -2,11 +2,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { formatPrice } from '../utils/productUtils';
 import { Trash2, Minus, Plus, ShoppingBag, ArrowLeft, CreditCard } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import SEOHead from '../components/SEOHead';
 import '../styles/pages.css';
 
 export default function CartPage() {
     const { cartItems, updateQuantity, removeFromCart, cartTotal, cartCount } = useCart();
+    const { isLoggedIn, setAuthModalOpen } = useAuth();
     const navigate = useNavigate();
 
     const subtotal = cartTotal;
@@ -14,6 +16,10 @@ export default function CartPage() {
     const total = subtotal + shipping;
 
     const handleCheckout = () => {
+        if (!isLoggedIn) {
+            setAuthModalOpen(true);
+            return;
+        }
         navigate('/checkout');
     };
 

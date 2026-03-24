@@ -339,7 +339,7 @@ export default function CheckoutPage() {
                                     </button>
                                 </div>
                             ) : (
-                                <form onSubmit={handleApplyDiscount} style={{ display: 'flex', gap: '0.75rem' }}>
+                                <form onSubmit={handleApplyDiscount} className="discount-row" style={{ display: 'flex', gap: '0.75rem' }}>
                                     <input
                                         type="text"
                                         placeholder="Escribe tu código"

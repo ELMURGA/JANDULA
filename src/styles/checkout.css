@@ -260,3 +260,58 @@
     position: sticky;
     top: 100px;
 }
+
+/* ── Checkout — Responsive móvil ───────────────────────────────────────── */
+@media (max-width: 899px) {
+    .checkout-summary {
+        position: static;
+    }
+}
+
+@media (max-width: 600px) {
+    .checkout-block {
+        padding: 1.25rem 1rem;
+        border-radius: 10px;
+    }
+
+    .checkout-block__title {
+        font-size: 1.25rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.1rem;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        padding: 0.75rem 0.875rem;
+        font-size: 0.9rem;
+    }
+
+    .payment-simulation {
+        padding: 1rem;
+        gap: 0.75rem;
+        flex-direction: column;
+    }
+
+    .checkout-item-mini .img-wrap {
+        width: 52px;
+        height: 52px;
+    }
+
+    .pickup-info-box {
+        padding: 0.875rem 1rem;
+        font-size: 0.825rem;
+    }
+
+    /* Fila del cupón: input + botón en columna en pantallas muy pequeñas */
+    .discount-row {
+        flex-direction: column;
+    }
+
+    .discount-row input,
+    .discount-row button {
+        width: 100%;
+    }
+}

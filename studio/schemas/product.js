@@ -1,3 +1,5 @@
+import { SubcategoryInput } from '../src/components/SubcategoryInput'
+
 export default {
     name: 'product',
     title: 'Producto',
@@ -50,26 +52,10 @@ export default {
             name: 'subcategory',
             title: 'Subcategoría',
             type: 'string',
-            options: {
-                list: [
-                    { title: 'Camisas y Chalecos', value: 'casual-camisas-chalecos' },
-                    { title: 'Camisetas y Tops', value: 'casual-camisetas-tops' },
-                    { title: 'Chaquetas', value: 'casual-chaquetas' },
-                    { title: 'Faldas y Shorts', value: 'casual-faldas-shorts' },
-                    { title: 'Pantalones y Monos', value: 'casual-pantalones-monos' },
-                    { title: 'Total Casual Look', value: 'casual-total-look' },
-                    { title: 'Vestidos Casuales', value: 'casual-vestidos' },
-                    { title: 'Conjunto Dos Piezas', value: 'fiesta-conjunto-dos-piezas' },
-                    { title: 'Vestidos Fiesta', value: 'fiesta-vestidos' },
-                    { title: 'Vestidos Largos Fiesta', value: 'fiesta-vestidos-largos' },
-                    { title: 'Anillos', value: 'complementos-anillos' },
-                    { title: 'Cinturones', value: 'complementos-cinturones' },
-                    { title: 'Collares', value: 'complementos-collares' },
-                    { title: 'Pendientes', value: 'complementos-pendientes' },
-                    { title: 'Pulseras', value: 'complementos-pulseras' },
-                    { title: 'Tocados', value: 'complementos-tocados' },
-                ],
-                layout: 'dropdown',
+            description:
+                'Las opciones se cargan automáticamente desde los documentos de Categorías. Si añades una nueva subcategoría allí, aparecerá aquí de inmediato.',
+            components: {
+                input: SubcategoryInput,
             },
         },
         {

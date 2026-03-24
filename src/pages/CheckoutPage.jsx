@@ -383,10 +383,8 @@ export default function CheckoutPage() {
                             <div className="payment-methods-icons">
                                 {[
                                     { label: '💳 Tarjeta', sub: 'Visa · Mastercard · Amex' },
-                                    { label: '📱 Bizum', sub: 'Solo España' },
                                     { label: '🍎 Apple Pay', sub: 'Safari/iPhone' },
                                     { label: 'G Google Pay', sub: 'Android/Chrome' },
-                                    { label: '🅿️ PayPal', sub: 'Cuenta PayPal' },
                                 ].map(({ label, sub }) => (
                                     <span key={label} className="payment-method-badge" title={sub}>
                                         {label}
@@ -394,7 +392,7 @@ export default function CheckoutPage() {
                                 ))}
                             </div>
                             <p style={{ marginTop: '0.75rem', fontSize: '0.75rem', color: 'var(--color-stone-400)' }}>
-                                La disponibilidad de cada método depende de tu dispositivo y país.
+                                Apple Pay y Google Pay aparecen automáticamente si usas Safari o Chrome con una tarjeta guardada.
                             </p>
                         </div>
                     </div>

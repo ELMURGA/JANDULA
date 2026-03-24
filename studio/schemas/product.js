@@ -51,8 +51,9 @@ export default {
         },
         {
             name: 'subcategory',
-            title: 'Subcategoría',
-            type: 'string',
+            title: 'Subcategorías',
+            type: 'array',
+            of: [{ type: 'string' }],
             description:
                 'Las opciones se cargan automáticamente desde los documentos de Categorías. Si añades una nueva subcategoría allí, aparecerá aquí de inmediato.',
             components: {

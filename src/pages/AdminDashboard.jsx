@@ -441,7 +441,7 @@ function AdminPanel() {
         pendientes: orders.filter(o => o.status === 'pendiente').length,
         enviados: orders.filter(o => o.status === 'enviado').length,
         recogida: orders.filter(o => o.delivery_method === 'pickup').length,
-        importe: orders.reduce((sum, o) => sum + (o.total || 0), 0),
+        importe: orders.filter(o => o.status !== 'cancelado').reduce((sum, o) => sum + (o.total || 0), 0),
     };
 
     return (

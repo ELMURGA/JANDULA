@@ -26,6 +26,25 @@ export default function AccountPage() {
     const [ordersLoading, setOrdersLoading] = useState(false);
     const [ordersError, setOrdersError] = useState('');
     const [expandedOrderId, setExpandedOrderId] = useState(null);
+    const [cancellingOrderId, setCancellingOrderId] = useState(null);
+
+    const handleCancelOrder = async (orderId) => {
+        if (!window.confirm('¿Seguro que quieres cancelar este pedido? Esta acción no se puede deshacer.')) return;
+        setCancellingOrderId(orderId);
+        try {
+            const { error } = await supabase
+                .from('orders')
+                .update({ status: 'cancelado' })
+                .eq('id', orderId)
+                .eq('user_id', user.id);
+            if (error) throw error;
+            setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: 'cancelado' } : o));
+        } catch (err) {
+            alert('No se pudo cancelar el pedido: ' + (err.message || 'Error desconocido'));
+        } finally {
+            setCancellingOrderId(null);
+        }
+    };
 
     // Address forms
     const [billingAddress, setBillingAddress] = useState({
@@ -411,22 +430,34 @@ export default function AccountPage() {
                                                     {orders.map(order => (
                                                         <React.Fragment key={order.id}>
                                                         <tr>
-                                                            <td><strong>#{order.id}</strong></td>
-                                                            <td>{new Date(order.created_at).toLocaleDateString('es-ES')}</td>
-                                                            <td>
+                                                            <td data-label="Pedido"><strong>#{order.id}</strong></td>
+                                                            <td data-label="Fecha">{new Date(order.created_at).toLocaleDateString('es-ES')}</td>
+                                                            <td data-label="Estado">
                                                                 <span className={`account-status account-status--${(order.status || '').toLowerCase()}`}>
                                                                     {order.status || 'pendiente'}
                                                                 </span>
                                                             </td>
-                                                            <td>{formatPrice(order.total || 0)}</td>
-                                                            <td>
-                                                                <button
-                                                                    className="account-view-btn"
-                                                                    type="button"
-                                                                    onClick={() => setExpandedOrderId(expandedOrderId === order.id ? null : order.id)}
-                                                                >
-                                                                    <Eye size={14} /> {expandedOrderId === order.id ? 'Ocultar' : 'Ver'}
-                                                                </button>
+                                                            <td data-label="Total">{formatPrice(order.total || 0)}</td>
+                                                            <td data-label="">
+                                                                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                                                                    <button
+                                                                        className="account-view-btn"
+                                                                        type="button"
+                                                                        onClick={() => setExpandedOrderId(expandedOrderId === order.id ? null : order.id)}
+                                                                    >
+                                                                        <Eye size={14} /> {expandedOrderId === order.id ? 'Ocultar' : 'Ver'}
+                                                                    </button>
+                                                                    {!['cancelado', 'entregado', 'enviado'].includes(order.status) && (
+                                                                        <button
+                                                                            className="account-cancel-btn"
+                                                                            type="button"
+                                                                            disabled={cancellingOrderId === order.id}
+                                                                            onClick={() => handleCancelOrder(order.id)}
+                                                                        >
+                                                                            {cancellingOrderId === order.id ? 'Cancelando…' : 'Cancelar'}
+                                                                        </button>
+                                                                    )}
+                                                                </div>
                                                             </td>
                                                         </tr>
                                                         {expandedOrderId === order.id && (

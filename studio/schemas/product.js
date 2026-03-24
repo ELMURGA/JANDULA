@@ -143,5 +143,12 @@ export default {
             subtitle: 'category',
             media: 'image',
         },
+        prepare({ title, subtitle, media }) {
+            return {
+                title,
+                subtitle: Array.isArray(subtitle) ? subtitle.join(', ') : (subtitle || ''),
+                media,
+            };
+        },
     },
 };

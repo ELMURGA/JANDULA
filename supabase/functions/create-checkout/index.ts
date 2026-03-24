@@ -204,9 +204,8 @@ serve(async (req: Request) => {
     };
 
     const sessionParams: any = {
-      // Muestra automáticamente todos los métodos activados en el Stripe Dashboard:
-      // Tarjeta (Visa/MC/Amex), Apple Pay, Google Pay, Bizum, PayPal, etc.
-      automatic_payment_methods: { enabled: true },
+      // Sin payment_method_types → Stripe Checkout muestra automáticamente
+      // todos los métodos activos en el Dashboard (Bizum, Apple Pay, Google Pay, etc.)
       line_items:           lineItems,
       mode:                 'payment',
       success_url:          `${origin}/pedido-confirmado?session_id={CHECKOUT_SESSION_ID}`,

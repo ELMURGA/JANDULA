@@ -32,8 +32,9 @@ export default {
         },
         {
             name: 'category',
-            title: 'Categoría',
-            type: 'string',
+            title: 'Categorías',
+            type: 'array',
+            of: [{ type: 'string' }],
             options: {
                 list: [
                     { title: 'Nueva Colección', value: 'Nueva Colección' },
@@ -44,9 +45,9 @@ export default {
                     { title: 'Bolsos', value: 'Bolsos' },
                     { title: 'Special Price', value: 'Special Price' },
                 ],
-                layout: 'dropdown',
+                layout: 'grid',
             },
-            validation: Rule => Rule.required(),
+            validation: Rule => Rule.required().min(1).error('Selecciona al menos una categoría'),
         },
         {
             name: 'subcategory',

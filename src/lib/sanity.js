@@ -29,6 +29,20 @@ export function urlFor(source) {
   return builder.image(source).auto('format').quality(100);
 }
 
+// Normaliza category y subcategory a siempre ser arrays
+// (compatibilidad con documentos antiguos que tenían string)
+function normalizeCatArrays(p) {
+  return {
+    ...p,
+    category: Array.isArray(p.category)
+      ? p.category
+      : p.category ? [p.category] : [],
+    subcategory: Array.isArray(p.subcategory)
+      ? p.subcategory
+      : p.subcategory ? [p.subcategory] : [],
+  };
+}
+
 // Función helper para obtener productos
 export async function getProducts() {
   const query = `*[_type == "product" && active == true] {
@@ -50,7 +64,8 @@ export async function getProducts() {
   } | order(_createdAt desc)`;
 
   try {
-    return await sanity.fetch(query);
+    const products = await sanity.fetch(query);
+    return products.map(normalizeCatArrays);
   } catch (error) {
     console.error('Error fetching products from Sanity:', error);
     return [];
@@ -78,7 +93,8 @@ export async function getProduct(idOrSlug) {
   }`;
 
   try {
-    return await sanity.fetch(query, { slug: idOrSlug, id: idOrSlug });
+    const product = await sanity.fetch(query, { slug: idOrSlug, id: idOrSlug });
+    return product ? normalizeCatArrays(product) : null;
   } catch (error) {
     console.error('Error fetching product:', error);
     return null;

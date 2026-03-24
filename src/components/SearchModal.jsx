@@ -36,7 +36,7 @@ export default function SearchModal({ isOpen, onClose }) {
         const q = query.toLowerCase().trim();
         const filtered = allProducts.filter(p =>
             p.name?.toLowerCase().includes(q) ||
-            p.category?.toLowerCase().includes(q) ||
+            (p.category || []).some(c => c.toLowerCase().includes(q)) ||
             p.description?.toLowerCase().includes(q) ||
             (p.tags && p.tags.some(t => t.toLowerCase().includes(q)))
         );
@@ -109,7 +109,7 @@ export default function SearchModal({ isOpen, onClose }) {
                                             <img src={product.image} alt={product.name} className="search-result__image" />
                                         </div>
                                         <div className="search-result__info">
-                                            <span className="search-result__category">{product.category}</span>
+                                            <span className="search-result__category">{(product.category || []).join(', ')}</span>
                                             <h4 className="search-result__name">{product.name}</h4>
                                             <div className="search-result__prices">
                                                 <span className="search-result__price">{formatPrice(product.price)}</span>

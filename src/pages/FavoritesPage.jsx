@@ -83,7 +83,7 @@ export default function FavoritesPage() {
                                         </div>
                                     </Link>
                                     <div className="product-card__info">
-                                        <p className="product-card__category">{product.category}</p>
+                                        <p className="product-card__category">{(product.category || []).join(', ')}</p>
                                         <Link to={`/producto/${product.id}`}>
                                             <h3 className="product-card__name">{product.name}</h3>
                                         </Link>

@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { useClient, set, unset } from 'sanity'
 
 /**
- * Input dinámico para el campo "subcategoría" del producto.
- * Lee las subcategorías directamente desde los documentos de Categoría de Sanity,
- * así cualquier cambio que la clienta haga en el studio de Categorías se refleja
- * automáticamente aquí sin necesidad de tocar código.
+ * Input dinámico multi-selección para subcategorías.
+ * Lee los datos directamente de los documentos de Categoría de Sanity,
+ * por lo que cualquier cambio allí se refleja automáticamente aquí.
+ * Permite asignar un producto a VARIAS subcategorías a la vez.
  */
 export function SubcategoryInput(props) {
     const { value, onChange, readOnly } = props
@@ -33,15 +33,22 @@ export function SubcategoryInput(props) {
             .finally(() => setLoading(false))
     }, [])
 
-    const handleChange = (e) => {
-        const val = e.target.value
-        onChange(val ? set(val) : unset())
+    // Normalizar value: puede ser string (doc antiguo) o array (doc nuevo)
+    const currentValues = Array.isArray(value)
+        ? value
+        : value ? [value] : []
+
+    const toggle = (slug) => {
+        const next = currentValues.includes(slug)
+            ? currentValues.filter((v) => v !== slug)
+            : [...currentValues, slug]
+        onChange(next.length > 0 ? set(next) : unset())
     }
 
-    // Comprueba si el valor actual existe en alguna subcategoría cargada
-    const valueIsKnown =
-        !value ||
-        groups.some((g) => (g.subcategories || []).some((s) => s.slug === value))
+    const allKnownSlugs = groups.flatMap((g) =>
+        (g.subcategories || []).map((s) => s.slug)
+    )
+    const orphaned = currentValues.filter((v) => !allKnownSlugs.includes(v))
 
     if (loading) {
         return (
@@ -56,49 +63,59 @@ export function SubcategoryInput(props) {
     }
 
     return (
-        <div>
-            <select
-                value={value || ''}
-                onChange={handleChange}
-                disabled={readOnly}
-                style={{
-                    width: '100%',
-                    padding: '8px 12px',
-                    border: '1px solid #ccc',
-                    borderRadius: 4,
-                    fontSize: 14,
-                    backgroundColor: readOnly ? '#f5f5f5' : 'white',
-                    cursor: readOnly ? 'not-allowed' : 'default',
-                    boxSizing: 'border-box',
-                }}
-            >
-                <option value="">— Sin subcategoría —</option>
-                {groups.map((cat) => (
-                    <optgroup key={cat.slug} label={cat.name}>
-                        {(cat.subcategories || []).map((sub) => (
-                            <option key={sub.slug} value={sub.slug}>
-                                {sub.name}
-                            </option>
-                        ))}
-                    </optgroup>
-                ))}
-            </select>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <p style={{ fontSize: 12, color: '#666', margin: 0 }}>
+                Haz clic en una o varias subcategorías para seleccionarlas. Las opciones se actualizan automáticamente desde el catálogo de Categorías.
+            </p>
 
-            {/* Aviso si el valor guardado ya no existe en el catálogo de categorías */}
-            {!valueIsKnown && (
-                <p
-                    style={{
-                        color: '#b45309',
-                        fontSize: 12,
-                        marginTop: 4,
-                        padding: '4px 8px',
-                        background: '#fef3c7',
-                        borderRadius: 3,
-                    }}
-                >
-                    ⚠️ El valor guardado <strong>"{value}"</strong> no coincide con
-                    ninguna subcategoría activa. Selecciona una opción del listado para
-                    corregirlo.
+            {groups.map((cat) => (
+                <div key={cat.slug}>
+                    <p style={{ fontWeight: 600, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#555', marginBottom: 6 }}>
+                        {cat.name}
+                    </p>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                        {(cat.subcategories || []).map((sub) => {
+                            const checked = currentValues.includes(sub.slug)
+                            return (
+                                <label
+                                    key={sub.slug}
+                                    style={{
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: 5,
+                                        padding: '5px 12px',
+                                        border: `1.5px solid ${checked ? '#7c3aed' : '#ddd'}`,
+                                        borderRadius: 20,
+                                        backgroundColor: checked ? '#ede9fe' : '#fafafa',
+                                        cursor: readOnly ? 'not-allowed' : 'pointer',
+                                        fontSize: 13,
+                                        color: checked ? '#5b21b6' : '#444',
+                                        userSelect: 'none',
+                                        transition: 'all 0.15s',
+                                        fontWeight: checked ? 600 : 400,
+                                    }}
+                                    onClick={() => !readOnly && toggle(sub.slug)}
+                                >
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ opacity: checked ? 1 : 0, transition: 'opacity 0.15s' }}>
+                                        <path d="M2 6l3 3 5-5" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                    </svg>
+                                    {sub.name}
+                                </label>
+                            )
+                        })}
+                    </div>
+                </div>
+            ))}
+
+            {currentValues.length > 0 && (
+                <p style={{ fontSize: 12, color: '#6b7280', margin: 0 }}>
+                    ✓ Seleccionadas: <strong>{currentValues.length}</strong> subcategor{currentValues.length === 1 ? 'ía' : 'ías'}
+                </p>
+            )}
+
+            {orphaned.length > 0 && (
+                <p style={{ color: '#b45309', fontSize: 12, padding: '5px 8px', background: '#fef3c7', borderRadius: 4 }}>
+                    ⚠️ Valor{orphaned.length > 1 ? 'es' : ''} guardado{orphaned.length > 1 ? 's' : ''} sin coincidencia activa: <strong>{orphaned.join(', ')}</strong>. Selecciona las opciones correctas del listado.
                 </p>
             )}
         </div>

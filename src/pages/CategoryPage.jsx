@@ -49,8 +49,8 @@ export default function CategoryPage() {
     let filtered = allProducts;
     if (!isAll) {
         filtered = allProducts.filter(p =>
-            p.category === categoryName ||
-            p.subcategory === slug ||
+            (p.category || []).includes(categoryName) ||
+            (p.subcategory || []).includes(slug) ||
             (p.tags && p.tags.includes(categoryName))
         );
     }

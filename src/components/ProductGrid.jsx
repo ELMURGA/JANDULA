@@ -32,7 +32,7 @@ export default function ProductGrid() {
 
     const filtered = activeCategory === 'Todos'
         ? bestSellers.slice(0, 8)
-        : bestSellers.filter((p) => p.category === activeCategory || (p.tags && p.tags.includes(activeCategory))).slice(0, 8);
+        : bestSellers.filter((p) => (p.category || []).includes(activeCategory) || (p.tags && p.tags.includes(activeCategory))).slice(0, 8);
 
     const filterCategories = ['Todos', 'Casual', 'Fiesta', 'Complementos', 'Bolsos'];
 

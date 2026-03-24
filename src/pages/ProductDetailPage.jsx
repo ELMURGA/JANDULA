@@ -49,7 +49,11 @@ export default function ProductDetailPage() {
                 // Cargar productos relacionados
                 const allProducts = await getProducts();
                 const related = allProducts
-                    .filter(p => p.category === productData.category && p._id !== productData._id)
+                    .filter(p => {
+                        const pCats = Array.isArray(p.category) ? p.category : (p.category ? [p.category] : []);
+                        const prodCats = Array.isArray(productData.category) ? productData.category : (productData.category ? [productData.category] : []);
+                        return pCats.some(c => prodCats.includes(c)) && p._id !== productData._id;
+                    })
                     .slice(0, 5);
 
                 setRelatedProducts(related.map(normalizeProduct));
@@ -155,7 +159,7 @@ export default function ProductDetailPage() {
                 <div className="breadcrumb" style={{ padding: '1.5rem 0' }}>
                     <Link to="/">Inicio</Link>
                     <ChevronRight size={14} />
-                    <Link to={`/categoria/${slugifyCategory(product.category)}`}>{product.category}</Link>
+                    <Link to={`/categoria/${slugifyCategory((product.category || [])[0])}`}>{(product.category || []).join(' / ')}</Link>
                     <ChevronRight size={14} />
                     <span>{product.name}</span>
                 </div>
@@ -179,7 +183,7 @@ export default function ProductDetailPage() {
 
                     {/* Info */}
                     <div className="product-detail__info">
-                        <p className="product-detail__category">{product.category}</p>
+                        <p className="product-detail__category">{(product.category || []).join(', ')}</p>
                         <h1 className="product-detail__title">{product.name}</h1>
 
                         <div className="product-detail__prices">

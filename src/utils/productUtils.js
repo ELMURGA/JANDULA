@@ -57,8 +57,12 @@ export function normalizeProduct(sanityProduct) {
     name: sanityProduct.name,
     price: sanityProduct.price,
     originalPrice: sanityProduct.originalPrice || null,
-    category: sanityProduct.category,
-    subcategory: sanityProduct.subcategory,
+    category: Array.isArray(sanityProduct.category)
+      ? sanityProduct.category
+      : sanityProduct.category ? [sanityProduct.category] : [],
+    subcategory: Array.isArray(sanityProduct.subcategory)
+      ? sanityProduct.subcategory
+      : sanityProduct.subcategory ? [sanityProduct.subcategory] : [],
     tags: sanityProduct.tags || [],
     // Imagen en alta calidad (95%) y ancho 800px para cards
     image: getImageUrl(sanityProduct.image, 800),

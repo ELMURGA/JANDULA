@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { formatPrice } from '../utils/productUtils';
 import { Trash2, Minus, Plus, ShoppingBag, ArrowLeft, CreditCard } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import SEOHead from '../components/SEOHead';
 import '../styles/pages.css';
 
 export default function CartPage() {
@@ -19,6 +20,7 @@ export default function CartPage() {
     if (cartItems.length === 0) {
         return (
             <main className="page-wrapper">
+                <SEOHead title="Carrito" noindex />
                 <div className="container cart-empty">
                     <ShoppingBag size={64} strokeWidth={1} />
                     <h1>Tu carrito está vacío</h1>
@@ -33,6 +35,7 @@ export default function CartPage() {
 
     return (
         <main className="page-wrapper">
+            <SEOHead title="Carrito" noindex />
             <div className="page-hero page-hero--cart">
                 <h1>Tu Carrito</h1>
                 <p>{cartCount} artículo{cartCount !== 1 && 's'}</p>

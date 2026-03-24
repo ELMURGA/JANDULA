@@ -6,6 +6,7 @@ import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { normalizeProduct, formatPrice } from '../utils/productUtils';
 import WhatsAppIcon from '../components/WhatsAppIcon';
+import SEOHead from '../components/SEOHead';
 import '../styles/pages.css';
 
 function slugifyCategory(category) {
@@ -114,6 +115,36 @@ export default function ProductDetailPage() {
 
     return (
         <main className="page-wrapper">
+            <SEOHead
+                title={product.name}
+                description={product.description
+                    ? `${product.description.slice(0, 140)}…`
+                    : `Compra ${product.name} en Jándula Moda, Utrera. ${formatPrice(product.price)}. Envío a toda España.`
+                }
+                canonical={`/producto/${product.slug || product.id}`}
+                image={product.imageHD || product.image}
+                type="product"
+                jsonLd={{
+                    '@context': 'https://schema.org',
+                    '@type': 'Product',
+                    name: product.name,
+                    description: product.description || '',
+                    image: product.imageHD || product.image,
+                    sku: String(product.id || product.slug),
+                    brand: { '@type': 'Brand', name: 'Jándula Moda' },
+                    offers: {
+                        '@type': 'Offer',
+                        priceCurrency: 'EUR',
+                        price: product.price,
+                        availability: 'https://schema.org/InStock',
+                        url: `https://jandulamodautrera.es/producto/${product.slug || product.id}`,
+                        seller: { '@type': 'Organization', name: 'Jándula Moda' },
+                    },
+                    ...(product.originalPrice && {
+                        aggregateRating: undefined,
+                    }),
+                }}
+            />
             <div className="container">
                 <div className="breadcrumb" style={{ padding: '1.5rem 0' }}>
                     <Link to="/">Inicio</Link>

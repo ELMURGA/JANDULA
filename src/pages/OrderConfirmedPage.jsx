@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { CheckCircle, ArrowRight, AlertCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import SEOHead from '../components/SEOHead';
 import '../styles/pages.css';
 
 /**
@@ -77,6 +78,7 @@ export default function OrderConfirmedPage() {
 
     return (
         <main className="page-wrapper" style={{ background: '#faf9f7', minHeight: '80vh' }}>
+            <SEOHead title="Pedido Confirmado" noindex />
             <section className="container" style={{ maxWidth: '600px', margin: '0 auto', padding: '5rem 2rem 3rem' }}>
 
                 {/* Success icon */}

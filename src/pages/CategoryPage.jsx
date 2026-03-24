@@ -3,6 +3,7 @@ import { getProducts, getCategories } from '../lib/sanity';
 import ProductCard from '../components/ProductCard';
 import { useState, useEffect } from 'react';
 import { Filter } from 'lucide-react';
+import SEOHead from '../components/SEOHead';
 import '../styles/pages.css';
 
 export default function CategoryPage() {
@@ -71,8 +72,17 @@ export default function CategoryPage() {
 
     const displayName = isAll ? 'Toda la Colección' : (categoryName || slug);
 
+    const seoDescription = isAll
+        ? 'Explora toda la colección de Jándula Moda: vestidos de fiesta, ropa casual, complementos y más. Envío a toda España.'
+        : `Compra ${displayName} en Jándula Moda, Utrera. ${sorted.length} ${sorted.length === 1 ? 'producto disponible' : 'productos disponibles'}. Envío a toda España.`;
+
     return (
         <main className="page-wrapper">
+            <SEOHead
+                title={displayName}
+                description={seoDescription}
+                canonical={`/categoria/${isAll ? 'todos' : slug}`}
+            />
             <div className="page-hero page-hero--category">
                 <h1>{displayName}</h1>
                 {!loading && <p>{sorted.length} producto{sorted.length !== 1 && 's'}</p>}

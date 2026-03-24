@@ -7,6 +7,7 @@ import {
     ChevronRight, Eye, Package, Mail, Lock, User, Save, Edit3
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import SEOHead from '../components/SEOHead';
 import '../styles/account.css';
 
 const TABS = [
@@ -262,6 +263,7 @@ export default function AccountPage() {
 
     return (
         <div className="page-wrapper">
+            <SEOHead title="Mi Cuenta" noindex />
             {/* Hero */}
             <div className="page-hero">
                 <div className="container">

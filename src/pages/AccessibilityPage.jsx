@@ -1,9 +1,15 @@
 import { Link } from 'react-router-dom';
+import SEOHead from '../components/SEOHead';
 import '../styles/pages.css';
 
 export default function AccessibilityPage() {
     return (
         <main className="page-wrapper">
+            <SEOHead
+                title="Accesibilidad"
+                description="Declaración de accesibilidad web de Jándula Moda. Comprometidas con ofrecer una experiencia accesible para todos los usuarios."
+                canonical="/accesibilidad"
+            />
             <div className="page-hero page-hero--legal">
                 <h1>Accesibilidad</h1>
                 <p>Nuestro compromiso con la accesibilidad web universal</p>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import SEOHead from '../components/SEOHead';
 import '../styles/pages.css';
 
 export default function ResetPasswordPage() {
@@ -49,6 +50,7 @@ export default function ResetPasswordPage() {
 
     return (
         <main className="page-wrapper" style={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
+            <SEOHead title="Restablecer Contraseña" noindex />
             <div style={{ maxWidth: '420px', width: '100%', background: '#fff', borderRadius: '16px', padding: '2.5rem', boxShadow: '0 4px 24px rgba(0,0,0,0.08)' }}>
                 <h1 style={{ fontSize: '1.5rem', color: '#111827', marginBottom: '0.5rem', textAlign: 'center', fontFamily: 'Georgia, serif' }}>
                     Nueva Contraseña

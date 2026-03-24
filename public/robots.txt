@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+
+# Páginas privadas o sin valor SEO
+Disallow: /admin
+Disallow: /carrito
+Disallow: /checkout
+Disallow: /pedido-confirmado
+Disallow: /mi-cuenta
+Disallow: /favoritos
+Disallow: /recuperar-contrasena
+
+# Sitemap
+Sitemap: https://jandulamodautrera.es/sitemap.xml

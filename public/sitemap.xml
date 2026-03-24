@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <!-- Inicio -->
+  <url>
+    <loc>https://jandulamodautrera.es/</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Contacto -->
+  <url>
+    <loc>https://jandulamodautrera.es/contacto</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Categorías -->
+  <url>
+    <loc>https://jandulamodautrera.es/categoria/todos</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://jandulamodautrera.es/categoria/vestidos</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://jandulamodautrera.es/categoria/casual</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://jandulamodautrera.es/categoria/fiesta</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://jandulamodautrera.es/categoria/complementos</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Páginas legales -->
+  <url>
+    <loc>https://jandulamodautrera.es/politica-privacidad</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://jandulamodautrera.es/politica-cookies</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://jandulamodautrera.es/devoluciones</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://jandulamodautrera.es/accesibilidad</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.2</priority>
+  </url>
+
+</urlset>

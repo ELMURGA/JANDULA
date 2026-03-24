@@ -4,6 +4,7 @@ import { useWishlist } from '../context/WishlistContext';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { formatPrice } from '../utils/productUtils';
+import SEOHead from '../components/SEOHead';
 import '../styles/pages.css';
 
 export default function FavoritesPage() {
@@ -39,6 +40,7 @@ export default function FavoritesPage() {
 
     return (
         <main className="page-wrapper">
+            <SEOHead title="Mis Favoritos" noindex />
             <div className="page-hero page-hero--category">
                 <h1>Mis Favoritos</h1>
                 <p>{favoriteProducts.length} producto{favoriteProducts.length !== 1 && 's'} guardado{favoriteProducts.length !== 1 && 's'}</p>

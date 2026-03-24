@@ -5,6 +5,7 @@ import { useCart } from '../context/CartContext';
 import { ArrowLeft, CreditCard, Lock, Tag, CheckCircle, XCircle, Truck, Store } from 'lucide-react';
 import { formatPrice } from '../utils/productUtils';
 import { supabase } from '../lib/supabase';
+import SEOHead from '../components/SEOHead';
 import '../styles/pages.css';
 import '../styles/checkout.css';
 
@@ -200,6 +201,7 @@ export default function CheckoutPage() {
 
     return (
         <main className="page-wrapper checkout-page">
+            <SEOHead title="Finalizar Compra" noindex />
             <div className="page-hero page-hero--cart" style={{ padding: '3rem 0' }}>
                 <h1>Finalizar Compra</h1>
             </div>

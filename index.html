@@ -3,29 +3,106 @@
 
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description"
-    content="Jándula Moda — Tu tienda de moda de mujer en Utrera, Sevilla. Vestidos de fiesta, ropa casual, complementos y más. Envíos a toda España." />
-  <meta name="keywords"
-    content="moda mujer, vestidos de fiesta, ropa casual, Utrera, Sevilla, complementos, Jándula Moda" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="apple-touch-icon" href="/favicon.png" />
+
+  <!-- SEO base (React Helmet la sobreescribe por página) -->
+  <title>Jándula Moda — Moda de Mujer en Utrera</title>
+  <meta name="description" content="Jándula Moda — Tu tienda de moda de mujer en Utrera, Sevilla. Vestidos de fiesta, ropa casual, complementos y más. Envíos a toda España." />
+  <meta name="keywords" content="moda mujer, vestidos de fiesta, ropa casual, Utrera, Sevilla, complementos, Jándula Moda" />
   <meta name="author" content="Jándula Moda Utrera" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+  <link rel="canonical" href="https://jandulamodautrera.es" />
+
   <!-- Open Graph -->
+  <meta property="og:site_name" content="Jándula Moda" />
   <meta property="og:title" content="Jándula Moda — Moda de Mujer en Utrera" />
-  <meta property="og:description"
-    content="Descubre las últimas tendencias en moda femenina. Vestidos de fiesta, ropa casual y complementos con envío a toda España." />
+  <meta property="og:description" content="Descubre las últimas tendencias en moda femenina. Vestidos de fiesta, ropa casual y complementos con envío a toda España." />
   <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://jandulamodautrera.es" />
+  <meta property="og:image" content="https://jandulamodautrera.es/images/og-cover.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Jándula Moda — Moda de Mujer en Utrera, Sevilla" />
   <meta property="og:locale" content="es_ES" />
-  <!-- Preconnect to image server for faster product image loading -->
-  <link rel="preconnect" href="https://jandulamodautrera.es" />
-  <link rel="dns-prefetch" href="https://jandulamodautrera.es" />
-  <!-- Google Fonts -->
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Jándula Moda — Moda de Mujer en Utrera" />
+  <meta name="twitter:description" content="Tu tienda de moda de mujer en Utrera, Sevilla. Vestidos de fiesta, ropa casual y complementos." />
+  <meta name="twitter:image" content="https://jandulamodautrera.es/images/og-cover.jpg" />
+
+  <!-- Theme / PWA -->  
+  <meta name="theme-color" content="#F29BCB" />
+  <meta name="msapplication-TileColor" content="#F29BCB" />
+
+  <!-- Preconnect para recursos externos -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://cdn.sanity.io" />
+  <link rel="dns-prefetch" href="https://aadjazenpqldtvnxqksr.supabase.co" />
+
+  <!-- Google Fonts -->
   <link
     href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap"
     rel="stylesheet" />
-  <title>Jándula Moda — Moda de Mujer en Utrera</title>
+
+  <!-- JSON-LD: LocalBusiness (base) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ClothingStore",
+    "name": "Jándula Moda",
+    "description": "Tienda de moda de mujer en Utrera, Sevilla. Vestidos de fiesta, ropa casual y complementos.",
+    "url": "https://jandulamodautrera.es",
+    "logo": "https://jandulamodautrera.es/favicon.png",
+    "image": "https://jandulamodautrera.es/images/og-cover.jpg",
+    "telephone": "+34610505303",
+    "email": "jandulamodautrera@gmail.com",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "C/ Cardenal Spínola, 22",
+      "addressLocality": "Utrera",
+      "addressRegion": "Sevilla",
+      "postalCode": "41710",
+      "addressCountry": "ES"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 37.1857,
+      "longitude": -5.7836
+    },
+    "openingHoursSpecification": [
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"],
+        "opens": "10:00",
+        "closes": "14:00"
+      },
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"],
+        "opens": "17:30",
+        "closes": "21:00"
+      },
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": "Saturday",
+        "opens": "10:00",
+        "closes": "14:00"
+      }
+    ],
+    "priceRange": "€€",
+    "currenciesAccepted": "EUR",
+    "paymentAccepted": "Cash, Credit Card",
+    "areaServed": "España",
+    "sameAs": []
+  }
+  </script>
 </head>
 
 <body>

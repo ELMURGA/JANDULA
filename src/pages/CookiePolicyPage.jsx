@@ -1,9 +1,15 @@
 import { Link } from 'react-router-dom';
+import SEOHead from '../components/SEOHead';
 import '../styles/pages.css';
 
 export default function CookiePolicyPage() {
     return (
         <main className="page-wrapper">
+            <SEOHead
+                title="Política de Cookies"
+                description="Información sobre el uso de cookies en jandulamodautrera.es. Conoce qué cookies utilizamos y cómo gestionarlas."
+                canonical="/politica-cookies"
+            />
             <div className="page-hero page-hero--legal">
                 <h1>Política de Cookies</h1>
                 <p>Última actualización: febrero 2026</p>

@@ -8,6 +8,7 @@ import {
     ShoppingBag, Clock, Truck, CheckCircle, XCircle, Lock, RefreshCw
 } from 'lucide-react';
 import WhatsAppIcon from '../components/WhatsAppIcon';
+import SEOHead from '../components/SEOHead';
 import '../styles/admin.css';
 
 function generateShippingLabelPdf(order) {
@@ -630,5 +631,10 @@ function AdminDashboardInner() {
         return <div className="admin-loading"><div className="spinner"></div></div>;
     }
 
-    return adminLoggedIn ? <AdminPanel /> : <AdminLogin />;
+    return (
+        <>
+            <SEOHead title="Admin" noindex />
+            {adminLoggedIn ? <AdminPanel /> : <AdminLogin />}
+        </>
+    );
 }

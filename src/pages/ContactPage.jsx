@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { MapPin, Phone, Mail, Clock, Send } from 'lucide-react';
 import WhatsAppIcon from '../components/WhatsAppIcon';
 import FAQAccordion from '../components/FAQAccordion';
+import SEOHead from '../components/SEOHead';
 import { sanity } from '../lib/sanity';
 import '../styles/pages.css';
 
@@ -60,6 +61,11 @@ export default function ContactPage() {
 
     return (
         <main className="page-wrapper">
+            <SEOHead
+                title="Contacto"
+                description="Contáctanos en Jándula Moda, Utrera. Llámanos al 610 505 303, vísítanos en Av. María Auxiliadora, 76 o envíanos un mensaje. Respondemos en menos de 24h."
+                canonical="/contacto"
+            />
             <div className="page-hero page-hero--contact">
                 <h1>Contacto</h1>
                 <p>Estamos encantadas de atenderte. Visítanos, llámanos o escríbenos directamente.</p>

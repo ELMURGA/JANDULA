@@ -1,9 +1,15 @@
 import { Link } from 'react-router-dom';
+import SEOHead from '../components/SEOHead';
 import '../styles/pages.css';
 
 export default function ReturnPolicyPage() {
     return (
         <main className="page-wrapper">
+            <SEOHead
+                title="Política de Devoluciones"
+                description="Consulta nuestra Política de Devoluciones y Reembolsos en Jándula Moda. Tienes 14 días para devolver tu pedido."
+                canonical="/devoluciones"
+            />
             <div className="page-hero page-hero--legal">
                 <h1>Política de Devoluciones y Reembolsos</h1>
                 <p>Conoce las condiciones para devolver tus compras</p>

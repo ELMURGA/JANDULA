@@ -1,9 +1,15 @@
 import { Link } from 'react-router-dom';
+import SEOHead from '../components/SEOHead';
 import '../styles/pages.css';
 
 export default function PrivacyPolicyPage() {
     return (
         <main className="page-wrapper">
+            <SEOHead
+                title="Política de Privacidad"
+                description="Consulta la Política de Privacidad de Jándula Moda. Información sobre el tratamiento de tus datos personales según el RGPD."
+                canonical="/politica-privacidad"
+            />
             <div className="page-hero page-hero--legal">
                 <h1>Política de Privacidad</h1>
                 <p>Última actualización: febrero 2026</p>

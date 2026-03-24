@@ -223,6 +223,12 @@
 .stat-card--warning .stat-icon { color: #f59e0b; }
 .stat-card--info    .stat-icon { color: #3b82f6; }
 .stat-card--success .stat-icon { color: #10b981; }
+.stat-card--pickup  .stat-icon { color: #ec4899; }
+.stat-card--pickup { transition: box-shadow 0.18s, border-color 0.18s; }
+.stat-card--pickup.stat-card--active {
+    border-color: #ec4899;
+    box-shadow: 0 0 0 3px #fce7f3;
+}
 
 .stat-label {
     font-size: 0.8125rem;
@@ -365,6 +371,28 @@
     font-weight: 600;
     text-transform: capitalize;
     white-space: nowrap;
+}
+
+/* Badges de tipo de entrega */
+.delivery-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 50px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+.delivery-badge--pickup {
+    background: #fdf0f8;
+    color: #ad4a7e;
+    border: 1px solid #f5c6e8;
+}
+.delivery-badge--shipping {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
 }
 
 .status-selector {

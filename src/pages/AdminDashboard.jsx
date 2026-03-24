@@ -5,7 +5,7 @@ import { formatPrice } from '../utils/productUtils';
 import { useAdminAuth, AdminAuthProvider } from '../context/AdminAuthContext';
 import {
     Package, Search, LogOut, Eye, X, TrendingUp,
-    ShoppingBag, Clock, Truck, CheckCircle, XCircle, Lock, RefreshCw
+    ShoppingBag, Clock, Truck, CheckCircle, XCircle, Lock, RefreshCw, Store
 } from 'lucide-react';
 import WhatsAppIcon from '../components/WhatsAppIcon';
 import SEOHead from '../components/SEOHead';
@@ -195,17 +195,31 @@ function OrderDetailModal({ order, onClose, onStatusChange, statusColors }) {
                     </div>
 
                     <div className="order-modal__section">
-                        <h3>Dirección de envío</h3>
-                        <p>{order.shipping_address}</p>
-                        <p>{order.shipping_city} {order.shipping_postal}</p>
-                        <p>{order.shipping_country || 'España'}</p>
-                        <button
-                            className="order-detail-btn"
-                            style={{ marginTop: '0.75rem', width: '100%' }}
-                            onClick={() => generateShippingLabelPdf(order)}
-                        >
-                            Descargar etiqueta PDF
-                        </button>
+                        <h3>Método de entrega</h3>
+                        {order.delivery_method === 'pickup' ? (
+                            <div style={{
+                                display: 'flex', alignItems: 'center', gap: '0.5rem',
+                                padding: '0.75rem 1rem', background: '#fdf0f8',
+                                border: '1px solid #f5c6e8', borderRadius: '8px',
+                                color: '#ad4a7e', fontWeight: 600,
+                            }}>
+                                <Store size={18} />
+                                Recogida en tienda — C/ Utrera, Utrera (Sevilla)
+                            </div>
+                        ) : (
+                            <>
+                                <p>{order.shipping_address}</p>
+                                <p>{order.shipping_city} {order.shipping_postal}</p>
+                                <p>{order.shipping_country || 'España'}</p>
+                                <button
+                                    className="order-detail-btn"
+                                    style={{ marginTop: '0.75rem', width: '100%' }}
+                                    onClick={() => generateShippingLabelPdf(order)}
+                                >
+                                    Descargar etiqueta PDF
+                                </button>
+                            </>
+                        )}
                     </div>
 
                     {order.items && order.items.length > 0 && (
@@ -272,6 +286,7 @@ function AdminPanel() {
     const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState('all');
+    const [filterDelivery, setFilterDelivery] = useState('all');
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [syncingDiscounts, setSyncingDiscounts] = useState(false);
 
@@ -407,6 +422,8 @@ function AdminPanel() {
 
     const filteredOrders = orders.filter(order => {
         if (filterStatus !== 'all' && order.status !== filterStatus) return false;
+        if (filterDelivery === 'pickup' && order.delivery_method !== 'pickup') return false;
+        if (filterDelivery === 'shipping' && order.delivery_method === 'pickup') return false;
         if (searchTerm) {
             const s = searchTerm.toLowerCase();
             return (
@@ -423,6 +440,7 @@ function AdminPanel() {
         total: orders.length,
         pendientes: orders.filter(o => o.status === 'pendiente').length,
         enviados: orders.filter(o => o.status === 'enviado').length,
+        recogida: orders.filter(o => o.delivery_method === 'pickup').length,
         importe: orders.reduce((sum, o) => sum + (o.total || 0), 0),
     };
 
@@ -475,6 +493,18 @@ function AdminPanel() {
                             <p className="stat-value">{stats.enviados}</p>
                         </div>
                     </div>
+                    <div
+                        className={`stat-card stat-card--pickup${filterDelivery === 'pickup' ? ' stat-card--active' : ''}`}
+                        onClick={() => setFilterDelivery(prev => prev === 'pickup' ? 'all' : 'pickup')}
+                        style={{ cursor: 'pointer' }}
+                        title="Clic para filtrar por recogida en tienda"
+                    >
+                        <Store size={20} className="stat-icon" />
+                        <div>
+                            <p className="stat-label">Recogida tienda</p>
+                            <p className="stat-value">{stats.recogida}</p>
+                        </div>
+                    </div>
                     <div className="stat-card stat-card--success">
                         <TrendingUp size={20} className="stat-icon" />
                         <div>
@@ -503,6 +533,13 @@ function AdminPanel() {
                             <option value="enviado">Enviado</option>
                             <option value="entregado">Entregado</option>
                             <option value="cancelado">Cancelado</option>
+                        </select>
+                    </div>
+                    <div className="admin-filter">
+                        <select value={filterDelivery} onChange={e => setFilterDelivery(e.target.value)}>
+                            <option value="all">Todos los envíos</option>
+                            <option value="pickup">🏪 Recogida en tienda</option>
+                            <option value="shipping">🚚 Envío a domicilio</option>
                         </select>
                     </div>
                     <button
@@ -535,6 +572,7 @@ function AdminPanel() {
                                     <th>ID</th>
                                     <th>Fecha</th>
                                     <th>Cliente</th>
+                                    <th>Entrega</th>
                                     <th>Total</th>
                                     <th>Estado</th>
                                     <th>Cambiar estado</th>
@@ -556,6 +594,17 @@ function AdminPanel() {
                                                     <strong>{order.shipping_name}</strong>
                                                     <span>{order.profiles?.email || '—'}</span>
                                                 </div>
+                                            </td>
+                                            <td>
+                                                {order.delivery_method === 'pickup' ? (
+                                                    <span className="delivery-badge delivery-badge--pickup">
+                                                        <Store size={13} /> Tienda
+                                                    </span>
+                                                ) : (
+                                                    <span className="delivery-badge delivery-badge--shipping">
+                                                        <Truck size={13} /> Domicilio
+                                                    </span>
+                                                )}
                                             </td>
                                             <td className="order-total">{formatPrice(order.total)}</td>
                                             <td>

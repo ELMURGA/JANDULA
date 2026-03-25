@@ -2,7 +2,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { getProduct, getProducts } from '../lib/sanity';
 import { useState, useEffect } from 'react';
 import { Heart, ShoppingBag, ChevronRight, Truck, ShieldCheck, Minus, Plus } from 'lucide-react';
-import { useRef, useCallback } from 'react';
+import { useRef } from 'react';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useAuth } from '../context/AuthContext';
@@ -107,23 +107,22 @@ export default function ProductDetailPage() {
     const allImages = [product.imageHD || product.image, ...(product.gallery || [])];
 
     // Scroll programático al hacer clic en miniaturas o dots
-    const scrollTo = useCallback((index) => {
+    // (No usar useCallback — estos se declaran después de los returns condicionales)
+    const scrollTo = (index) => {
         setActiveImg(index);
         if (scrollRef.current) {
             const slideWidth = scrollRef.current.offsetWidth;
-            // Desktop: cambio instantáneo (sin deslizamiento visible). Móvil: suave.
             const behavior = window.innerWidth >= 768 ? 'instant' : 'smooth';
             scrollRef.current.scrollTo({ left: slideWidth * index, behavior });
         }
-    }, []);
+    };
 
-    // Actualizar dot activo al hacer scroll (móvil)
-    const handleScroll = useCallback(() => {
+    const handleScroll = () => {
         if (!scrollRef.current) return;
         const slideWidth = scrollRef.current.offsetWidth;
         const index = Math.round(scrollRef.current.scrollLeft / slideWidth);
         setActiveImg(index);
-    }, []);
+    };
 
     const handleAddToCart = () => {
         if (!isLoggedIn) {

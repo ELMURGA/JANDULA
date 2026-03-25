@@ -685,15 +685,7 @@
 .product-detail__main-area {
     flex: 1;
     min-width: 0;
-    position: relative;
-    overflow: hidden;
-    border-radius: 12px;
-}
-
-@media (min-width: 768px) {
-    .product-detail__main-area {
-        border-radius: 16px;
-    }
+    position: relative;   /* necesario para los dots absolutos */
 }
 
 /* ── Snap track: el carrusel real ── */
@@ -702,12 +694,13 @@
     overflow-x: scroll;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;            /* Firefox */
+    scrollbar-width: none;
     overscroll-behavior-x: contain;
+    border-radius: 12px;
 }
 
 .product-detail__snap-track::-webkit-scrollbar {
-    display: none;                    /* Chrome/Safari */
+    display: none;
 }
 
 /* ── Cada imagen ── */
@@ -732,12 +725,17 @@
     -webkit-user-drag: none;
 }
 
-/* ── Dots (solo móvil) ── */
+/* ── Dots: superpuestos sobre la imagen (estilo Zalando) ── */
 .product-detail__dots {
+    position: absolute;
+    bottom: 12px;
+    left: 0;
+    right: 0;
     display: flex;
     justify-content: center;
     gap: 6px;
-    padding-top: 10px;
+    z-index: 2;
+    pointer-events: none;  /* los botones hijos siguen siendo clicables */
 }
 
 .dot {
@@ -745,15 +743,33 @@
     height: 7px;
     border-radius: 50%;
     border: none;
-    background: var(--color-stone-300);
+    background: rgba(255, 255, 255, 0.55);
     padding: 0;
     cursor: pointer;
+    pointer-events: all;
     transition: background 0.2s, transform 0.2s;
 }
 
 .dot.active {
-    background: var(--color-stone-900);
+    background: #fff;
     transform: scale(1.35);
+}
+
+/* ── Móvil: galería full-width como Zalando ── */
+@media (max-width: 767px) {
+    .product-detail {
+        padding-top: 0.5rem;
+        gap: 1.5rem;
+    }
+
+    .product-detail__gallery {
+        /* Rompe el container para llegar de borde a borde */
+        margin-inline: calc(-1 * clamp(1rem, 4vw, 2rem));
+    }
+
+    .product-detail__snap-track {
+        border-radius: 0;
+    }
 }
 
 /* ── Desktop ── */
@@ -763,8 +779,8 @@
     }
 
     .product-detail__snap-track {
-        /* En desktop no se hace scroll, solo se muestra la imagen activa */
         overflow: hidden;
+        border-radius: 16px;
     }
 
     .product-detail__dots {

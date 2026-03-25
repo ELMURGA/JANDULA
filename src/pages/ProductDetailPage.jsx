@@ -111,7 +111,9 @@ export default function ProductDetailPage() {
         setActiveImg(index);
         if (scrollRef.current) {
             const slideWidth = scrollRef.current.offsetWidth;
-            scrollRef.current.scrollTo({ left: slideWidth * index, behavior: 'smooth' });
+            // Desktop: cambio instantáneo (sin deslizamiento visible). Móvil: suave.
+            const behavior = window.innerWidth >= 768 ? 'instant' : 'smooth';
+            scrollRef.current.scrollTo({ left: slideWidth * index, behavior });
         }
     }, []);
 

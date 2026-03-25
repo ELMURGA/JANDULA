@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { getBanners, urlFor } from '../lib/sanity';
 import '../styles/hero.css';
 
+
 // Contenido por defecto mientras carga o si Sanity no devuelve nada
 const DEFAULT = {
     eyebrow: 'Jándula Moda — Tienda Online',
@@ -20,6 +21,7 @@ const DEFAULT = {
 
 export default function Hero() {
     const [banner, setBanner] = useState(null);
+    const [imgLoaded, setImgLoaded] = useState(false);
 
     useEffect(() => {
         getBanners().then(list => {
@@ -37,7 +39,10 @@ export default function Hero() {
             buttonLink: banner.buttonLink || DEFAULT.buttonLink,
             secondButtonText: banner.secondButtonText,
             secondButtonLink: banner.secondButtonLink,
-            imageUrl: banner.image ? urlFor(banner.image).width(2000).url() : DEFAULT.imageUrl,
+            // Imagen principal: 1400px (suficiente para pantallas 2x hasta 700px)
+            imageUrl: banner.image ? urlFor(banner.image).width(1400).url() : DEFAULT.imageUrl,
+            // LQIP: imagen diminuta (20px) como placeholder borroso mientras carga la principal
+            lqipUrl: banner.image ? urlFor(banner.image).width(20).quality(20).url() : null,
             imageAlt: banner.imageAlt || DEFAULT.imageAlt,
         }
         : DEFAULT;
@@ -45,13 +50,20 @@ export default function Hero() {
     return (
         <section className="hero" id="inicio">
             {b.imageUrl && (
-                <img
-                    src={b.imageUrl}
-                    alt={b.imageAlt}
-                    className="hero__bg"
-                    loading="eager"
-                    fetchPriority="high"
-                />
+                // El div wrapper muestra el LQIP borroso hasta que carga la imagen real
+                <div
+                    className={`hero__bg-wrap${imgLoaded ? ' hero__bg-wrap--loaded' : ''}`}
+                    style={b.lqipUrl ? { backgroundImage: `url(${b.lqipUrl})` } : undefined}
+                >
+                    <img
+                        src={b.imageUrl}
+                        alt={b.imageAlt}
+                        className="hero__bg"
+                        loading="eager"
+                        fetchPriority="high"
+                        onLoad={() => setImgLoaded(true)}
+                    />
+                </div>
             )}
             <div className="hero__overlay" />
 

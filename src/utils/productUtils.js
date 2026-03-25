@@ -15,11 +15,10 @@ export function formatPrice(price) {
  * - WebP automático si el navegador lo soporta
  * - width configurable
  */
-export function getImageUrl(image, width = 800) {
+export function getImageUrl(image, width = 600) {
   if (typeof image === 'string') return image;
   if (!image?.asset) return '/placeholder.jpg';
-  // Eliminamos width fijo para que no haya reescalado o forzamos máximo
-  return urlFor(image).url();
+  return urlFor(image).width(width).url();
 }
 
 // Normaliza un producto de Sanity al formato compatible con los componentes
@@ -64,12 +63,12 @@ export function normalizeProduct(sanityProduct) {
       ? sanityProduct.subcategory
       : sanityProduct.subcategory ? [sanityProduct.subcategory] : [],
     tags: sanityProduct.tags || [],
-    // Imagen en alta calidad (95%) y ancho 800px para cards
-    image: getImageUrl(sanityProduct.image, 800),
-    // Imagen en máxima calidad para página de detalle
-    imageHD: getImageUrl(sanityProduct.image, 1200),
+    // Imagen para cards: 500px cubre hasta 250px@2x DPR
+    image: getImageUrl(sanityProduct.image, 500),
+    // Imagen para página de detalle: 900px cubre hasta 450px@2x DPR
+    imageHD: getImageUrl(sanityProduct.image, 900),
     // Galería de imágenes adicionales
-    gallery: sanityProduct.gallery?.map(img => getImageUrl(img, 1200)) || [],
+    gallery: sanityProduct.gallery?.map(img => getImageUrl(img, 900)) || [],
     // Objeto imagen original (por si se necesita para srcset)
     rawImage: sanityProduct.image || null,
     description: sanityProduct.description,

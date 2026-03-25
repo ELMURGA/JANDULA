@@ -26,7 +26,9 @@ const builder = imageUrlBuilder(sanity);
  *   urlFor(product.image).width(1200).url()  ← para detalle
  */
 export function urlFor(source) {
-  return builder.image(source).auto('format').quality(100);
+  // auto('format') → WebP en navegadores compatibles
+  // quality(82) → visualmente idéntico a 100 pero 40-60% más ligero
+  return builder.image(source).auto('format').quality(82);
 }
 
 // Normaliza category y subcategory a siempre ser arrays

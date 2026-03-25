@@ -102,25 +102,40 @@ function esc(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-const WRAP_OPEN = `<!DOCTYPE html><html lang="es"><head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-</head>
-<body style="margin:0;padding:0;background:#f5f5f5;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
-<table width="100%" cellpadding="0" cellspacing="0" style="padding:48px 16px;">
-<tr><td align="center">
-<table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;background:#fff;">`;
+const WRAP_OPEN = `<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"/><title>Jándula Moda</title></head>
+<body style="margin:0;padding:0;background:#faf9f7;font-family:Georgia,serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="padding:40px 20px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0"
+             style="background:#fff;border-radius:16px;overflow:hidden;
+                    box-shadow:0 4px 24px rgba(0,0,0,0.06);max-width:600px;">`;
 
-const WRAP_CLOSE = `<tr><td style="padding:28px 40px;border-top:1px solid #eee;text-align:center;">
-<p style="margin:0;font-size:11px;color:#bbb;letter-spacing:.06em;text-transform:uppercase;">
-Jándula Moda &nbsp;&middot;&nbsp; Utrera, Sevilla &nbsp;&middot;&nbsp;
-<a href="https://jandulamodautrera.es" style="color:#bbb;text-decoration:none;">jandulamodautrera.es</a>
-</p>
-</td></tr>
-</table></td></tr></table></body></html>`;
+const WRAP_CLOSE = `        <tr>
+          <td style="background:#f9fafb;padding:16px 36px;text-align:center;border-top:1px solid #f3f4f6;">
+            <p style="color:#9ca3af;font-size:12px;font-family:Arial,sans-serif;margin:0;">
+              &copy; ${new Date().getFullYear()} Jándula Moda &middot; Todos los derechos reservados<br/>
+              <a href="https://jandulamodautrera.es/politica-privacidad"
+                 style="color:#9ca3af;text-decoration:underline;">Política de Privacidad</a>
+              &nbsp;&middot;&nbsp;
+              <a href="https://jandulamodautrera.es/devoluciones"
+                 style="color:#9ca3af;text-decoration:underline;">Devoluciones</a>
+            </p>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body></html>`;
 
 function emailBtn(label: string, url: string): string {
-  return `<a href="${esc(url)}" style="display:inline-block;background:#111;color:#fff;padding:13px 30px;text-decoration:none;font-size:14px;font-weight:600;letter-spacing:.04em;">${label}</a>`;
+  return `<table cellpadding="0" cellspacing="0" width="100%"><tr><td align="center" style="padding-top:8px;">
+    <a href="${esc(url)}"
+       style="display:inline-block;background:#F29BCB;color:#fff;
+              padding:14px 36px;border-radius:8px;text-decoration:none;
+              font-size:15px;font-weight:600;font-family:Arial,sans-serif;">${label}</a>
+  </td></tr></table>`;
 }
 
 function buildStoreHtml(
@@ -128,36 +143,47 @@ function buildStoreHtml(
   productName: string, productUrl: string, color: string,
 ): string {
   const colorRow = color
-    ? `<tr>
-  <td style="padding:10px 0;border-bottom:1px solid #f0f0f0;font-size:14px;color:#666;width:110px;">Color</td>
-  <td style="padding:10px 0;border-bottom:1px solid #f0f0f0;font-size:14px;font-weight:600;color:#111;">${esc(color)}</td>
+    ? `<tr style="background:#fdf0f8;">
+  <td style="padding:10px 16px;font-weight:600;color:#374151;font-size:13px;border-top:1px solid #f3f4f6;width:110px;">Color</td>
+  <td style="padding:10px 16px;color:#111827;font-size:14px;border-top:1px solid #f3f4f6;">${esc(color)}</td>
 </tr>`
     : '';
 
   return `${WRAP_OPEN}
-<tr><td style="padding:36px 40px 28px;border-bottom:2px solid #111;">
-  <p style="margin:0 0 8px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#aaa;">Jándula Moda</p>
-  <h1 style="margin:0;font-size:22px;font-weight:700;color:#111;">Nueva petición de stock</h1>
-  <p style="margin:8px 0 0;font-size:14px;color:#666;">Un cliente quiere ser avisado cuando vuelva este producto.</p>
-</td></tr>
-<tr><td style="padding:28px 40px 8px;">
-  <table width="100%" cellpadding="0" cellspacing="0">
-    <tr>
-      <td style="padding:10px 0;border-bottom:1px solid #f0f0f0;font-size:14px;color:#666;width:110px;">Producto</td>
-      <td style="padding:10px 0;border-bottom:1px solid #f0f0f0;font-size:14px;font-weight:700;color:#111;">${esc(productName)}</td>
-    </tr>
-    ${colorRow}
-    <tr>
-      <td style="padding:10px 0;border-bottom:1px solid #f0f0f0;font-size:14px;color:#666;">Cliente</td>
-      <td style="padding:10px 0;border-bottom:1px solid #f0f0f0;font-size:14px;color:#111;">${esc(name)}</td>
-    </tr>
-    <tr>
-      <td style="padding:10px 0;font-size:14px;color:#666;">Email</td>
-      <td style="padding:10px 0;font-size:14px;"><a href="mailto:${esc(email)}" style="color:#111;">${esc(email)}</a></td>
-    </tr>
-  </table>
-</td></tr>
-<tr><td style="padding:24px 40px 40px;">${emailBtn('Ver producto', productUrl)}</td></tr>
+        <tr>
+          <td style="background:#F29BCB;padding:28px 32px;text-align:center;">
+            <h1 style="color:#fff;margin:0;font-size:22px;letter-spacing:1px;font-weight:400;">
+              JÁNDULA MODA — Aviso de Stock
+            </h1>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:32px;">
+            <h2 style="margin:0 0 20px;color:#111827;font-size:18px;"> Nueva petición de stock</h2>
+            <p style="margin:0 0 16px;color:#6b7280;font-size:14px;line-height:1.6;">
+              Un cliente quiere ser avisado cuando vuelva a estar disponible.
+            </p>
+            <table width="100%" cellpadding="0" cellspacing="0"
+                   style="border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;margin-bottom:24px;">
+              <tr style="background:#fdf0f8;">
+                <td style="padding:10px 16px;font-weight:600;color:#374151;font-size:13px;width:110px;">Producto</td>
+                <td style="padding:10px 16px;color:#111827;font-size:14px;font-weight:700;">${esc(productName)}</td>
+              </tr>
+              ${colorRow}
+              <tr>
+                <td style="padding:10px 16px;font-weight:600;color:#374151;font-size:13px;border-top:1px solid #f3f4f6;">Cliente</td>
+                <td style="padding:10px 16px;color:#111827;font-size:14px;border-top:1px solid #f3f4f6;">${esc(name)}</td>
+              </tr>
+              <tr>
+                <td style="padding:10px 16px;font-weight:600;color:#374151;font-size:13px;border-top:1px solid #f3f4f6;">Email</td>
+                <td style="padding:10px 16px;font-size:14px;border-top:1px solid #f3f4f6;">
+                  <a href="mailto:${esc(email)}" style="color:#F29BCB;">${esc(email)}</a>
+                </td>
+              </tr>
+            </table>
+            ${emailBtn('Ver producto', productUrl)}
+          </td>
+        </tr>
 ${WRAP_CLOSE}`;
 }
 
@@ -166,19 +192,30 @@ function buildClientConfirmHtml(
 ): string {
   const colorText = color ? ` en <strong>${esc(color)}</strong>` : '';
   return `${WRAP_OPEN}
-<tr><td style="padding:36px 40px 28px;border-bottom:2px solid #111;">
-  <p style="margin:0 0 8px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#aaa;">Jándula Moda</p>
-  <h1 style="margin:0;font-size:22px;font-weight:700;color:#111;">Te avisaremos cuando vuelva</h1>
-</td></tr>
-<tr><td style="padding:32px 40px;">
-  <p style="margin:0 0 16px;font-size:15px;color:#333;line-height:1.75;">Hola ${esc(name)},</p>
-  <p style="margin:0 0 16px;font-size:15px;color:#333;line-height:1.75;">
-    Hemos anotado tu interés en <strong>${esc(productName)}</strong>${colorText}.
-  </p>
-  <p style="margin:0 0 32px;font-size:15px;color:#333;line-height:1.75;">
-    En cuanto vuelva a estar disponible recibirás un email con el enlace directo. No tienes que hacer nada más.
-  </p>
-  ${emailBtn('Ver el producto', productUrl)}
-</td></tr>
+        <tr>
+          <td style="background:#F29BCB;padding:36px;text-align:center;">
+            <h1 style="color:#fff;font-size:26px;margin:0;font-weight:300;letter-spacing:2px;">
+              JÁNDULA MODA
+            </h1>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:36px;">
+            <h2 style="color:#111827;font-size:20px;margin:0 0 14px;">
+              ¡Anotado! Te avisaremos cuando vuelva 
+            </h2>
+            <p style="color:#6b7280;font-size:15px;line-height:1.7;margin:0 0 16px;">
+              Hola ${esc(name)},
+            </p>
+            <p style="color:#6b7280;font-size:15px;line-height:1.7;margin:0 0 16px;">
+              Hemos anotado tu interés en <strong style="color:#111827;">${esc(productName)}</strong>${colorText}.
+            </p>
+            <p style="color:#6b7280;font-size:15px;line-height:1.7;margin:0 0 28px;">
+              En cuanto vuelva a estar disponible recibirás un email con el enlace directo.
+              No tienes que hacer nada más.
+            </p>
+            ${emailBtn('Ver el producto', productUrl)}
+          </td>
+        </tr>
 ${WRAP_CLOSE}`;
 }

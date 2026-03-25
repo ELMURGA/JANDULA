@@ -62,13 +62,13 @@ serve(async (req: Request) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     );
 
-    // Extraer IDs numéricos (los cartItems.id vienen como número entero)
-    const productIds = cartItems.map((item: { id: number }) => Number(item.id));
+    // Los cartItems.id son el _id de Sanity (string), se busca por sanity_id
+    const sanityIds = cartItems.map((item: { id: string }) => String(item.id));
 
     const { data: dbProducts, error: productsError } = await supabaseAdmin
       .from('products')
-      .select('id, name, price, image, stock, is_active')
-      .in('id', productIds);
+      .select('id, sanity_id, name, price, image, stock, is_active')
+      .in('sanity_id', sanityIds);
 
     if (productsError) {
       throw new Error('Error al verificar los productos: ' + productsError.message);
@@ -76,10 +76,12 @@ serve(async (req: Request) => {
 
     // ── 4. Construir line_items de Stripe con precios del servidor ───────────
     const lineItems: any[] = [];
+    // IDs numéricos internos resueltos para pasar a process_order_server_side
+    const resolvedItems: Array<{ id: number; quantity: number; size: string | null; color: string | null }> = [];
     let subtotal = 0;
 
     for (const cartItem of cartItems) {
-      const dbProduct = (dbProducts ?? []).find((p: { id: number }) => p.id === Number(cartItem.id));
+      const dbProduct = (dbProducts ?? []).find((p: any) => p.sanity_id === String(cartItem.id));
 
       if (!dbProduct) {
         throw new Error(`Producto no encontrado: ${cartItem.name || cartItem.id}`);
@@ -108,6 +110,14 @@ serve(async (req: Request) => {
           unit_amount: unitPrice,
         },
         quantity: cartItem.quantity,
+      });
+
+      // Guardar ID numérico interno para el metadata de Stripe
+      resolvedItems.push({
+        id:       dbProduct.id,
+        quantity: cartItem.quantity,
+        size:     cartItem.size  ?? null,
+        color:    cartItem.color ?? null,
       });
     }
 
@@ -192,15 +202,8 @@ serve(async (req: Request) => {
       discount_code:    resolvedDiscountCode ?? '',
       discount_amount:  String(discountAmount),
       delivery_method:  isPickup ? 'pickup' : 'shipping',
-      // Sólo guardamos id, quantity, size, color (los precios se vuelven a verificar en el webhook)
-      cart_items: JSON.stringify(
-        cartItems.map((item: { id: number; quantity: number; size?: string; color?: string }) => ({
-          id:       Number(item.id),
-          quantity: item.quantity,
-          size:     item.size ?? null,
-          color:    item.color ?? null,
-        }))
-      ),
+      // ID numérico interno de Supabase (process_order_server_side lo requiere así)
+      cart_items: JSON.stringify(resolvedItems),
     };
 
     const sessionParams: any = {

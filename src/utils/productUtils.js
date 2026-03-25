@@ -25,10 +25,12 @@ export function getImageUrl(image, width = 600) {
 export function normalizeProduct(sanityProduct) {
   if (!sanityProduct) return null;
 
+  // Si ya fue normalizado (id es string Sanity, slug e imagen ya son strings)
   const isAlreadyNormalized =
     typeof sanityProduct.slug === 'string' &&
     typeof sanityProduct.image === 'string' &&
-    Number.isFinite(sanityProduct.id);
+    typeof sanityProduct.id === 'string' &&
+    !!sanityProduct.id;
 
   if (isAlreadyNormalized) {
     return {
@@ -44,15 +46,14 @@ export function normalizeProduct(sanityProduct) {
     };
   }
 
-  // Extraer ID numérico de "_id" (formato: "product-42" → 42)
-  // Necesario para que el carrito referencie correctamente la tabla products de Supabase
-  const numericId = Number.isFinite(sanityProduct.id)
-    ? sanityProduct.id
-    : parseInt(sanityProduct._id?.replace('product-', '') || '0', 10);
+  // Usamos el _id de Sanity directamente como identificador único del producto.
+  // Anteriormente se extraía un número de "_id" con formato "product-NNN",
+  // pero los nuevos productos tienen _id aleatorio, lo que causaba id=NaN.
+  const productId = sanityProduct._id || sanityProduct.id || '';
 
   return {
     _id: sanityProduct._id,
-    id: numericId,
+    id: productId,   // string (Sanity _id), compatible con todos los contextos
     name: sanityProduct.name,
     price: sanityProduct.price,
     originalPrice: sanityProduct.originalPrice || null,

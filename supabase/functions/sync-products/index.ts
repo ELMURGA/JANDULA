@@ -65,11 +65,11 @@ serve(async (req: Request) => {
 
     const rows = products
       .map((product: any) => {
-        const id = Number(String(product._id ?? '').replace('product-', ''));
-        if (!Number.isFinite(id) || id <= 0) return null;
+        const sanityId = String(product._id ?? '').trim();
+        if (!sanityId) return null;
 
         return {
-          id,
+          sanity_id: sanityId,
           name: product.name,
           slug: product.slug?.current ?? null,
           price: product.price,
@@ -85,7 +85,7 @@ serve(async (req: Request) => {
       })
       .filter(Boolean);
 
-    const syncedIds = rows.map((row: any) => row.id);
+    const syncedSanityIds = rows.map((row: any) => row.sanity_id as string);
 
     let upserted = 0;
 
@@ -93,7 +93,7 @@ serve(async (req: Request) => {
       const batch = rows.slice(i, i + 50);
       const { error } = await supabase
         .from('products')
-        .upsert(batch, { onConflict: 'id' });
+        .upsert(batch, { onConflict: 'sanity_id' });
 
       if (error) {
         throw new Error(`Fallo al sincronizar lote ${i / 50 + 1}: ${error.message}`);
@@ -102,30 +102,38 @@ serve(async (req: Request) => {
       upserted += batch.length;
     }
 
+    // Desactivar productos que ya no existen en Sanity
     let deactivated = 0;
-    if (syncedIds.length > 0) {
-      const { data: staleRows, error: staleError } = await supabase
+    if (syncedSanityIds.length > 0) {
+      // Obtener todos los productos activos para comparar por sanity_id
+      const { data: activeRows, error: activeError } = await supabase
         .from('products')
-        .select('id')
-        .eq('is_active', true)
-        .not('id', 'in', `(${syncedIds.join(',')})`);
+        .select('id, sanity_id')
+        .eq('is_active', true);
 
-      if (staleError) {
-        throw new Error(`Fallo al revisar productos obsoletos: ${staleError.message}`);
+      if (activeError) {
+        throw new Error(`Fallo al revisar productos activos: ${activeError.message}`);
       }
 
-      if (staleRows && staleRows.length > 0) {
-        const staleIds = staleRows.map((row: { id: number }) => row.id);
-        const { error: deactivateError } = await supabase
-          .from('products')
-          .update({ is_active: false })
-          .in('id', staleIds);
+      if (activeRows && activeRows.length > 0) {
+        const staleIds = activeRows
+          .filter((row: { id: number; sanity_id: string | null }) =>
+            row.sanity_id !== null && !syncedSanityIds.includes(row.sanity_id)
+          )
+          .map((row: { id: number }) => row.id);
 
-        if (deactivateError) {
-          throw new Error(`Fallo al desactivar productos obsoletos: ${deactivateError.message}`);
+        if (staleIds.length > 0) {
+          const { error: deactivateError } = await supabase
+            .from('products')
+            .update({ is_active: false })
+            .in('id', staleIds);
+
+          if (deactivateError) {
+            throw new Error(`Fallo al desactivar productos obsoletos: ${deactivateError.message}`);
+          }
+
+          deactivated = staleIds.length;
         }
-
-        deactivated = staleIds.length;
       }
     }
 

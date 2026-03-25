@@ -27,6 +27,7 @@ export default function ProductDetailPage() {
     const [selectedSize, setSelectedSize] = useState('');
     const [selectedColor, setSelectedColor] = useState('');
     const [quantity, setQuantity] = useState(1);
+    const [activeImg, setActiveImg] = useState(0);
     const { addToCart } = useCart();
     const { wishlistItems, toggleWishlist } = useWishlist();
     const { isLoggedIn, setAuthModalOpen } = useAuth();
@@ -45,6 +46,7 @@ export default function ProductDetailPage() {
 
                 const normalizedProduct = normalizeProduct(productData);
                 setProduct(normalizedProduct);
+                setActiveImg(0);
 
                 // Cargar productos relacionados
                 const allProducts = await getProducts();
@@ -99,6 +101,8 @@ export default function ProductDetailPage() {
     const discount = product.originalPrice
         ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
         : null;
+
+    const allImages = [product.imageHD || product.image, ...(product.gallery || [])];
 
     const handleAddToCart = () => {
         if (!isLoggedIn) {
@@ -165,20 +169,41 @@ export default function ProductDetailPage() {
                 </div>
 
                 <div className="product-detail">
-                    {/* Image — usa imageHD (1200px, calidad 95%) */}
+                    {/* Galería estilo Zalando: miniaturas izq. (desktop) / apiladas (móvil) */}
                     <div className="product-detail__gallery">
-                        <div className="product-detail__main-img">
-                            {discount && <span className="product-detail__discount">-{discount}%</span>}
-                            <img src={product.imageHD || product.image} alt={product.name} />
-                        </div>
-                        {/* Galería adicional si existe */}
-                        {product.gallery?.length > 0 && (
-                            <div className="product-detail__thumbs">
-                                {product.gallery.map((img, i) => (
-                                    <img key={i} src={img} alt={`${product.name} ${i + 1}`} />
+                        {/* Strip de miniaturas — solo visible en desktop */}
+                        {allImages.length > 1 && (
+                            <div className="product-detail__thumbstrip">
+                                {allImages.map((img, i) => (
+                                    <button
+                                        key={i}
+                                        className={`thumb-btn${activeImg === i ? ' active' : ''}`}
+                                        onClick={() => setActiveImg(i)}
+                                        aria-label={`Ver imagen ${i + 1}`}
+                                    >
+                                        <img src={img} alt={`${product.name} ${i + 1}`} loading="lazy" />
+                                    </button>
                                 ))}
                             </div>
                         )}
+
+                        {/* Área principal de imágenes */}
+                        <div className="product-detail__main-area">
+                            {allImages.map((img, i) => (
+                                <div
+                                    key={i}
+                                    className={`product-detail__img-slot${i === activeImg ? ' is-active' : ''}`}
+                                >
+                                    {i === 0 && discount && (
+                                        <span className="product-detail__discount">-{discount}%</span>
+                                    )}
+                                    <img
+                                        src={img}
+                                        alt={i === 0 ? product.name : `${product.name} — foto ${i + 1}`}
+                                    />
+                                </div>
+                            ))}
+                        </div>
                     </div>
 
                     {/* Info */}

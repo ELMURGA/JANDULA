@@ -643,23 +643,89 @@
 }
 
 .product-detail__gallery {
-    position: relative;
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
 }
 
-.product-detail__main-img {
+/* ── Thumbnail strip (desktop only) ── */
+.product-detail__thumbstrip {
+    display: none;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 76px;
+    flex-shrink: 0;
+}
+
+.thumb-btn {
+    width: 76px;
+    aspect-ratio: 3/4;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid transparent;
+    background: var(--color-stone-100);
+    padding: 0;
+    cursor: pointer;
+    transition: border-color 0.15s;
+    flex-shrink: 0;
+}
+
+.thumb-btn img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    image-orientation: from-image;
+}
+
+.thumb-btn:hover {
+    border-color: var(--color-stone-400);
+}
+
+.thumb-btn.active {
+    border-color: var(--color-stone-900);
+}
+
+/* ── Main area ── */
+.product-detail__main-area {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* Image slots */
+.product-detail__img-slot {
     position: relative;
-    border-radius: 16px;
+    border-radius: 12px;
     overflow: hidden;
     background: var(--color-stone-100);
     aspect-ratio: 3/4;
 }
 
-.product-detail__main-img img {
+.product-detail__img-slot img {
     width: 100%;
     height: 100%;
     display: block;
     object-fit: cover;
     image-orientation: from-image;
+}
+
+/* Desktop: only show active slot, show thumbstrip */
+@media (min-width: 768px) {
+    .product-detail__thumbstrip {
+        display: flex;
+    }
+
+    .product-detail__img-slot {
+        display: none;
+        border-radius: 16px;
+    }
+
+    .product-detail__img-slot.is-active {
+        display: block;
+    }
 }
 
 .product-detail__discount {
@@ -672,6 +738,7 @@
     border-radius: 6px;
     font-size: 0.8125rem;
     font-weight: 700;
+    z-index: 1;
 }
 
 .product-detail__info {

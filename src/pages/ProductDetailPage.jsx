@@ -2,6 +2,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { getProduct, getProducts } from '../lib/sanity';
 import { useState, useEffect } from 'react';
 import { Heart, ShoppingBag, ChevronRight, Truck, ShieldCheck, Minus, Plus } from 'lucide-react';
+import { useRef } from 'react';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useAuth } from '../context/AuthContext';
@@ -28,6 +29,7 @@ export default function ProductDetailPage() {
     const [selectedColor, setSelectedColor] = useState('');
     const [quantity, setQuantity] = useState(1);
     const [activeImg, setActiveImg] = useState(0);
+    const touchStartX = useRef(null);
     const { addToCart } = useCart();
     const { wishlistItems, toggleWishlist } = useWishlist();
     const { isLoggedIn, setAuthModalOpen } = useAuth();
@@ -104,6 +106,19 @@ export default function ProductDetailPage() {
 
     const allImages = [product.imageHD || product.image, ...(product.gallery || [])];
 
+    const handleTouchStart = (e) => {
+        touchStartX.current = e.touches[0].clientX;
+    };
+    const handleTouchEnd = (e) => {
+        if (touchStartX.current === null) return;
+        const diff = touchStartX.current - e.changedTouches[0].clientX;
+        if (Math.abs(diff) > 40) {
+            if (diff > 0) setActiveImg(i => Math.min(i + 1, allImages.length - 1));
+            else setActiveImg(i => Math.max(i - 1, 0));
+        }
+        touchStartX.current = null;
+    };
+
     const handleAddToCart = () => {
         if (!isLoggedIn) {
             setAuthModalOpen(true);
@@ -169,9 +184,9 @@ export default function ProductDetailPage() {
                 </div>
 
                 <div className="product-detail">
-                    {/* Galería estilo Zalando: miniaturas izq. (desktop) / apiladas (móvil) */}
+                    {/* Galería estilo Zalando */}
                     <div className="product-detail__gallery">
-                        {/* Strip de miniaturas — solo visible en desktop */}
+                        {/* Strip de miniaturas — solo desktop */}
                         {allImages.length > 1 && (
                             <div className="product-detail__thumbstrip">
                                 {allImages.map((img, i) => (
@@ -187,22 +202,42 @@ export default function ProductDetailPage() {
                             </div>
                         )}
 
-                        {/* Área principal de imágenes */}
-                        <div className="product-detail__main-area">
-                            {allImages.map((img, i) => (
-                                <div
-                                    key={i}
-                                    className={`product-detail__img-slot${i === activeImg ? ' is-active' : ''}`}
-                                >
-                                    {i === 0 && discount && (
-                                        <span className="product-detail__discount">-{discount}%</span>
-                                    )}
-                                    <img
-                                        src={img}
-                                        alt={i === 0 ? product.name : `${product.name} — foto ${i + 1}`}
-                                    />
+                        {/* Carrusel (mobile) + imagen activa (desktop) */}
+                        <div
+                            className="product-detail__main-area"
+                            onTouchStart={handleTouchStart}
+                            onTouchEnd={handleTouchEnd}
+                        >
+                            <div
+                                className="product-detail__carousel-track"
+                                style={{ transform: `translateX(-${activeImg * 100}%)` }}
+                            >
+                                {allImages.map((img, i) => (
+                                    <div key={i} className="product-detail__carousel-slide">
+                                        {i === 0 && discount && (
+                                            <span className="product-detail__discount">-{discount}%</span>
+                                        )}
+                                        <img
+                                            src={img}
+                                            alt={i === 0 ? product.name : `${product.name} — foto ${i + 1}`}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Dots indicadores — solo móvil */}
+                            {allImages.length > 1 && (
+                                <div className="product-detail__dots">
+                                    {allImages.map((_, i) => (
+                                        <button
+                                            key={i}
+                                            className={`dot${activeImg === i ? ' active' : ''}`}
+                                            onClick={() => setActiveImg(i)}
+                                            aria-label={`Imagen ${i + 1}`}
+                                        />
+                                    ))}
                                 </div>
-                            ))}
+                            )}
                         </div>
                     </div>
 

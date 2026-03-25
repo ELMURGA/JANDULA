@@ -61,6 +61,8 @@ export async function getProducts() {
     description,
     sizes,
     colors,
+    variants[] { color, sizes },
+    outOfStock,
     active,
     featured
   } | order(_createdAt desc)`;
@@ -90,6 +92,8 @@ export async function getProduct(idOrSlug) {
     description,
     sizes,
     colors,
+    variants[] { color, sizes },
+    outOfStock,
     active,
     featured
   }`;

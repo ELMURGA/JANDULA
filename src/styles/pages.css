@@ -1028,6 +1028,100 @@
     color: var(--color-stone-500);
 }
 
+/* ── Badge agotado ── */
+.product-detail__out-of-stock-badge {
+    display: inline-block;
+    background: #fef2f2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* ── Hint de color/variante ── */
+.product-detail__hint {
+    font-size: 0.8125rem;
+    color: var(--color-stone-500);
+    margin-top: 0.4rem;
+}
+
+/* ── Formulario "Avísame cuando esté disponible" ── */
+.notify-stock {
+    padding: 1.5rem;
+    background: #fafafa;
+    border: 1px solid var(--color-stone-200);
+    border-radius: 12px;
+}
+
+.notify-stock__title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-stone-900);
+    margin-bottom: 0.4rem;
+}
+
+.notify-stock__desc {
+    font-size: 0.875rem;
+    color: var(--color-stone-500);
+    margin-bottom: 1rem;
+}
+
+.notify-stock__form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.notify-stock__form input {
+    width: 100%;
+    padding: 0.6rem 0.9rem;
+    border: 1px solid var(--color-stone-300);
+    border-radius: 8px;
+    font-size: 0.9375rem;
+    font-family: inherit;
+    background: #fff;
+    transition: border-color 0.15s;
+    box-sizing: border-box;
+}
+
+.notify-stock__form input:focus {
+    outline: none;
+    border-color: var(--color-brand-pink);
+}
+
+.notify-stock__form button {
+    padding: 0.7rem 1.5rem;
+    background: var(--color-brand-pink);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    align-self: flex-start;
+}
+
+.notify-stock__form button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.notify-stock__success {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    font-size: 0.9375rem;
+    color: #15803d;
+}
+
+.notify-stock__success span {
+    font-size: 1.25rem;
+    line-height: 1;
+}
+
 /* Related Products */
 .related-products {
     padding: 4rem 0 6rem;

@@ -29,6 +29,10 @@ export default function ProductDetailPage() {
     const [selectedColor, setSelectedColor] = useState('');
     const [quantity, setQuantity] = useState(1);
     const [activeImg, setActiveImg] = useState(0);
+    const [notifyName, setNotifyName] = useState('');
+    const [notifyEmail, setNotifyEmail] = useState('');
+    const [notifySent, setNotifySent] = useState(false);
+    const [notifySending, setNotifySending] = useState(false);
     const scrollRef = useRef(null);
     const { addToCart } = useCart();
     const { wishlistItems, toggleWishlist } = useWishlist();
@@ -124,16 +128,52 @@ export default function ProductDetailPage() {
         setActiveImg(index);
     };
 
+    // Variantes por color: si el producto tiene variants, las tallas dependen del color seleccionado
+    const hasVariants = product.variants && product.variants.length > 0;
+    // Colores disponibles: de variants o del campo colors
+    const colorOptions = hasVariants
+        ? product.variants.map(v => v.color)
+        : (product.colors || []);
+    // Tallas disponibles: si hay variants, las del color seleccionado; si no, las globales
+    const sizeOptions = hasVariants
+        ? (product.variants.find(v => v.color === selectedColor)?.sizes || [])
+        : (product.sizes || []);
+
+    const handleNotifySubmit = async (e) => {
+        e.preventDefault();
+        if (!notifyName.trim() || !notifyEmail.trim()) return;
+        setNotifySending(true);
+        try {
+            const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+            await fetch(`${supabaseUrl}/functions/v1/notify-stock`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: notifyName.trim(),
+                    email: notifyEmail.trim(),
+                    productName: product.name,
+                    productSlug: product.slug,
+                    selectedColor: selectedColor || '',
+                }),
+            });
+            setNotifySent(true);
+        } catch {
+            setNotifySent(true); // mostramos confirmación igualmente
+        } finally {
+            setNotifySending(false);
+        }
+    };
+
     const handleAddToCart = () => {
         if (!isLoggedIn) {
             setAuthModalOpen(true);
             return;
         }
-        if (product.sizes?.length > 0 && !selectedSize) {
+        if (sizeOptions.length > 0 && !selectedSize) {
             alert('Por favor, selecciona una talla antes de añadir al carrito.');
             return;
         }
-        if (product.colors?.length > 0 && !selectedColor) {
+        if (colorOptions.length > 0 && !selectedColor) {
             alert('Por favor, selecciona un color antes de añadir al carrito.');
             return;
         }
@@ -249,6 +289,13 @@ export default function ProductDetailPage() {
                         <p className="product-detail__category">{(product.category || []).join(', ')}</p>
                         <h1 className="product-detail__title">{product.name}</h1>
 
+                        {/* Badge agotado */}
+                        {product.outOfStock && (
+                            <div className="product-detail__out-of-stock-badge">
+                                ⛔ Producto agotado
+                            </div>
+                        )}
+
                         <div className="product-detail__prices">
                             <span className="product-detail__price">{formatPrice(product.price)}</span>
                             {product.originalPrice && (
@@ -259,30 +306,33 @@ export default function ProductDetailPage() {
 
                         <p className="product-detail__desc">{product.description}</p>
 
-                        {/* Colors */}
-                        {product.colors && product.colors.length > 0 && (
+                        {/* Colores (simples o de variantes) */}
+                        {colorOptions.length > 0 && (
                             <div className="product-detail__sizes">
                                 <p className="product-detail__label">Color</p>
                                 <div className="size-options">
-                                    {product.colors.map(color => (
+                                    {colorOptions.map(color => (
                                         <button
                                             key={color}
                                             className={`size-btn ${selectedColor === color ? 'active' : ''}`}
-                                            onClick={() => setSelectedColor(color)}
+                                            onClick={() => { setSelectedColor(color); setSelectedSize(''); }}
                                         >
                                             {color}
                                         </button>
                                     ))}
                                 </div>
+                                {hasVariants && !selectedColor && (
+                                    <p className="product-detail__hint">Selecciona un color para ver las tallas disponibles</p>
+                                )}
                             </div>
                         )}
 
-                        {/* Sizes */}
-                        {product.sizes && product.sizes.length > 0 && (
+                        {/* Tallas (globales o del color seleccionado) */}
+                        {sizeOptions.length > 0 && (
                             <div className="product-detail__sizes">
                                 <p className="product-detail__label">Talla</p>
                                 <div className="size-options">
-                                    {product.sizes.map(size => (
+                                    {sizeOptions.map(size => (
                                         <button
                                             key={size}
                                             className={`size-btn ${selectedSize === size ? 'active' : ''}`}
@@ -295,31 +345,72 @@ export default function ProductDetailPage() {
                             </div>
                         )}
 
-                        {/* Quantity */}
-                        <div className="product-detail__quantity">
-                            <p className="product-detail__label">Cantidad</p>
-                            <div className="quantity-control">
-                                <button onClick={() => setQuantity(Math.max(1, quantity - 1))}><Minus size={16} /></button>
-                                <span>{quantity}</span>
-                                <button onClick={() => setQuantity(quantity + 1)}><Plus size={16} /></button>
-                            </div>
-                        </div>
+                        {/* Quantity + actions — solo si NO está agotado */}
+                        {!product.outOfStock ? (
+                            <>
+                                <div className="product-detail__quantity">
+                                    <p className="product-detail__label">Cantidad</p>
+                                    <div className="quantity-control">
+                                        <button onClick={() => setQuantity(Math.max(1, quantity - 1))}><Minus size={16} /></button>
+                                        <span>{quantity}</span>
+                                        <button onClick={() => setQuantity(quantity + 1)}><Plus size={16} /></button>
+                                    </div>
+                                </div>
 
-                        {/* Actions */}
-                        <div className="product-detail__actions">
-                            <button className="btn-primary btn-lg" onClick={handleAddToCart}>
-                                <ShoppingBag size={18} /> Añadir al Carrito
-                            </button>
-                            <button className="btn-whatsapp btn-lg" onClick={handleBuyWhatsApp}>
-                                <WhatsAppIcon size={20} color="#fff" /> Comprar por WhatsApp
-                            </button>
-                            <button
-                                className={`btn-wishlist ${wishlisted ? 'active' : ''}`}
-                                onClick={() => toggleWishlist(product)}
-                            >
-                                <Heart size={18} fill={wishlisted ? 'currentColor' : 'none'} />
-                            </button>
-                        </div>
+                                <div className="product-detail__actions">
+                                    <button className="btn-primary btn-lg" onClick={handleAddToCart}>
+                                        <ShoppingBag size={18} /> Añadir al Carrito
+                                    </button>
+                                    <button className="btn-whatsapp btn-lg" onClick={handleBuyWhatsApp}>
+                                        <WhatsAppIcon size={20} color="#fff" /> Comprar por WhatsApp
+                                    </button>
+                                    <button
+                                        className={`btn-wishlist ${wishlisted ? 'active' : ''}`}
+                                        onClick={() => toggleWishlist(product)}
+                                    >
+                                        <Heart size={18} fill={wishlisted ? 'currentColor' : 'none'} />
+                                    </button>
+                                </div>
+                            </>
+                        ) : (
+                            /* ── Formulario "Avísame cuando esté disponible" ── */
+                            <div className="notify-stock">
+                                {notifySent ? (
+                                    <div className="notify-stock__success">
+                                        <span>✅</span>
+                                        <p>¡Listo! Te avisaremos por email en cuanto vuelva a estar disponible.</p>
+                                    </div>
+                                ) : (
+                                    <form className="notify-stock__form" onSubmit={handleNotifySubmit} noValidate>
+                                        <p className="notify-stock__title">
+                                            🔔 Avísame cuando esté disponible
+                                        </p>
+                                        <p className="notify-stock__desc">
+                                            Deja tu nombre y correo y te avisamos en cuanto vuelva a estar en stock.
+                                        </p>
+                                        <input
+                                            type="text"
+                                            placeholder="Tu nombre"
+                                            value={notifyName}
+                                            onChange={e => setNotifyName(e.target.value)}
+                                            required
+                                            autoComplete="given-name"
+                                        />
+                                        <input
+                                            type="email"
+                                            placeholder="Tu email"
+                                            value={notifyEmail}
+                                            onChange={e => setNotifyEmail(e.target.value)}
+                                            required
+                                            autoComplete="email"
+                                        />
+                                        <button type="submit" disabled={notifySending}>
+                                            {notifySending ? 'Enviando…' : 'Avisarme'}
+                                        </button>
+                                    </form>
+                                )}
+                            </div>
+                        )}
 
                         {/* Guarantees */}
                         <div className="product-detail__guarantees">

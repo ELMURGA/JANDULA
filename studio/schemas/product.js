@@ -126,6 +126,51 @@ export default {
             description: 'Escribe los colores disponibles separados por coma o Intro (ej. Rojo, Azul marino, Blanco)',
         },
         {
+            name: 'variants',
+            title: 'Variantes por color (tallas por color)',
+            type: 'array',
+            description: '⚠️ Usa esto SOLO si cada color tiene tallas distintas. Si todos los colores comparten las mismas tallas, usa los campos "Colores" y "Tallas" de arriba.',
+            of: [
+                {
+                    type: 'object',
+                    name: 'colorVariant',
+                    title: 'Variante',
+                    fields: [
+                        {
+                            name: 'color',
+                            title: 'Color',
+                            type: 'string',
+                            validation: Rule => Rule.required(),
+                        },
+                        {
+                            name: 'sizes',
+                            title: 'Tallas para este color',
+                            type: 'array',
+                            of: [{ type: 'string' }],
+                            options: {
+                                list: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', 'S/M', 'L/XL', 'Única'],
+                                layout: 'tags',
+                            },
+                        },
+                    ],
+                    preview: {
+                        select: { title: 'color', subtitle: 'sizes' },
+                        prepare({ title, subtitle }) {
+                            const sizes = Array.isArray(subtitle) ? subtitle.join(', ') : '';
+                            return { title: title || 'Sin color', subtitle: sizes || 'Sin tallas' };
+                        },
+                    },
+                },
+            ],
+        },
+        {
+            name: 'outOfStock',
+            title: 'Agotado',
+            type: 'boolean',
+            initialValue: false,
+            description: 'Actívalo para marcar el producto como agotado en la tienda. Aparecerá el botón "Avísame cuando esté disponible".',
+        },
+        {
             name: 'active',
             title: 'Visible en la tienda',
             type: 'boolean',
@@ -143,11 +188,13 @@ export default {
             title: 'name',
             subtitle: 'category',
             media: 'image',
+            outOfStock: 'outOfStock',
         },
-        prepare({ title, subtitle, media }) {
+        prepare({ title, subtitle, media, outOfStock }) {
+            const cats = Array.isArray(subtitle) ? subtitle.join(', ') : (subtitle || '');
             return {
-                title,
-                subtitle: Array.isArray(subtitle) ? subtitle.join(', ') : (subtitle || ''),
+                title: outOfStock ? `⛔ ${title}` : title,
+                subtitle: cats,
                 media,
             };
         },

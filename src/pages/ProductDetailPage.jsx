@@ -130,10 +130,12 @@ export default function ProductDetailPage() {
 
     // Variantes por color: si el producto tiene variants, las tallas dependen del color seleccionado
     const hasVariants = product.variants && product.variants.length > 0;
-    // Colores disponibles: de variants o del campo colors
+    // Colores disponibles: de variants (objetos) o del campo colors (strings)
     const colorOptions = hasVariants
-        ? product.variants.map(v => v.color)
-        : (product.colors || []);
+        ? product.variants   // array de { color, colorHex?, sizes }
+        : (product.colors || []);  // array de strings
+    // Nombre del color seleccionado (normaliza si viene de variants u objeto)
+    const selectedColorName = selectedColor;
     // Tallas disponibles: si hay variants, las del color seleccionado; si no, las globales
     const sizeOptions = hasVariants
         ? (product.variants.find(v => v.color === selectedColor)?.sizes || [])
@@ -292,7 +294,7 @@ export default function ProductDetailPage() {
                         {/* Badge agotado */}
                         {product.outOfStock && (
                             <div className="product-detail__out-of-stock-badge">
-                                ⛔ Producto agotado
+                                 Producto agotado
                             </div>
                         )}
 
@@ -310,16 +312,28 @@ export default function ProductDetailPage() {
                         {colorOptions.length > 0 && (
                             <div className="product-detail__sizes">
                                 <p className="product-detail__label">Color</p>
-                                <div className="size-options">
-                                    {colorOptions.map(color => (
-                                        <button
-                                            key={color}
-                                            className={`size-btn ${selectedColor === color ? 'active' : ''}`}
-                                            onClick={() => { setSelectedColor(color); setSelectedSize(''); }}
-                                        >
-                                            {color}
-                                        </button>
-                                    ))}
+                                <div className="size-options size-options--colors">
+                                    {colorOptions.map(colorOpt => {
+                                        // colorOpt puede ser string (colors simple) u objeto {color, colorHex}
+                                        const colorName = typeof colorOpt === 'object' ? colorOpt.color : colorOpt;
+                                        const colorHex  = typeof colorOpt === 'object' ? colorOpt.colorHex : null;
+                                        return (
+                                            <button
+                                                key={colorName}
+                                                className={`size-btn size-btn--color ${selectedColor === colorName ? 'active' : ''}`}
+                                                onClick={() => { setSelectedColor(colorName); setSelectedSize(''); }}
+                                                title={colorName}
+                                            >
+                                                {colorHex && (
+                                                    <span
+                                                        className="color-swatch"
+                                                        style={{ background: colorHex }}
+                                                    />
+                                                )}
+                                                {colorName}
+                                            </button>
+                                        );
+                                    })}
                                 </div>
                                 {hasVariants && !selectedColor && (
                                     <p className="product-detail__hint">Selecciona un color para ver las tallas disponibles</p>
@@ -362,7 +376,7 @@ export default function ProductDetailPage() {
                                         <ShoppingBag size={18} /> Añadir al Carrito
                                     </button>
                                     <button className="btn-whatsapp btn-lg" onClick={handleBuyWhatsApp}>
-                                        <WhatsAppIcon size={20} color="#fff" /> Comprar por WhatsApp
+                                        <WhatsAppIcon size={20} color="#fff" /> Preguntar por WhatsApp
                                     </button>
                                     <button
                                         className={`btn-wishlist ${wishlisted ? 'active' : ''}`}
@@ -383,7 +397,7 @@ export default function ProductDetailPage() {
                                 ) : (
                                     <form className="notify-stock__form" onSubmit={handleNotifySubmit} noValidate>
                                         <p className="notify-stock__title">
-                                            🔔 Avísame cuando esté disponible
+                                             Avísame cuando esté disponible
                                         </p>
                                         <p className="notify-stock__desc">
                                             Deja tu nombre y correo y te avisamos en cuanto vuelva a estar en stock.

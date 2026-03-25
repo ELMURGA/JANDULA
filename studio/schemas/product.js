@@ -138,9 +138,17 @@ export default {
                     fields: [
                         {
                             name: 'color',
-                            title: 'Color',
+                            title: 'Nombre del color',
                             type: 'string',
                             validation: Rule => Rule.required(),
+                        },
+                        {
+                            name: 'colorHex',
+                            title: 'Código hexadecimal del color (ej. #FF0000)',
+                            type: 'string',
+                            validation: Rule =>
+                                Rule.regex(/^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/, { name: 'hex color' })
+                                    .warning('Formato: #RGB o #RRGGBB'),
                         },
                         {
                             name: 'sizes',
@@ -154,10 +162,10 @@ export default {
                         },
                     ],
                     preview: {
-                        select: { title: 'color', subtitle: 'sizes' },
-                        prepare({ title, subtitle }) {
+                        select: { title: 'color', subtitle: 'sizes', hex: 'colorHex' },
+                        prepare({ title, subtitle, hex }) {
                             const sizes = Array.isArray(subtitle) ? subtitle.join(', ') : '';
-                            return { title: title || 'Sin color', subtitle: sizes || 'Sin tallas' };
+                            return { title: hex ? `${title} (${hex})` : (title || 'Sin color'), subtitle: sizes || 'Sin tallas' };
                         },
                     },
                 },

@@ -74,7 +74,7 @@ export function normalizeProduct(sanityProduct) {
     description: sanityProduct.description,
     sizes: sanityProduct.sizes || [],
     colors: sanityProduct.colors || [],
-    // Variantes por color: [{ color: string, sizes: string[] }]
+    // Variantes por color: [{ color: string, colorHex?: string, sizes: string[] }]
     variants: sanityProduct.variants || [],
     // Producto agotado
     outOfStock: sanityProduct.outOfStock || false,

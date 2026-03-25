@@ -1047,6 +1047,22 @@
     margin-top: 0.4rem;
 }
 
+/* Botón de color con swatch */
+.size-btn--color {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.color-swatch {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.15);
+    flex-shrink: 0;
+}
+
 /* ── Formulario "Avísame cuando esté disponible" ── */
 .notify-stock {
     padding: 1.5rem;

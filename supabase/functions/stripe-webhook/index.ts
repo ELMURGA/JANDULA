@@ -138,6 +138,44 @@ serve(async (req: Request) => {
         console.error('⚠️  Error al enviar email:', emailErr);
       }
     }
+
+    // ── 5. Notificación al administrador ────────────────────────────────────
+    try {
+      const adminEmailRes = await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/send-email`, {
+        method: 'POST',
+        headers: {
+          'Content-Type':  'application/json',
+          'Authorization': `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`,
+        },
+        body: JSON.stringify({
+          to:              'jandulamodautrera@gmail.com',
+          subject:         `🛒 Nuevo pedido #${orderData.order_id} — ${meta.shipping_name}`,
+          orderId:         orderData.order_id,
+          customerName:    meta.shipping_name,
+          items:           orderData.items,
+          subtotal:        orderData.subtotal,
+          shipping:        orderData.shipping,
+          discount:        orderData.discount,
+          total:           orderData.total,
+          shippingAddress: {
+            address: meta.shipping_address,
+            city:    meta.shipping_city,
+            postal:  meta.shipping_postal,
+            phone:   meta.shipping_phone,
+          },
+          adminPanelLink: 'https://jandulamodautrera.es/admin',
+        }),
+      });
+
+      if (!adminEmailRes.ok) {
+        const adminEmailErr = await adminEmailRes.text();
+        console.error('⚠️ Notificación admin error:', adminEmailErr);
+      } else {
+        console.log(`✅ Notificación enviada a admin para pedido #${orderData.order_id}`);
+      }
+    } catch (adminEmailErr) {
+      console.error('⚠️  Error al enviar notificación admin:', adminEmailErr);
+    }
   }
 
   return new Response(JSON.stringify({ received: true }), {

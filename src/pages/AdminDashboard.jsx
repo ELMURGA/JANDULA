@@ -459,9 +459,9 @@ function AdminPanel() {
                         </div>
                     </div>
                     <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                        <button className="admin-logout-btn" onClick={fetchOrders} title="Actualizar pedidos">
-                            <RefreshCw size={16} />
-                            Actualizar
+                        <button className="admin-logout-btn" onClick={fetchOrders} disabled={loading} title="Actualizar pedidos">
+                            <RefreshCw size={16} className={loading ? 'spin' : ''} />
+                            {loading ? 'Cargando…' : 'Actualizar'}
                         </button>
                         <button className="admin-logout-btn" onClick={adminLogout}>
                             <LogOut size={16} />

@@ -38,6 +38,10 @@ interface SendEmailBody {
   discount:        number;
   total:           number;
   shippingAddress: ShippingAddress;
+  /** Asunto personalizado (si no se indica, se usa el asunto por defecto de confirmación al cliente) */
+  subject?:        string;
+  /** Si se proporciona, añade un botón "Panel de administración" con este enlace al final del email */
+  adminPanelLink?: string;
 }
 
 serve(async (req: Request) => {
@@ -59,16 +63,19 @@ serve(async (req: Request) => {
     const {
       to, orderId, customerName, items,
       subtotal, shipping, discount, total, shippingAddress,
+      subject: customSubject, adminPanelLink,
     } = body;
 
     if (!to || !orderId) throw new Error('Faltan parámetros requeridos');
 
     const html = buildEmailHtml(
       orderId, customerName, items,
-      subtotal, shipping, discount, total, shippingAddress
+      subtotal, shipping, discount, total, shippingAddress,
+      adminPanelLink,
     );
 
     const from = Deno.env.get('RESEND_FROM_EMAIL') || 'Jándula Moda <onboarding@resend.dev>';
+    const subject = customSubject ?? `✅ Pedido #${orderId} confirmado — Jándula Moda`;
 
     const resendResponse = await fetch('https://api.resend.com/emails', {
       method: 'POST',
@@ -79,7 +86,7 @@ serve(async (req: Request) => {
       body: JSON.stringify({
         from,
         to:      [to],
-        subject: `✅ Pedido #${orderId} confirmado — Jándula Moda`,
+        subject,
         html,
       }),
     });
@@ -125,7 +132,8 @@ function buildEmailHtml(
   shipping:        number,
   discount:        number,
   total:           number,
-  shippingAddress: ShippingAddress
+  shippingAddress: ShippingAddress,
+  adminPanelLink?: string,
 ): string {
   const itemRows = (items ?? []).map(item => `
     <tr>
@@ -269,6 +277,16 @@ function buildEmailHtml(
                   Ver Mis Pedidos
                 </a>
               </div>
+
+              ${adminPanelLink ? `
+              <!-- Admin CTA -->
+              <div style="text-align:center;margin-bottom:32px;">
+                <a href="${escapeHtml(adminPanelLink)}"
+                   style="display:inline-block;background:#1e293b;color:#fff;text-decoration:none;padding:12px 28px;border-radius:50px;font-family:Arial,sans-serif;font-size:14px;font-weight:600;letter-spacing:0.5px;">
+                  🛠️ Ir al Panel de Administración
+                </a>
+              </div>
+              ` : ''}
 
               <!-- Info note -->
               <p style="margin:0 0 24px;color:#9ca3af;text-align:center;font-family:Arial,sans-serif;font-size:13px;line-height:1.6;">

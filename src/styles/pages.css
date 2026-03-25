@@ -681,30 +681,47 @@
 .thumb-btn:hover { border-color: var(--color-stone-400); }
 .thumb-btn.active { border-color: var(--color-stone-900); }
 
-/* ── Main area (wraps carousel + dots) ── */
+/* ── Main area ── */
 .product-detail__main-area {
     flex: 1;
     min-width: 0;
     position: relative;
+    overflow: hidden;
+    border-radius: 12px;
 }
 
-/* ── Carousel ── */
-.product-detail__carousel-track {
+@media (min-width: 768px) {
+    .product-detail__main-area {
+        border-radius: 16px;
+    }
+}
+
+/* ── Snap track: el carrusel real ── */
+.product-detail__snap-track {
     display: flex;
-    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-    will-change: transform;
+    overflow-x: scroll;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;            /* Firefox */
+    overscroll-behavior-x: contain;
 }
 
-.product-detail__carousel-slide {
+.product-detail__snap-track::-webkit-scrollbar {
+    display: none;                    /* Chrome/Safari */
+}
+
+/* ── Cada imagen ── */
+.product-detail__snap-slide {
     position: relative;
     flex: 0 0 100%;
     aspect-ratio: 3/4;
     overflow: hidden;
     background: var(--color-stone-100);
-    border-radius: 12px;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
 }
 
-.product-detail__carousel-slide img {
+.product-detail__snap-slide img {
     width: 100%;
     height: 100%;
     display: block;
@@ -712,14 +729,15 @@
     image-orientation: from-image;
     pointer-events: none;
     user-select: none;
+    -webkit-user-drag: none;
 }
 
-/* ── Dots (mobile only) ── */
+/* ── Dots (solo móvil) ── */
 .product-detail__dots {
     display: flex;
     justify-content: center;
     gap: 6px;
-    padding-top: 12px;
+    padding-top: 10px;
 }
 
 .dot {
@@ -735,26 +753,20 @@
 
 .dot.active {
     background: var(--color-stone-900);
-    transform: scale(1.3);
+    transform: scale(1.35);
 }
 
-/* ── Desktop overrides ── */
+/* ── Desktop ── */
 @media (min-width: 768px) {
-    /* Show thumbstrip */
     .product-detail__thumbstrip {
         display: flex;
     }
 
-    /* Lock carousel to show only active slide (no swipe on desktop) */
-    .product-detail__carousel-track {
+    .product-detail__snap-track {
+        /* En desktop no se hace scroll, solo se muestra la imagen activa */
         overflow: hidden;
     }
 
-    .product-detail__carousel-slide {
-        border-radius: 16px;
-    }
-
-    /* Hide dots on desktop */
     .product-detail__dots {
         display: none;
     }

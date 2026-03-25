@@ -8,7 +8,7 @@ const STORAGE_KEY = 'jandula_discount_modal_seen';
 function getDelay() {
     const key = 'jandula_discount_delay';
     if (!sessionStorage.getItem(key)) {
-        sessionStorage.setItem(key, Math.floor(Math.random() * 10_000) + 30_000);
+        sessionStorage.setItem(key, Math.floor(Math.random() * 5_000) + 10_000);
     }
     return Number(sessionStorage.getItem(key));
 }

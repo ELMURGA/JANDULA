@@ -15,24 +15,42 @@ serve(async (req: Request) => {
 
   try {
     const authorization = req.headers.get('Authorization') ?? '';
-    const expected = `Bearer ${Deno.env.get('SUPABASE_ANON_KEY')}`;
-    const webhookToken = req.headers.get('x-webhook-token') ?? '';
-    const expectedWebhookToken = Deno.env.get('SANITY_WEBHOOK_SECRET') ?? '';
-    const isAuthorized =
-      authorization === expected ||
-      (expectedWebhookToken !== '' && webhookToken === expectedWebhookToken);
+    const webhookToken  = req.headers.get('x-webhook-token') ?? '';
 
-    if (!isAuthorized) {
+    const supabaseUrl    = Deno.env.get('SUPABASE_URL')!;
+    const anonKey        = Deno.env.get('SUPABASE_ANON_KEY')!;
+    const serviceKey     = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const webhookSecret  = Deno.env.get('SANITY_WEBHOOK_SECRET') ?? '';
+
+    // Opción A: webhook de Sanity con token secreto en header x-webhook-token
+    const isWebhook = webhookSecret !== '' && webhookToken === webhookSecret;
+
+    // Opción B: llamada manual desde el panel admin — verifica JWT + rol admin
+    let isAdminUser = false;
+    if (!isWebhook && authorization.startsWith('Bearer ')) {
+      const userClient = createClient(supabaseUrl, anonKey, {
+        global: { headers: { Authorization: authorization } },
+      });
+      const { data: { user }, error: userError } = await userClient.auth.getUser();
+      if (!userError && user?.id) {
+        const svcClient = createClient(supabaseUrl, serviceKey);
+        const { data: profile } = await svcClient
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .single();
+        isAdminUser = profile?.role === 'admin';
+      }
+    }
+
+    if (!isWebhook && !isAdminUser) {
       return new Response(JSON.stringify({ success: false, error: 'No autorizado' }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 401,
       });
     }
 
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL')!,
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-    );
+    const supabase = createClient(supabaseUrl, serviceKey);
 
     const query = `*[_type == "product"] {
       _id,

@@ -5,8 +5,8 @@
 /* --- Section Header --- */
 .products-section {
     padding: 5rem 0;
-    background-color: var(--color-stone-950, #0a0a0a);
-    color: var(--color-stone-100);
+    background-color: #ffffff;
+    color: var(--color-stone-900);
 }
 
 .sale-section {
@@ -32,7 +32,7 @@
 .section-header h2 {
     font-family: var(--font-serif);
     font-size: clamp(1.75rem, 4vw, 2.5rem);
-    color: var(--color-white, #ffffff);
+    color: var(--color-stone-900);
     margin-bottom: 0.75rem;
 }
 
@@ -45,7 +45,7 @@
     max-width: 500px;
     margin: 0 auto;
     font-size: 0.9375rem;
-    color: var(--color-stone-300);
+    color: var(--color-stone-500);
 }
 
 .sale-section .section-header p {

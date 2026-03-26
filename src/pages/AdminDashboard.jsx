@@ -289,6 +289,7 @@ function AdminPanel() {
     const [filterDelivery, setFilterDelivery] = useState('all');
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [syncingDiscounts, setSyncingDiscounts] = useState(false);
+    const [syncingProducts, setSyncingProducts] = useState(false);
 
     useEffect(() => {
         document.body.style.overflow = selectedOrder ? 'hidden' : '';
@@ -401,6 +402,42 @@ function AdminPanel() {
             alert('❌ Error al sincronizar: ' + (err.message || String(err)));
         } finally {
             setSyncingDiscounts(false);
+        }
+    };
+
+    const handleSyncProducts = async () => {
+        setSyncingProducts(true);
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+            const token = session?.access_token;
+            if (!token) {
+                alert('Sesión expirada. Vuelve a iniciar sesión.');
+                setSyncingProducts(false);
+                return;
+            }
+            const res = await fetch(
+                `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/sync-products`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+            const text = await res.text();
+            let data;
+            try { data = JSON.parse(text); } catch { data = {}; }
+            if (data.success) {
+                alert(`✅ Productos sincronizados: ${data.upserted} actualizados, ${data.deactivated} desactivados.`);
+            } else {
+                const msg = data.error || data.message || text || 'Error desconocido';
+                alert('❌ Error al sincronizar productos: ' + msg);
+            }
+        } catch (err) {
+            alert('❌ Error al sincronizar productos: ' + (err.message || String(err)));
+        } finally {
+            setSyncingProducts(false);
         }
     };
 
@@ -550,6 +587,15 @@ function AdminPanel() {
                         style={{ whiteSpace: 'nowrap' }}
                     >
                         {syncingDiscounts ? 'Sincronizando...' : '🏷️ Sincronizar cupones'}
+                    </button>
+                    <button
+                        className="admin-logout-btn"
+                        onClick={handleSyncProducts}
+                        disabled={syncingProducts}
+                        title="Sincronizar productos desde Sanity a la base de datos"
+                        style={{ whiteSpace: 'nowrap' }}
+                    >
+                        {syncingProducts ? 'Sincronizando...' : '📦 Sincronizar productos'}
                     </button>
                 </div>
 

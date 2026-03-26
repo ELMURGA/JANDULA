@@ -54,17 +54,22 @@ export default function ProductDetailPage() {
                 setProduct(normalizedProduct);
                 setActiveImg(0);
 
-                // Cargar productos relacionados
-                const allProducts = await getProducts();
-                const related = allProducts
-                    .filter(p => {
-                        const pCats = Array.isArray(p.category) ? p.category : (p.category ? [p.category] : []);
-                        const prodCats = Array.isArray(productData.category) ? productData.category : (productData.category ? [productData.category] : []);
-                        return pCats.some(c => prodCats.includes(c)) && p._id !== productData._id;
-                    })
-                    .slice(0, 5);
-
-                setRelatedProducts(related.map(normalizeProduct));
+                // Productos relacionados: primero los definidos manualmente en Sanity
+                if (productData.relatedProducts && productData.relatedProducts.length > 0) {
+                    const filtered = productData.relatedProducts.filter(p => p.active !== false);
+                    setRelatedProducts(filtered.map(normalizeProduct));
+                } else {
+                    // Fallback: productos de la misma categoría
+                    const allProducts = await getProducts();
+                    const related = allProducts
+                        .filter(p => {
+                            const pCats = Array.isArray(p.category) ? p.category : (p.category ? [p.category] : []);
+                            const prodCats = Array.isArray(productData.category) ? productData.category : (productData.category ? [productData.category] : []);
+                            return pCats.some(c => prodCats.includes(c)) && p._id !== productData._id;
+                        })
+                        .slice(0, 5);
+                    setRelatedProducts(related.map(normalizeProduct));
+                }
             } catch (error) {
                 console.error('Error cargando producto:', error);
                 setProduct(null);

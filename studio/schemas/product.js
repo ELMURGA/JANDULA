@@ -190,6 +190,14 @@ export default {
             type: 'boolean',
             initialValue: false,
         },
+        {
+            name: 'relatedProducts',
+            title: 'Productos relacionados',
+            type: 'array',
+            of: [{ type: 'reference', to: [{ type: 'product' }] }],
+            description: 'Selecciona los productos que quieres mostrar en la sección "También te puede gustar" de esta ficha de producto.',
+            validation: Rule => Rule.unique().max(8).warning('Se recomiendan máximo 8 productos relacionados'),
+        },
     ],
     preview: {
         select: {

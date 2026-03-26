@@ -95,7 +95,18 @@ export async function getProduct(idOrSlug) {
     variants[] { color, colorHex, sizes },
     outOfStock,
     active,
-    featured
+    featured,
+    relatedProducts[]-> {
+      _id,
+      name,
+      slug,
+      price,
+      originalPrice,
+      category,
+      image,
+      outOfStock,
+      active
+    }
   }`;
 
   try {
